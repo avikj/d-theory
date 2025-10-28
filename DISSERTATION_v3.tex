@@ -1609,6 +1609,76 @@ $(\NN, +) \cong (\ZZ_{\geq 0}, +)$ is a free abelian monoid. Multiplicative stru
 
 \textbf{Interpretation}: The two operations live in "achromatic" relationship—no compressive morphism between them. This independence is the source of arithmetic depth.
 
+\section{Formal Bridge: Operations as Distinction Operators}
+
+We now formalize how internal operations on $\NN$ relate to the general distinction framework.
+
+\begin{definition}[Factorization Type]\label{def:factorization-type}
+For $n \in \NN$ and operation $\mathrm{op} : \NN \times \NN \to \NN$, define the \emph{factorization type}:
+\[
+\mathsf{Fact}_{\mathrm{op}}(n) := \Sigma_{(a,b : \NN)} [\mathrm{op}(a,b) = n]
+\]
+This is the type of all op-decompositions of $n$.
+\end{definition}
+
+\begin{example}[Multiplicative Factorizations]
+For $\times$, $\mathsf{Fact}_\times(12) = \{(1,12), (2,6), (3,4), (4,3), (6,2), (12,1)\}$
+
+For prime $p$, $\mathsf{Fact}_\times(p) = \{(1,p), (p,1)\}$ (trivial only)
+\end{example}
+
+\begin{definition}[Internal Distinction Operator]\label{def:internal-distinction}
+For operation $\mathrm{op}$, define:
+\[
+\D_{\mathrm{op}}(n) := \mathsf{Fact}_{\mathrm{op}}(n)
+\]
+This examines $n$ by distinguishing all op-decompositions.
+\end{definition}
+
+\begin{definition}[Internal Necessity Operator]\label{def:internal-necessity}
+For operation $\mathrm{op}$, define:
+\[
+\nec_{\mathrm{op}}(n) := \|\mathsf{Fact}_{\mathrm{op}}(n)\|_0
+\]
+the 0-truncation (proposition: "op-decomposition exists").
+\end{definition}
+
+\begin{definition}[Internal Connection]\label{def:internal-connection}
+The internal connection for operation $\mathrm{op}$ is the commutator:
+\[
+\nabla_{\mathrm{op}} := \D_{\mathrm{op}} \circ \nec_{\mathrm{op}} - \nec_{\mathrm{op}} \circ \D_{\mathrm{op}}
+\]
+\end{definition}
+
+\begin{proposition}[Bridge to External Framework]
+The internal connection $\nabla_{\mathrm{op}}$ is the restriction of the general semantic connection $\nabla$ (Definition~\ref{def:connection}) to the specific context of operation-induced distinctions on $\NN$.
+\end{proposition}
+
+\begin{proof}[Justification]
+Both are defined as commutators $[\D, \nec]$. The internal version specializes the general type-theoretic operators to the concrete setting of arithmetic operations. The formal equivalence follows from functoriality of $\D$ and $\nec$.
+\end{proof}
+
+\begin{theorem}[Achromatic Independence]\label{thm:achromatic}
+For algebraically independent operations $\mathrm{op}_1, \mathrm{op}_2$ (like $+$ and $\times$), their internal connections do not factor through each other: there is no natural transformation $\alpha : \nabla_{\mathrm{op}_1} \Rightarrow \nabla_{\mathrm{op}_2}$.
+\end{theorem}
+
+\begin{proof}[Proof Sketch]
+By Theorem (Algebraic Independence), no homomorphism exists between $(\NN, +)$ and $(\NN, \times)$. The connections $\nabla_+$ and $\nabla_\times$ are induced by these structures. If they factored through each other, this would provide the prohibited homomorphism. Contradiction.
+\end{proof}
+
+\begin{definition}[Achromatic Coupling]
+Operations $\mathrm{op}_1, \mathrm{op}_2$ are \emph{achromatically coupled} if:
+\begin{enumerate}[nosep]
+\item They are algebraically independent (no homomorphism)
+\item Their connections don't commute: $[\nabla_{\mathrm{op}_1}, \nabla_{\mathrm{op}_2}] \neq 0$
+\item Witness data combining both has Kolmogorov complexity $K(w) \geq \beta \cdot |w| \cdot \log|w|$
+\end{enumerate}
+\end{definition}
+
+\begin{remark}[Why "Achromatic"]
+In optics, achromatic means wavelengths cannot be separated. Here: operations cannot be reduced to each other—information at their interface is incompressible into either system alone. The coupling creates irreducible complexity.
+\end{remark}
+
 \section{Primes as Internal Autopoietic Nodes}
 
 \begin{definition}[Prime]
