@@ -253,7 +253,7 @@ From $\D$, everything follows:
 
 \section{Definition and Basic Properties}
 
-Let $\mathcal{U}$ be a univalent universe of types in homotopy type theory.
+Let $\mathcal{U}$ be a univalent universe of types in homotopy type theory~\cite{hottbook}.
 
 \begin{definition}[Distinction Operator]
 For any type $X : \mathcal{U}$, define
@@ -317,6 +317,16 @@ The canonical tower for $X$ is:
 X \xrightarrow{\iota_X} \D(X) \xrightarrow{\D(\iota_X)} \D^2(X) \xrightarrow{\D^2(\iota_X)} \cdots
 \]
 \end{definition}
+
+\begin{center}
+\begin{tikzcd}[column sep=large]
+X \arrow[r, "\iota_X"] & \D(X) \arrow[r, "\D(\iota_X)"] & \D^2(X) \arrow[r, "\D^2(\iota_X)"] & \cdots \arrow[r] & E
+\end{tikzcd}
+\end{center}
+
+\begin{center}
+\textit{Figure: The distinction tower converges to the Eternal Lattice $E$}
+\end{center}
 
 \begin{lemma}[Tower Stability for Sets]
 If $X$ is a 0-type, all maps in the tower are equivalences, hence $\D^n(X) \simeq X$ for all $n$.
@@ -2397,7 +2407,7 @@ RH & \textbf{Speculated No} & Flatness = operational consistency \\
 \end{center}
 
 \begin{observation}[Pattern]
-Known unprovable $\Pi_2$ statements (Paris-Harrington, Goodstein) involve infinite combinatorics requiring transfinite induction. Our conjectures (Goldbach, Twin Primes, RH) involve self-referential examination of arithmetic/analytic structure. Both exceed PA's expressive power, but via different mechanisms.
+Known unprovable $\Pi_2$ statements (Paris-Harrington~\cite{paris1977}, Goodstein~\cite{goodstein1944}) involve infinite combinatorics requiring transfinite induction. Our conjectures (Goldbach, Twin Primes, RH) involve self-referential examination of arithmetic/analytic structure. Both exceed PA's expressive power, but via different mechanisms.
 \end{observation}
 
 \section{Ordinal Strength and Nonstandard Models}
@@ -2445,7 +2455,7 @@ These features suggest structural unprovability in PA, though provability in str
 \end{theorem}
 
 \begin{observation}[Connection to Gödel]
-Gödel's first incompleteness theorem constructs a statement $G$ asserting ``$G$ is not provable in $T$.'' Our conjectures arise naturally (not artificially constructed) but share the self-referential structure:
+Gödel's first incompleteness theorem~\cite{godel1931} constructs a statement $G$ asserting ``$G$ is not provable in $T$.'' Our conjectures arise naturally (not artificially constructed) but share the self-referential structure:
 
 \begin{itemize}[nosep]
 \item \textbf{Goldbach}: ``Elements defined as $\times$-irreducible $+$-generate all evens'' (one operation examining another's output)
@@ -3645,20 +3655,89 @@ If even partially correct, this advances our understanding of the relationship b
 
 \chapter{Summary of Key Definitions}
 
+\section{Core Operators and Structures}
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+\textbf{Symbol} & \textbf{Name} & \textbf{Definition/Description} \\
+\midrule
+$\D$ & Distinction operator & $\D(X) = \Sigma_{(x,y:X)} \Path_X(x,y)$ \\
+$\nec$ & Necessity operator & Idempotent stabilization: $\nec\nec \simeq \nec$ \\
+$\nabla$ & Semantic connection & $\nabla = \D\nec - \nec\D$ (commutator) \\
+$\Riem$ & Curvature & $\Riem = \nabla^2$ \\
+$\widehat{\D}$ & Quantum distinction & Linearization of $\D$ in tangent category \\
+$\widehat{H}_{\D}$ & Distinction Hamiltonian & $\log(\widehat{\D})$ \\
+$E$ & Eternal Lattice & $\lim_{n \to \infty} \D^n(\mathbf{1})$ \\
+$\iota_X$ & Canonical embedding & $\iota_X(x) = (x, x, \mathsf{refl}_x)$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Information and Complexity}
+
 \begin{center}
 \begin{tabular}{lll}
 \toprule
 \textbf{Symbol} & \textbf{Name} & \textbf{Definition} \\
 \midrule
-$\D$ & Distinction operator & $\D(X) = \Sigma_{(x,y:X)} \Path_X(x,y)$ \\
-$\nec$ & Necessity operator & Idempotent: $\nec\nec \simeq \nec$ \\
-$\nabla$ & Connection & $\nabla = \D\nec - \nec\D$ \\
-$\Riem$ & Curvature & $\Riem = \nabla^2$ \\
-Autopoietic & Self-maintaining & $\nabla \neq 0$, $\nabla^2 = 0$ \\
-$H(X)$ & Entropy & $\log|\Omega(X)|$ \\
-$K(x)$ & Kolmogorov complexity & $\min\{|p| : U(p)=x\}$ \\
-$c_T$ & Theory capacity & Max complexity $T$ can prove \\
-$W(G_2)$ & Weyl group & $\cong D_6$ (order 12) \\
+$H(X)$ & Shannon entropy & $\log|\Omega(X)|$ (distinction capacity) \\
+$S(A)$ & Von Neumann entropy & $-\Tr(\rho_A \log \rho_A)$ \\
+$I(A;B)$ & Mutual information & $H(A) + H(B) - H(A \otimes B)$ \\
+$K(x)$ & Kolmogorov complexity & $\min\{|p| : U(p)=x\}$ (program length) \\
+$c_T$ & Theory capacity & Max complexity $T$ can prove (Chaitin bound) \\
+$\Omega(X)$ & Distinction capacity & $\{x_n \in \D^n(X) : \D(x_n) \simeq x_n\}$ \\
+$C(f)$ & Channel capacity & $\sup I(X;Y)$ subject to curvature bound \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Algebraic and Geometric Structures}
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+\textbf{Symbol} & \textbf{Name} & \textbf{Description} \\
+\midrule
+$\RR, \CC, \HH, \OO$ & Division algebras & Real, complex, quaternions, octonions \\
+$G_2$ & Exceptional Lie group & $\Aut(\OO)$ (14-dimensional) \\
+$W(G_2)$ & Weyl group & $\cong D_6$ (dihedral, order 12) \\
+$(\ZZ/12\ZZ)^*$ & Units mod 12 & $\{1,5,7,11\} \cong \ZZ_2 \times \ZZ_2$ \\
+$\Der(A)$ & Derivation algebra & Infinitesimal automorphisms \\
+QRA & Quaternary Resonance & $w^2 = pq + 1$ for twin primes \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Spectral and Homotopy Invariants}
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+\textbf{Symbol} & \textbf{Name} & \textbf{Definition} \\
+\midrule
+$\pi_k(X)$ & Homotopy groups & $k$-th homotopy group of $X$ \\
+$\rho_k(X)$ & Homotopy rank & $\text{rank}(\pi_k(X))$ (number of generators) \\
+$E^{p,q}_r$ & Spectral sequence & Converges to $\pi_{p+q}(\D^n(X))$ \\
+$\nu(X)$ & Spectral page & Convergence page where $E_r = E_\infty$ \\
+$\lambda_n$ & Eigenvalues & $2^n$ for $\widehat{\D}$ operator \\
+$E_n$ & Energy levels & $n \log 2$ (distinction Hamiltonian) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Physical Constants and Principles}
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+\textbf{Symbol} & \textbf{Name} & \textbf{Definition/Value} \\
+\midrule
+$\hbar$ & Planck constant & $\int_\delta \Riem$ (minimal curvature) \\
+$kT \ln 2$ & Landauer bound & Minimum energy to erase one bit \\
+$g_{ij}$ & Fisher metric & $\langle \partial_i \nabla, \partial_j \nabla \rangle$ \\
+$\epsilon_0$ & Ordinal (PA limit) & Proof-theoretic strength of PA \\
+$\Lambda$ & Cosmological constant & Vacuum energy density \\
 \bottomrule
 \end{tabular}
 \end{center}
