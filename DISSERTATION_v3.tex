@@ -81,7 +81,7 @@
 \newcommand{\nec}{\Box}
 
 % Connection/curvature
-\renewcommand{\nabla}{\nabla}
+% Note: \nabla already defined by amsmath, using standard notation
 \newcommand{\Riem}{\mathcal{R}}
 
 % ============================================================================
@@ -112,7 +112,7 @@
 
 \vspace{1cm}
 
-{\large Complete Integration: Foundations, Computation, and Testability\par}
+{\large Foundations, Spectral Methods, and Testable Predictions\par}
 
 \vspace{1.5cm}
 
@@ -2364,6 +2364,13 @@ Contradiction. Therefore PA $\nvdash$ Goldbach.
 
 \begin{remark}[Status of Argument]
 This argument is conditional on Conjecture~\ref{conj:witness-incompressible}, which itself requires RH. The conjecture is plausible (no compression pattern is known) but unproven. If true, it provides an information-theoretic obstruction to proving Goldbach in PA.
+
+\textbf{Critical caveat}: The unprovability arguments for Goldbach, Twin Primes, and RH are **conjectural and mutually dependent**. We claim RH aids in proving Goldbach unprovable (via witness complexity), while also claiming RH itself is unprovable (via flatness). This creates potential circular dependency that must be resolved through:
+\begin{itemize}[nosep]
+\item Constructing explicit nonstandard models (independent of RH)
+\item Proving ordinal strength bounds directly
+\item Or accepting these as mutually supporting conjectures requiring external validation
+\end{itemize}
 \end{remark}
 
 \section{The Depth-2 Boundary}
