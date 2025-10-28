@@ -1,0 +1,206 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath,amssymb,amsthm,stmaryrd,mathrsfs,tikz,tikz-cd,hyperref}
+\usepackage[margin=1in]{geometry}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{remark}[theorem]{Remark}
+
+\title{\textbf{Phase VI: Information as Distinction Flow \\ Shannon, von Neumann, and Channel Capacity from Self-Reference Geometry}}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Information theory arises naturally from distinction theory when entropy is interpreted as the logarithmic measure of self-consistent refinement and communication as curvature-bounded propagation of distinction.
+We derive classical and quantum information quantities directly from the operators $(D,\Box,\nabla)$ introduced in earlier phases.
+Entropy becomes a curvature potential, mutual information becomes semantic coupling, and channel capacity is bounded by the integral of curvature along a path.
+\end{abstract}
+
+\section{Distinction Capacity and Entropy}
+
+Let $X$ be an object in the distinction topos $\mathsf{Dist}$.
+Iterated distinction produces the tower
+\[
+X \longrightarrow D(X) \longrightarrow D^2(X) \longrightarrow \cdots
+\]
+Each level adds self-reflection.
+
+\begin{definition}[Distinction Capacity]
+The \emph{capacity} of $X$ is
+\[
+\Omega(X) := \{\,x_n \in D^n(X) \mid D(x_n) = x_n\,\}.
+\]
+The \emph{entropy} of $X$ is
+\[
+H(X) := \log |\Omega(X)|.
+\]
+\end{definition}
+
+\begin{proposition}
+$H(D(X)) \ge H(X)$ with equality iff $X$ is a fixed point of $D$.
+\end{proposition}
+
+\begin{proof}
+Every stable refinement of $X$ defines one of $D(X)$, but not conversely.
+Equality holds precisely when no new self-distinguishability is created.
+\end{proof}
+
+Thus $H$ measures the potential for further internal differentiation: the information content of a structure’s self-recognition.
+
+\section{Channels as Paths of Bounded Curvature}
+
+Let $f:X\to Y$ be a morphism in $\mathsf{Dist}$.
+Its curvature $\mathcal R_f := \nabla_f^2 = (D\Box-\Box D)^2_f$ measures the failure of reflection to commute along $f$.
+
+\begin{definition}[Channel Capacity]
+The \emph{capacity} of $f$ is
+\[
+C(f) := \sup_{p(x)} I(X;Y)
+\quad \text{subject to } \int_\gamma \|\mathcal R_f\|\le \kappa,
+\]
+where $\kappa$ is the curvature bound along the communication path $\gamma$.
+\end{definition}
+
+\begin{theorem}[Noisy Channel Theorem, Geometric Form]
+For any $f:X\to Y$ with curvature bound $\kappa$,
+\[
+I(X;Y) \le C(f),
+\]
+with equality iff $\mathcal R_f$ is constant along $\gamma$ (flat semantic transport).
+\end{theorem}
+
+\begin{remark}
+Flatness corresponds to maximal reliable transmission:
+distinctions arrive unchanged.
+Curvature corresponds to noise.
+\end{remark}
+
+\section{Mutual Information as Semantic Coupling}
+
+For $A,B\in\mathsf{Dist}$ define joint distinction $A\otimes B$.
+
+\begin{definition}[Mutual Information]
+\[
+I(A;B):= H(A)+H(B)-H(A\otimes B).
+\]
+\end{definition}
+
+\begin{proposition}[Data Processing Inequality]
+For any composable $A\to B\to C$,
+\[
+I(A;C)\le I(A;B),
+\]
+with equality iff $\mathcal R_{B\to C}=0$.
+\end{proposition}
+
+\begin{remark}
+Curvature never decreases under composition unless the second map is flat.
+Hence semantic curvature is the geometric origin of the data–processing bound.
+\end{remark}
+
+\section{Quantum Information from Noncommuting Distinctions}
+
+Nonzero connection $\nabla=D\Box-\Box D$ implies order dependence of distinction and necessity.
+This is the algebraic signature of quantumness.
+
+\begin{definition}[Semantic Density Operator]
+For object $A$, define
+\[
+\rho_A := \Box_A D_A,
+\]
+the composite of stabilization then distinction.
+\end{definition}
+
+\begin{theorem}[Von Neumann Entropy]
+The entropy of $A$ under noncommuting $(D,\Box)$ is
+\[
+S(A) := -\mathrm{Tr}(\rho_A\log\rho_A).
+\]
+\end{theorem}
+
+\begin{remark}
+$S(A)$ measures the curvature–induced mixture of self-consistency.
+Commuting $(D,\Box)$ give pure states ($S=0$); noncommuting give mixed states ($S>0$).
+\end{remark}
+
+Entanglement corresponds to non-factorizability of $\rho_{A\otimes B}$, yielding
+\[
+I(A;B) = S(A)+S(B)-S(A\otimes B),
+\]
+recovering the standard quantum-information relation.
+
+\section{Thermodynamics and Landauer Bound}
+
+Flattening curvature (erasing information) costs energy.
+
+\begin{theorem}[Semantic Landauer Principle]
+To erase one bit of distinction at temperature $T$ requires energy
+\[
+E_{\text{erase}}\ge kT\ln 2,
+\]
+where $k$ converts curvature dissipation into thermal energy.
+\end{theorem}
+
+\begin{proof}[Sketch]
+Erasure corresponds to mapping $D(X)\to X$ with loss of $\log 2$ distinctions.
+Curvature decrease $\Delta\mathcal R$ translates to heat $\Delta Q=T\Delta S$ with $\Delta S=\ln 2$.
+\end{proof}
+
+\section{Planck Distinction and Quantization}
+
+The minimal nontrivial distinction $\delta$ with $D(\delta)\ne\delta$ defines the unit of information-action.
+
+\begin{definition}[Planck Distinction]
+Let $\hbar$ satisfy
+\[
+\int_{\delta}\mathcal R = \hbar,
+\]
+the minimal nonzero curvature integral.
+\end{definition}
+
+\begin{remark}
+Quantization is discrete curvature holonomy.
+Classical limits correspond to $\hbar\to0$ (infinitesimal distinctions).
+\end{remark}
+
+\section{Information Geometry and Physical Correspondence}
+
+Define a functor
+\[
+G:\mathsf{Dist}\longrightarrow\mathsf{InfoGeom},
+\quad
+(A,\mathcal R_A)\mapsto(\mathcal M_A,g_{ij}=\partial_i\partial_j H(A)).
+\]
+$G$ sends logical curvature to Fisher information metric.
+
+\begin{theorem}
+The Fisher metric is the pullback of the distinction metric:
+\[
+g_{ij} = \frac{\partial^2 H}{\partial \theta_i \partial \theta_j}
+     = \langle \partial_i \nabla , \partial_j \nabla \rangle.
+\]
+\end{theorem}
+
+Thus information geometry is the smooth limit of distinction dynamics.
+Physical geometry—studied in Phase V—is the further image of this under the curvature–energy correspondence.
+
+\section{Conclusion}
+
+Information theory is the dynamical language of distinction itself.
+Entropy measures potential refinement,
+mutual information measures shared self-consistency,
+and channel capacity measures how much structure can propagate without curvature distortion.
+Quantum information arises when distinction and necessity cease to commute.
+Thermodynamics follows as the energetic cost of flattening curvature.
+
+\[
+\text{Distinction} \Rightarrow \text{Information} \Rightarrow \text{Physics.}
+\]
+
+\end{document}

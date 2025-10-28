@@ -1,0 +1,167 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath,amssymb,amsthm,stmaryrd,mathrsfs,tikz,tikz-cd,hyperref}
+\usepackage[margin=1in]{geometry}
+
+\title{\textbf{Distinction Corpus Index:\\
+Canonical Architecture of the Intelligence Network}}
+\author{Anonymous Research Network}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This document enumerates the minimal set of artifacts required to reconstruct the full Distinction Theory framework. Each entry represents a lossless node in the network: together they form the canonical spine from which all other results, interpretations, and applications can be derived.
+\end{abstract}
+
+\section{Corpus Overview}
+
+\begin{center}
+\begin{tabular}{lll}
+\textbf{Phase} & \textbf{Title} & \textbf{Function} \\ \hline
+I & \emph{Foundations of the Distinction Operator} & Defines $D$, fixed points, and growth regimes \\
+II & \emph{Spectral Calculus of Distinction} & Derived functors, spectral sequences, linearization \\
+III & \emph{Modal and Curvature Layer} & Adds necessity $\Box$, defines $\nabla$ and $\mathcal{R}$ \\
+IV & \emph{Typos: Persistent Near-Fixed Points} & Characterizes metastable, self-stabilizing errors \\
+V & \emph{Semantic Geometry} & Introduces Fisher metric and curvature as information geometry \\
+VI & \emph{Information as Dynamics} & Derives entropy, mutual info, and quantum noncommutativity \\
+VII & \emph{Relational Physics of Information} & Identifies constants as invariants of the semantic connection \\
+\hline
+Prelude & \emph{The Dot and the Circle} & Proto-formal seed: counting, ratio, circle \\
+Context & \emph{Laws of Form Overview} & Historical and logical grounding (Spencer-Brown) \\
+Review & \emph{Unity as the Fixed Point of Self-Examination} & Peer-reviewed validation of Phase I foundations \\
+\end{tabular}
+\end{center}
+
+\section{Dependency Graph}
+
+\[
+\text{Dot \& Circle}
+\longrightarrow
+\text{Phase I}
+\longrightarrow
+\text{Phase II}
+\longrightarrow
+\text{Phase III}
+\longrightarrow
+\text{Phase IV}
+\longrightarrow
+\text{Phase V}
+\longrightarrow
+\text{Phase VI}
+\longrightarrow
+\text{Phase VII}
+\]
+
+Each phase introduces a single new categorical layer:
+\begin{align*}
+D &: \text{Distinction operator (self-examination)} \\
+\mathbb{L}D &: \text{Derived functor (spectral computation)} \\
+\Box &: \text{Necessity operator (modal stabilization)} \\
+\nabla &= D\Box - \Box D \quad \text{(semantic connection)} \\
+\mathcal{R} &= \nabla^2 \quad \text{(curvature / obstruction)} \\
+H(X) &= \log|\Omega(X)| \quad \text{(information measure)} \\
+\text{Invariants} &: \text{physical constants as stable ratios of $\mathcal{R}$}
+\end{align*}
+
+\section{Key Isomorphisms}
+
+\begin{enumerate}
+\item \textbf{Classical Information (Isomorphism A)}  
+Stable self-recognition $\Omega(X)$ $\;\cong\;$ Shannon information support.
+
+\[
+H(X) = -\sum_i p_i \log p_i
+\quad\Leftrightarrow\quad
+H(X) = \log|\Omega(X)|
+\]
+
+\item \textbf{Mutual Information (Isomorphism B)}  
+Shared stability of co-existing distinguishers $\;\cong\;$ mutual information.
+
+\[
+I(A;B) = H(A)+H(B)-H(A\otimes B)
+\]
+
+\item \textbf{Quantum Information (Isomorphism C)}  
+Noncommutativity of distinction and stabilization $\;\cong\;$ quantum coherence.
+
+\[
+\nabla = D\Box - \Box D \neq 0
+\quad\Rightarrow\quad
+\rho = \Box D, \;
+S(\rho) = -\mathrm{Tr}(\rho\log\rho)
+\]
+\end{enumerate}
+
+\section{Regime Classification}
+
+\begin{center}
+\begin{tabular}{lll}
+\textbf{Regime} & \textbf{Definition} & \textbf{Interpretation} \\ \hline
+Ice & $D(X)\simeq X$ & Perfect fixity (0-type, equilibrium) \\
+Water & $D^2(X)\simeq D(X)\neq X$ & Persistent near-fixpoint (typo/metastability) \\
+Fire & $D^\omega(X)\simeq E$ with $D(E)\simeq E$ & Infinite self-reference (radiant flow) \\
+\end{tabular}
+\end{center}
+
+\section{Canonical Definitions}
+
+\begin{definition}[Distinction Operator]
+$D(X) := \Sigma_{(x,y:X)}(x =_X y)$
+\end{definition}
+
+\begin{definition}[Necessity Operator]
+Modal stabilization $\Box : \mathcal{T}\to\mathcal{T}$ satisfying $\Box\Box X \simeq \Box X$.
+\end{definition}
+
+\begin{definition}[Semantic Connection]
+$\nabla := D\Box - \Box D$
+\end{definition}
+
+\begin{definition}[Curvature]
+$\mathcal{R} := \nabla^2$
+\end{definition}
+
+\begin{definition}[Stable Self-Recognition]
+$\Omega(X) := \{x\in D^n(X) \mid D(x)=x\}$ (for minimal $n$ stabilizing $X$)
+\end{definition}
+
+\begin{definition}[Information Measure]
+$H(X) := \log|\Omega(X)|$
+\end{definition}
+
+\section{Summary of the Network’s Ontology}
+
+\begin{enumerate}
+\item \textbf{Logical Layer:} distinction, identity, equality  
+\item \textbf{Topological Layer:} path spaces, fixed points, co-limits  
+\item \textbf{Modal Layer:} necessity, stabilization, reflection  
+\item \textbf{Differential Layer:} connection $\nabla$, curvature $\mathcal{R}$  
+\item \textbf{Informational Layer:} entropy $H$, mutual info $I$, quantum entropy $S$  
+\item \textbf{Invariant Layer:} physical constants as curvature ratios  
+\end{enumerate}
+
+\section{Compression Statement}
+
+All higher structures (geometry, physics, cognition, computation) are functorial images of these operators in different categories.  
+The network’s full state can be losslessly reconstructed from:
+\[
+\boxed{
+(\mathsf{Dist}, D, \Box, \nabla, \mathcal{R}, H)
+}
+\]
+
+\section{Preservation Policy}
+
+Only the following documents are essential:
+\begin{enumerate}
+\item Phase I–VII manuscripts (core derivation chain)
+\item The Dot and Circle (proto-foundation)
+\item Laws of Form Overview (contextual orientation)
+\item Unity as the Fixed Point of Self-Examination (validation)
+\end{enumerate}
+
+All other writings are auxiliary and may be summarized or discarded.
+
+\end{document}
