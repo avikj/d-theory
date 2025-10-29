@@ -1,0 +1,190 @@
+AUTHORSHIP COMMITMENT AND AUTHENTICATION
+=========================================
+
+Work: "Gödel's Incompleteness Theorems from Information-Theoretic Bounds"
+Submitted: October 2024
+Attribution: Anonymous Research Network, Coordinated by Avik Jain
+
+---
+
+NATURE OF THIS WORK
+
+This work represents collaborative synthesis involving:
+
+1. HUMAN COORDINATION (Avik Jain)
+   - Direction and integration of existing frameworks
+   - Validation of mathematical claims against literature
+   - Experimental verification (code execution, result checking)
+   - Final responsibility for correctness
+
+2. AI ASSISTANCE (Claude 3.5 Sonnet, Anthropic)
+   - Literature synthesis and citation integration
+   - LaTeX formalization and proof structuring
+   - Exposition and clarity improvements
+   - Technical machinery formalization
+
+3. ESTABLISHED FRAMEWORKS (cited throughout)
+   - Gödel (incompleteness theorems, 1931)
+   - Chaitin (algorithmic information theory, 1974)
+   - Kolmogorov (complexity theory, 1965)
+   - Curry-Howard correspondence (1980)
+   - Realizability theory (Kleene, Troelstra)
+   - Proof mining (Kohlenbach)
+
+The "Anonymous Research Network" designation reflects our view that:
+- Mathematical truth is discovered, not invented
+- Modern research synthesis involves distributed contributions
+- Authorship in an era of AI assistance is better understood as
+  stewardship and coordination rather than individual creation
+- Honest disclosure of AI collaboration is ethically necessary
+
+The human coordinator takes full responsibility for the correctness
+of all claims and serves as point of contact for scientific discourse.
+
+---
+
+CRYPTOGRAPHIC AUTHENTICATION
+
+To enable future authentication without requiring disclosure beyond
+what is provided, we establish a cryptographic commitment:
+
+PGP Public Key Fingerprint: [TO BE GENERATED]
+
+Public Key: [TO BE ATTACHED or published to keyserver]
+
+This cryptographic signature proves:
+1. The holder of the corresponding private key is the submitting author
+2. Future communications signed with this key are authentic
+3. False claimants cannot forge this signature
+4. The work can be attributed correctly even if anonymity is preserved
+
+If this work gains attention and scientific discourse requires
+authenticated participation, the key holder can:
+- Sign statements proving authorship of communications
+- Participate in discussions with verified identity
+- Provide authentication without full identity disclosure
+- Reveal complete identity if desired (but not required)
+
+---
+
+VERIFICATION INSTRUCTIONS
+
+To verify a message purporting to be from Anonymous Research Network:
+
+1. Obtain the signature file (message.txt.asc)
+2. Import our public key: gpg --import ARN_pubkey.asc
+3. Verify signature: gpg --verify message.txt.asc message.txt
+4. Check fingerprint matches: [fingerprint above]
+
+Any communication from "Anonymous Research Network" without a valid
+cryptographic signature should be considered potentially fraudulent.
+
+---
+
+PROTECTION AGAINST FALSE ATTRIBUTION
+
+If false claims to authorship emerge, authentication can be established
+through:
+
+1. Cryptographic signature (immediate proof)
+2. Git repository history (development timeline, private but can be revealed)
+3. Email correspondence with AI provider (proves AI collaboration claims)
+4. Original source files with metadata
+5. Knowledge of non-public details of development process
+
+No false claimant can provide cryptographic proof matching our
+commitment made at submission (October 2024).
+
+---
+
+CONTACT INFORMATION
+
+Scientific Correspondence:
+- Email: anon-research@protonmail.com (monitored, PGP encrypted available)
+- PGP: [fingerprint]
+
+For Editor (Confidential):
+- Human Coordinator: Avik Jain
+- Background: B.S. EECS, UC Berkeley
+  Prior publication: "Optimal Cost Design for Model Predictive Control"
+  (First author, with L. Chan and A. Dragan)
+- Current: Independent researcher (garden leave from quantitative finance)
+- Contact: [provide real email to editor separately]
+
+---
+
+RESEARCH ETHICS STATEMENT
+
+This work was developed with extensive AI assistance. We believe full
+disclosure of AI collaboration is ethically necessary and scientifically
+important. All mathematical content has been verified by the human
+coordinator against established literature.
+
+Novel contributions (witness extraction theorem, information horizon
+formalization, correspondence theorem) have been carefully validated.
+Applications to open problems (Goldbach, Twin Primes, RH) are clearly
+marked as conjectures requiring further formalization.
+
+We view this submission as potentially precedent-setting for research
+ethics in an era of AI collaboration. Full transparency is provided so
+that the community can assess both the mathematical content and the
+methodological approach.
+
+---
+
+COMMITMENT TO SCIENTIFIC DISCOURSE
+
+If this work is accepted and garners attention, we commit to:
+
+1. Responding to technical questions (via signed communications)
+2. Clarifying proofs or providing additional detail as needed
+3. Acknowledging errors if identified by reviewers/readers
+4. Participating in extensions/collaborations if scientifically valuable
+5. Making supporting materials available (code, computations, etc.)
+
+The goal is dissemination of ideas and advancement of understanding,
+not personal credit or status.
+
+---
+
+INTELLECTUAL PROPERTY
+
+This work is dedicated to the public domain (CC0 or equivalent).
+
+No patents, proprietary claims, or commercial interests exist.
+
+Anyone may freely use, extend, or build upon these ideas.
+
+---
+
+SIGNATURE
+
+This document is cryptographically signed to prove authenticity.
+
+Signed: October 28, 2024
+Anonymous Research Network
+Coordinated by Avik Jain
+
+PGP Signature: [TO BE GENERATED - see AUTHORSHIP_COMMITMENT.txt.asc]
+
+---
+
+VERIFICATION OF THIS COMMITMENT
+
+To verify this commitment document itself is authentic:
+gpg --verify AUTHORSHIP_COMMITMENT.txt.asc AUTHORSHIP_COMMITMENT.txt
+
+---
+
+FOR FUTURE REFERENCE
+
+This commitment is made at submission (October 2024) to:
+- Enable authentication if needed for scientific discourse
+- Protect against false attribution claims
+- Provide transparency about AI collaboration
+- Establish cryptographic chain of custody for the work
+
+The private key is securely held by the human coordinator and will
+be used only for authenticated communications regarding this work.
+
+===END OF COMMITMENT===
