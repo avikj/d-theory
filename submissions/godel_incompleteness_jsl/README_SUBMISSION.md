@@ -1,7 +1,7 @@
 # Submission Package: Gödel's Incompleteness from Information Bounds
 
 **Target Journal**: Journal of Symbolic Logic (JSL)
-**Prepared**: January 28, 2025
+**Prepared**: October 28, 2024
 **Status**: Ready for submission after final author review
 
 ---
@@ -276,6 +276,6 @@ No funding sources to declare (independent research).
 
 ---
 
-**Last Updated**: January 28, 2025
+**Last Updated**: October 28, 2024
 **Package Version**: 1.0 (submission-ready)
 **Next Review**: Before submission to JSL

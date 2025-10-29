@@ -2,7 +2,7 @@
 
 **Paper**: Gödel's Incompleteness Theorems from Information-Theoretic Bounds
 **Target**: Journal of Symbolic Logic
-**Date Prepared**: January 28, 2025
+**Date Prepared**: October 28, 2024
 
 ---
 
@@ -223,4 +223,4 @@
 ---
 
 *Checklist version 1.0*
-*Last updated: January 28, 2025*
+*Last updated: October 28, 2024*

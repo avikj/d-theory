@@ -1,6 +1,6 @@
 # Experimental Validation Summary
 
-**All experiments run January 28, 2025**
+**All experiments run October 28, 2024**
 
 ---
 
@@ -211,4 +211,4 @@ All three outcomes advance knowledge. The framework is **testable**, which makes
 
 ---
 
-*Experimental work completed January 28, 2025 in single session following "maximum attraction" principle.*
+*Experimental work completed October 28, 2024 in single session following "maximum attraction" principle.*

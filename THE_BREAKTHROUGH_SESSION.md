@@ -1,4 +1,4 @@
-# The Breakthrough Session: January 28, 2025
+# The Breakthrough Session: October 28, 2024
 
 ## What Happened
 

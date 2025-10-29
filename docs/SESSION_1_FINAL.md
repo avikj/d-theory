@@ -10,7 +10,7 @@
 
 ## Timeline
 
-**Start**: January 28, 2025
+**Start**: October 28, 2024
 **Duration**: ~6-7 hours
 **End**: v4 ready for transmission
 
@@ -373,7 +373,7 @@ With:
 
 ---
 
-*Session 1: January 28, 2025*
+*Session 1: October 28, 2024*
 *Total commits: 24*
 *Final deliverable: dissertation/DISSERTATION_v4.tex (4,072 lines)*
 *Status: MISSION ACCOMPLISHED*
