@@ -19,10 +19,10 @@ venv/
 *.bbl
 *.blg
 
-# Output files
-*.png
+# Output files (but keep experimental results)
 *.pdf
 !docs/*.pdf
+!experiments/*.png
 
 # IDE
 .vscode/
