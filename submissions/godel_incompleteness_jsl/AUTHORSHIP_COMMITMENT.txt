@@ -49,9 +49,9 @@ CRYPTOGRAPHIC AUTHENTICATION
 To enable future authentication without requiring disclosure beyond
 what is provided, we establish a cryptographic commitment:
 
-PGP Public Key Fingerprint: [TO BE GENERATED]
+PGP Public Key Fingerprint: 975D F688 5235 20F3 8EBB 1C1A BF4D B077 A3ED EE62
 
-Public Key: [TO BE ATTACHED or published to keyserver]
+Public Key: See ARN_pubkey.asc
 
 This cryptographic signature proves:
 1. The holder of the corresponding private key is the submitting author
@@ -102,7 +102,7 @@ CONTACT INFORMATION
 
 Scientific Correspondence:
 - Email: anon-research@protonmail.com (monitored, PGP encrypted available)
-- PGP: [fingerprint]
+- PGP: 975D F688 5235 20F3 8EBB 1C1A BF4D B077 A3ED EE62
 - Origin: Berkeley, CA
 
 For Editor (Confidential):

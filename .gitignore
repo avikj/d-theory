@@ -29,3 +29,4 @@ venv/
 .idea/
 *.swp
 *.swo
+ARN_PRIVATE_KEY_BACKUP.asc
