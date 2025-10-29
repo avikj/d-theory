@@ -3,11 +3,22 @@ COVER LETTER FOR JOURNAL SUBMISSION
 To: Editorial Board
 Journal of Symbolic Logic (or Annals of Pure and Applied Logic)
 
+From: Anonymous Research Network
+      Berkeley, CA
+      anon-research@protonmail.com
+
 Subject: Submission of "Gödel's Incompleteness Theorems from Information-Theoretic Bounds: Complete Proof and Interpretation"
 
 Dear Editors,
 
 We submit for your consideration an original research article providing a rigorous information-theoretic proof of Gödel's incompleteness theorems using Kolmogorov complexity and witness extraction.
+
+AUTHORSHIP NOTE: This work is submitted anonymously by Anonymous Research
+Network, originating from Berkeley, CA. We provide cryptographic authentication
+(PGP signatures with all submission materials) to enable future verification
+while preserving anonymity. The accompanying AUTHORSHIP_COMMITMENT.txt document
+explains our authentication mechanism and provides full disclosure of AI
+collaboration in this research synthesis.
 
 SUMMARY OF CONTRIBUTIONS:
 

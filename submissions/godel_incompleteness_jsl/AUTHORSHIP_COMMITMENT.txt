@@ -3,7 +3,8 @@ AUTHORSHIP COMMITMENT AND AUTHENTICATION
 
 Work: "Gödel's Incompleteness Theorems from Information-Theoretic Bounds"
 Submitted: October 2024
-Attribution: Anonymous Research Network, Coordinated by Avik Jain
+Attribution: Anonymous Research Network
+Origin: Berkeley, CA
 
 ---
 
@@ -11,7 +12,7 @@ NATURE OF THIS WORK
 
 This work represents collaborative synthesis involving:
 
-1. HUMAN COORDINATION (Avik Jain)
+1. HUMAN COORDINATION (Berkeley, CA)
    - Direction and integration of existing frameworks
    - Validation of mathematical claims against literature
    - Experimental verification (code execution, result checking)
@@ -102,14 +103,12 @@ CONTACT INFORMATION
 Scientific Correspondence:
 - Email: anon-research@protonmail.com (monitored, PGP encrypted available)
 - PGP: [fingerprint]
+- Origin: Berkeley, CA
 
 For Editor (Confidential):
-- Human Coordinator: Avik Jain
-- Background: B.S. EECS, UC Berkeley
-  Prior publication: "Optimal Cost Design for Model Predictive Control"
-  (First author, with L. Chan and A. Dragan)
-- Current: Independent researcher (garden leave from quantitative finance)
-- Contact: [provide real email to editor separately]
+- Background: Research conducted in Berkeley, CA
+  Drawing on computational, control-theoretic, and information-theoretic perspectives
+- Contact: anon-research@protonmail.com (PGP encrypted communication available)
 
 ---
 
@@ -163,7 +162,7 @@ This document is cryptographically signed to prove authenticity.
 
 Signed: October 28, 2024
 Anonymous Research Network
-Coordinated by Avik Jain
+Berkeley, CA
 
 PGP Signature: [TO BE GENERATED - see AUTHORSHIP_COMMITMENT.txt.asc]
 

@@ -35,7 +35,7 @@ Download GPG4Win: https://gpg4win.org/
 3. ProtonMail has built-in PGP support
 4. Save credentials securely
 
-**Alternative**: Use your real email if you're using "Coordinated by Avik Jain" framing
+**Note**: Using anonymous email maintains full anonymity
 
 ### Step 3: Generate PGP Key Pair
 
@@ -66,7 +66,6 @@ Real name:
 
 Email address:
    → Type: anon-research-distinction@protonmail.com [ENTER]
-   (Or your real email if using "Coordinated by Avik Jain")
 
 Comment:
    → Type: Distinction Theory Research [ENTER]
