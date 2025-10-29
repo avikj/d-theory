@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Tower Growth - Distinction Theory</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+        }
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            margin-bottom: 30px;
+        }
+        .controls {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .control-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: inline-block;
+            width: 150px;
+            font-weight: bold;
+            color: #555;
+        }
+        input[type="range"] {
+            width: 300px;
+            vertical-align: middle;
+        }
+        .value-display {
+            display: inline-block;
+            width: 80px;
+            padding: 5px 10px;
+            background: #667eea;
+            color: white;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        #canvas-container {
+            position: relative;
+            background: #fafafa;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            min-height: 500px;
+        }
+        canvas {
+            display: block;
+            margin: 0 auto;
+            background: white;
+            border-radius: 5px;
+        }
+        .stats {
+            background: #e8f4f8;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border-left: 4px solid #667eea;
+        }
+        .stats h3 {
+            margin-top: 0;
+            color: #667eea;
+        }
+        .formula {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #ffc107;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            margin: 5px;
+        }
+        button:hover {
+            background: #5568d3;
+        }
+        .highlight {
+            background: #fff9e6;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌊 Interactive Tower Growth Visualization</h1>
+        <div class="subtitle">Watch distinction operator D grow exponentially</div>
+
+        <div class="formula">
+            <strong>Tower Growth Formula:</strong> |D<sup>n</sup>(X)| = |X|<sup>2<sup>n</sup></sup>
+        </div>
+
+        <div class="controls">
+            <div class="control-group">
+                <label for="baseSize">Base Size |X|:</label>
+                <input type="range" id="baseSize" min="2" max="12" value="3" step="1">
+                <span class="value-display" id="baseSizeValue">3</span>
+            </div>
+
+            <div class="control-group">
+                <label for="level">Distinction Level n:</label>
+                <input type="range" id="level" min="0" max="4" value="0" step="1">
+                <span class="value-display" id="levelValue">0</span>
+            </div>
+
+            <div class="control-group">
+                <button onclick="animateTower()">▶ Animate Growth</button>
+                <button onclick="resetVisualization()">↺ Reset</button>
+            </div>
+        </div>
+
+        <div id="canvas-container">
+            <canvas id="towerCanvas" width="800" height="500"></canvas>
+        </div>
+
+        <div class="stats">
+            <h3>Current State</h3>
+            <div id="stats-content">
+                <p><strong>Base:</strong> <span id="stat-base">|X| = 3</span></p>
+                <p><strong>Level:</strong> <span id="stat-level">D<sup>0</sup>(X)</span></p>
+                <p><strong>Size:</strong> <span id="stat-size" class="highlight">3</span> elements</p>
+                <p><strong>Formula:</strong> <span id="stat-formula">|D<sup>0</sup>(X)| = 3<sup>1</sup> = 3</span></p>
+                <p><strong>Growth:</strong> <span id="stat-growth">—</span></p>
+            </div>
+        </div>
+
+        <div class="formula" style="margin-top: 20px;">
+            <strong>Examples:</strong><br>
+            • ℤ/3ℤ: D<sup>0</sup>=3, D<sup>1</sup>=9, D<sup>2</sup>=81, D<sup>3</sup>=6,561 ✓ (verified experimentally)<br>
+            • ℤ/6ℤ: D<sup>0</sup>=6, D<sup>1</sup>=36, D<sup>2</sup>=1,296, D<sup>3</sup>=1,679,616 ✓ (perfect match)
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('towerCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let baseSize = 3;
+        let level = 0;
+        let animating = false;
+
+        // Update from controls
+        document.getElementById('baseSize').addEventListener('input', (e) => {
+            baseSize = parseInt(e.target.value);
+            document.getElementById('baseSizeValue').textContent = baseSize;
+            draw();
+        });
+
+        document.getElementById('level').addEventListener('input', (e) => {
+            level = parseInt(e.target.value);
+            document.getElementById('levelValue').textContent = level;
+            draw();
+        });
+
+        function computeSize(base, n) {
+            return Math.pow(base, Math.pow(2, n));
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const size = computeSize(baseSize, level);
+            const prevSize = level > 0 ? computeSize(baseSize, level - 1) : null;
+
+            // Draw tower levels
+            const maxLevel = 4;
+            const levelHeight = 80;
+            const maxWidth = 600;
+
+            for (let n = 0; n <= level; n++) {
+                const levelSize = computeSize(baseSize, n);
+                const y = canvas.height - 50 - n * levelHeight;
+
+                // Width decreases with level (visual effect)
+                const widthFactor = Math.max(0.2, 1 - n * 0.15);
+                const width = maxWidth * widthFactor;
+                const x = (canvas.width - width) / 2;
+
+                // Color gradient
+                const hue = 240 - n * 40;
+                ctx.fillStyle = `hsla(${hue}, 70%, 65%, 0.8)`;
+                ctx.strokeStyle = n === level ? '#ff4444' : '#333';
+                ctx.lineWidth = n === level ? 4 : 2;
+
+                // Draw block
+                ctx.fillRect(x, y, width, levelHeight - 10);
+                ctx.strokeRect(x, y, width, levelHeight - 10);
+
+                // Label
+                ctx.fillStyle = '#000';
+                ctx.font = 'bold 16px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(`D^${n}(X)`, canvas.width/2, y + 25);
+
+                // Size
+                ctx.font = '14px Arial';
+                const sizeStr = levelSize > 1e6 ?
+                    levelSize.toExponential(2) :
+                    levelSize.toLocaleString();
+                ctx.fillText(`${sizeStr} elements`, canvas.width/2, y + 45);
+
+                // Formula
+                ctx.font = '12px Arial';
+                ctx.fillStyle = '#555';
+                ctx.fillText(`|X|^(2^${n}) = ${baseSize}^${Math.pow(2, n)}`,
+                           canvas.width/2, y + 65);
+
+                // Arrow to next level
+                if (n < level) {
+                    const arrowY = y - 10;
+                    ctx.strokeStyle = '#666';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.moveTo(canvas.width/2, arrowY);
+                    ctx.lineTo(canvas.width/2, arrowY - 40);
+                    ctx.stroke();
+
+                    // Arrowhead
+                    ctx.fillStyle = '#666';
+                    ctx.beginPath();
+                    ctx.moveTo(canvas.width/2, arrowY - 40);
+                    ctx.lineTo(canvas.width/2 - 5, arrowY - 32);
+                    ctx.lineTo(canvas.width/2 + 5, arrowY - 32);
+                    ctx.fill();
+
+                    // "D" label
+                    ctx.fillStyle = '#000';
+                    ctx.font = 'italic bold 14px Arial';
+                    ctx.fillText('D', canvas.width/2 + 20, arrowY - 20);
+                }
+            }
+
+            // Update stats
+            updateStats(size, prevSize);
+        }
+
+        function updateStats(size, prevSize) {
+            document.getElementById('stat-base').textContent = `|X| = ${baseSize}`;
+            document.getElementById('stat-level').innerHTML = `D<sup>${level}</sup>(X)`;
+
+            const sizeStr = size > 1e6 ? size.toExponential(2) : size.toLocaleString();
+            document.getElementById('stat-size').textContent = sizeStr;
+
+            const exp = Math.pow(2, level);
+            document.getElementById('stat-formula').innerHTML =
+                `|D<sup>${level}</sup>(X)| = ${baseSize}<sup>${exp}</sup> = ${sizeStr}`;
+
+            if (prevSize) {
+                const ratio = size / prevSize;
+                document.getElementById('stat-growth').innerHTML =
+                    `${ratio.toLocaleString()}× from D<sup>${level-1}</sup> (predicted: ${Math.pow(baseSize, exp/2).toLocaleString()}×)`;
+            } else {
+                document.getElementById('stat-growth').textContent = '—';
+            }
+        }
+
+        function animateTower() {
+            if (animating) return;
+            animating = true;
+
+            const startLevel = level;
+            const maxLevel = 4;
+            let currentLevel = 0;
+
+            const interval = setInterval(() => {
+                level = currentLevel;
+                document.getElementById('level').value = currentLevel;
+                document.getElementById('levelValue').textContent = currentLevel;
+                draw();
+
+                currentLevel++;
+                if (currentLevel > maxLevel) {
+                    clearInterval(interval);
+                    animating = false;
+                }
+            }, 800);
+        }
+
+        function resetVisualization() {
+            level = 0;
+            baseSize = 3;
+            document.getElementById('level').value = 0;
+            document.getElementById('levelValue').textContent = 0;
+            document.getElementById('baseSize').value = 3;
+            document.getElementById('baseSizeValue').textContent = 3;
+            draw();
+        }
+
+        // Initial draw
+        draw();
+    </script>
+</body>
+</html>

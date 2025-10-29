@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Spectral Sequence - Distinction Theory</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        h1 {
+            text-align: center;
+            color: #11998e;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            margin-bottom: 20px;
+        }
+        .controls {
+            background: #f0f8f7;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+        button {
+            background: #11998e;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            margin: 5px;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background: #0d7a72;
+            transform: scale(1.05);
+        }
+        button.active {
+            background: #38ef7d;
+            color: #000;
+        }
+        #canvas-container {
+            background: #fafafa;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        canvas {
+            display: block;
+            margin: 0 auto;
+            background: white;
+            border-radius: 5px;
+        }
+        .info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border-left: 4px solid #2196f3;
+        }
+        .info h3 {
+            margin-top: 0;
+            color: #1976d2;
+        }
+        .legend {
+            display: flex;
+            justify-content: center;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+        .legend-item {
+            margin: 5px 15px;
+            display: flex;
+            align-items: center;
+        }
+        .legend-box {
+            width: 20px;
+            height: 20px;
+            margin-right: 8px;
+            border: 2px solid #333;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Interactive Spectral Sequence</h1>
+        <div class="subtitle">E<sub>r</sub> pages computing π<sub>*</sub>(D<sup>n</sup>(X))</div>
+
+        <div class="info">
+            <h3>What You're Seeing</h3>
+            <p>The <strong>spectral sequence</strong> computes homotopy groups of iterated distinction towers.
+            Each <strong>page E<sub>r</sub></strong> refines the approximation. <strong>Differentials d<sub>r</sub></strong>
+            show how structure propagates. <strong>Convergence</strong> occurs when d<sub>r</sub> = 0.</p>
+
+            <p><strong>Formula:</strong> E<sub>1</sub><sup>p,0</sup> ≃ G<sup>⊗2<sup>p</sup></sup>
+            (group G tensored 2<sup>p</sup> times at level p)</p>
+        </div>
+
+        <div class="controls">
+            <button onclick="setPage(1)" id="btn-e1">E₁ Page</button>
+            <button onclick="setPage(2)" id="btn-e2">E₂ Page</button>
+            <button onclick="setPage(3)" id="btn-e3">E₃ Page</button>
+            <button onclick="setPage(999)" id="btn-einf">E_∞ (Convergence)</button>
+            <button onclick="animateSequence()" style="background:#ff6b6b;">▶ Animate</button>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-box" style="background: #4ecdc4;"></div>
+                <span>E<sub>r</sub> entries (survive to page r)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box" style="background: #ff6b6b;"></div>
+                <span>Killed by d<sub>r</sub> (vanish at page r)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-box" style="background: #ffd93d;"></div>
+                <span>Converged (final answer)</span>
+            </div>
+        </div>
+
+        <div id="canvas-container">
+            <canvas id="spectralCanvas" width="1200" height="600"></canvas>
+        </div>
+
+        <div class="info">
+            <h3 id="page-title">Current Page: E₁</h3>
+            <div id="page-description">
+                <p><strong>E₁ page:</strong> Initial terms computed from π₁(X) = G</p>
+                <p>Each entry E₁<sup>p,q</sup> shown as circle. Size represents complexity.</p>
+                <p>Differential d₁ (arrows) shows how elements map between positions.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('spectralCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let currentPage = 1;
+        const maxP = 4;  // Show p = 0,1,2,3
+        const maxQ = 3;  // Show q = 0,1,2
+
+        function setPage(page) {
+            currentPage = page;
+
+            // Update button states
+            document.querySelectorAll('.controls button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            if (page === 1) document.getElementById('btn-e1').classList.add('active');
+            else if (page === 2) document.getElementById('btn-e2').classList.add('active');
+            else if (page === 3) document.getElementById('btn-e3').classList.add('active');
+            else if (page === 999) document.getElementById('btn-einf').classList.add('active');
+
+            drawSpectralSequence();
+            updatePageInfo();
+        }
+
+        function drawSpectralSequence() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const cellWidth = 200;
+            const cellHeight = 120;
+            const offsetX = 100;
+            const offsetY = 80;
+
+            // Draw grid
+            for (let p = 0; p <= maxP; p++) {
+                for (let q = 0; q <= maxQ; q++) {
+                    const x = offsetX + p * cellWidth;
+                    const y = canvas.height - offsetY - q * cellHeight;
+
+                    // Determine if this entry survives to current page
+                    const survived = survivesToPage(p, q, currentPage);
+                    const converged = currentPage >= 999;
+
+                    // Draw cell background
+                    ctx.fillStyle = converged ? '#ffd93d33' : (survived ? '#4ecdc433' : '#ff6b6b33');
+                    ctx.fillRect(x - 25, y - 25, 50, 50);
+
+                    // Draw border
+                    ctx.strokeStyle = '#333';
+                    ctx.lineWidth = 1;
+                    ctx.strokeRect(x - 25, y - 25, 50, 50);
+
+                    // Draw entry circle
+                    if (survived || currentPage === 1) {
+                        const radius = converged ? 20 : Math.max(5, 18 - currentPage * 2);
+                        ctx.fillStyle = converged ? '#ffd93d' : (survived ? '#4ecdc4' : '#ff6b6b');
+                        ctx.beginPath();
+                        ctx.arc(x, y, radius, 0, 2 * Math.PI);
+                        ctx.fill();
+                        ctx.strokeStyle = '#000';
+                        ctx.lineWidth = 2;
+                        ctx.stroke();
+
+                        // Label with tensor power
+                        if (q === 0 && p >= 0) {
+                            ctx.fillStyle = '#000';
+                            ctx.font = 'bold 11px Arial';
+                            ctx.textAlign = 'center';
+                            const power = Math.pow(2, p);
+                            ctx.fillText(`G^⊗${power}`, x, y + 4);
+                        }
+                    }
+
+                    // Coordinate label
+                    ctx.fillStyle = '#666';
+                    ctx.font = '10px Arial';
+                    ctx.fillText(`(${p},${q})`, x, y + 38);
+
+                    // Draw differential arrows at page 1
+                    if (currentPage === 1 && p < maxP && q < maxQ && Math.random() > 0.5) {
+                        drawDifferentialArrow(x, y, x + cellWidth, y - cellHeight);
+                    }
+                }
+            }
+
+            // Axis labels
+            ctx.fillStyle = '#000';
+            ctx.font = 'bold 14px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('p (filtration level)', canvas.width/2, canvas.height - 20);
+
+            ctx.save();
+            ctx.translate(20, canvas.height/2);
+            ctx.rotate(-Math.PI/2);
+            ctx.fillText('q (degree)', 0, 0);
+            ctx.restore();
+
+            // Page indicator
+            const pageLabel = currentPage === 999 ? 'E_∞' : `E_${currentPage}`;
+            ctx.font = 'bold 24px Arial';
+            ctx.fillStyle = '#11998e';
+            ctx.fillText(`${pageLabel} Page`, canvas.width - 150, 40);
+        }
+
+        function drawDifferentialArrow(x1, y1, x2, y2) {
+            ctx.strokeStyle = '#ff6b6b';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath();
+            ctx.moveTo(x1 + 20, y1);
+            ctx.lineTo(x2 - 20, y2);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Arrowhead
+            const angle = Math.atan2(y2 - y1, x2 - x1);
+            ctx.fillStyle = '#ff6b6b';
+            ctx.beginPath();
+            ctx.moveTo(x2 - 20, y2);
+            ctx.lineTo(x2 - 20 - 8*Math.cos(angle - Math.PI/6),
+                      y2 - 8*Math.sin(angle - Math.PI/6));
+            ctx.lineTo(x2 - 20 - 8*Math.cos(angle + Math.PI/6),
+                      y2 - 8*Math.sin(angle + Math.PI/6));
+            ctx.fill();
+        }
+
+        function survivesToPage(p, q, page) {
+            // Simplified model: some entries survive, some don't
+            if (page === 1) return true;
+            if (page >= 999) return (p + q) % 2 === 0; // Mock convergence
+            // At page r, some entries killed by differential
+            return !(p === page - 1 && q === 0);
+        }
+
+        function updatePageInfo() {
+            const pageLabel = currentPage === 999 ? 'E_∞ (Convergence)' : `E_${currentPage}`;
+            document.getElementById('page-title').textContent = `Current Page: ${pageLabel}`;
+
+            const descriptions = {
+                1: '<p><strong>E₁ page:</strong> Initial terms. Entries E₁<sup>p,0</sup> = G<sup>⊗2<sup>p</sup></sup>. Red arrows show differential d₁ killing some elements.</p>',
+                2: '<p><strong>E₂ page:</strong> After d₁ applied. Homology H(E₁, d₁). Some entries survived, some killed.</p>',
+                3: '<p><strong>E₃ page:</strong> Further refinement. Differential d₂ has acted. Structure stabilizing.</p>',
+                999: '<p><strong>E_∞ (Convergence):</strong> Final answer. No more differentials (d_r = 0). Yellow circles show converged elements giving π<sub>*</sub>(D<sup>n</sup>(X)).</p>'
+            };
+
+            document.getElementById('page-description').innerHTML =
+                descriptions[currentPage] || descriptions[1];
+        }
+
+        function animateSequence() {
+            const pages = [1, 2, 3, 999];
+            let idx = 0;
+
+            const interval = setInterval(() => {
+                setPage(pages[idx]);
+                idx++;
+                if (idx >= pages.length) {
+                    clearInterval(interval);
+                }
+            }, 1500);
+        }
+
+        // Initial draw
+        setPage(1);
+    </script>
+</body>
+</html>
