@@ -237,14 +237,19 @@
 
 ### **THE_EMPTINESS_GENERATES_ALL.tex** (257 lines)
 **Date**: Oct 28 23:16
+**Status**: ❌ **REFUTED** - See CORRECTION_NOTICE.md
 
-**Core result**: D(∅) = 1 in HoTT
-- Vacuous truth: Σ over empty domain ≃ 1
-- Emptiness examining itself generates unity
-- "Something from nothing" rigorously proven
+**Original claim**: D(∅) = 1 in HoTT
+- Claimed: Σ over empty domain ≃ 1 (vacuous truth)
+- **Error**: Confused Σ (dependent sum) with Π (dependent product)
 
-**Tower from emptiness**:
-- ∅ → 1 → 1 → ... (stabilizes immediately for sets)
+**Corrected result** (Machine-verified Lean 4):
+- **D(∅) = ∅** (emptiness stable under examination)
+- No witnesses exist (∅ uninhabited → Σ over ∅ is ∅)
+- **Strengthened framework**: Unity (1) primordial, not void
+
+**Tower corrected**:
+- ∅ → ∅ → ∅ → ... (emptiness persists, not generative)
 - For non-trivial: S¹ → D(S¹) → ... (grows)
 
 ---

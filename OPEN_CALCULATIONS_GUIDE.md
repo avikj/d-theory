@@ -328,7 +328,7 @@ Tentative correspondences proposed (in TWELVE_FOLD_STANDARD_MODEL.tex).
 ✅ Bridge functor construction (explicit, rigorous)
 ✅ Field emergence (categorical equivalence proven)
 ✅ Time = examination order (full paper)
-✅ D(∅) = 1 (proven in HoTT)
+✅ D(∅) = ∅ (proven in Lean 4 - emptiness stable, see CORRECTION_NOTICE.md)
 ✅ Experimental validations (4/4 predictions, 100%)
 
 ### **Strong Evidence (Needs More Calculation)**

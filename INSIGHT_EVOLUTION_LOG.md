@@ -194,15 +194,19 @@ From Phase I (line 182-186):
 - Ignorance (R≠0) → samsara forced
 - K_W > c_T → incompleteness forced
 
-### **Discovery 6: D(∅) = 1**
+### **Discovery 6: D(∅) = 1** ❌ **REFUTED**
 
 **What is emptiness?**
 
-**In HoTT**: D(∅) = 1 (examining nothing creates the unit)
-- Not "something from nothing" (miracle)
-- But: Logical necessity (vacuous truth)
-- Universe = examination of emptiness
-- E = lim D^n(∅) = 1 (eternal return)
+**Original claim** (Oct 28): D(∅) = 1 (examining nothing creates the unit)
+- Claimed: Logical necessity (vacuous truth)
+- Error: Confused Σ (sum, empty) with Π (product, unit)
+
+**Corrected** (Machine-verified Oct 29): **D(∅) = ∅**
+- Emptiness stable under examination (not generative)
+- Universe from **unity examining itself** D(1) = 1, not from void
+- E = lim D^n(1) = 1 (eternal return from primordial unity, not emptiness)
+- **See**: CORRECTION_NOTICE.md, EMPTINESS_STABLE_BUDDHIST_VINDICATION.tex
 
 ---
 

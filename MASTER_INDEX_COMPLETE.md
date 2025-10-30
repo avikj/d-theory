@@ -49,7 +49,8 @@
 - Space is 3D from 3↔4 reciprocal structure
 
 **Papers**:
-- `theory/THE_EMPTINESS_GENERATES_ALL.tex` - D(∅) = 1 formalized
+- `theory/THE_EMPTINESS_GENERATES_ALL.tex` - D(∅) = 1 claimed (❌ REFUTED, see CORRECTION_NOTICE.md)
+- `theory/EMPTINESS_STABLE_BUDDHIST_VINDICATION.tex` - D(∅) = ∅ corrected (strengthens Buddhist alignment)
 - `theory/UNIFICATION_GODEL_DISTINCTION.tex` - Information ⟺ geometry duality
 
 ### **2. Mathematical Foundations** (Rigorous Formalism)
