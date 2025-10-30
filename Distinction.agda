@@ -45,7 +45,10 @@ D-Unit = isoToEquiv (iso from to ret sec)
     ret tt = refl
 
     sec : ∀ x → to (from x) ≡ x
-    sec (tt , tt , p) = ΣPathP (refl , ΣPathP (refl , isContr→isProp (isContrSingl tt) (tt , refl) (tt , p)))
+    sec x = isContr→isProp (isContrD-Unit) (to (from x)) x
+      where
+        isContrD-Unit : isContr (D Unit)
+        isContrD-Unit = (tt , tt , refl) , λ { (tt , tt , p) → ΣPathP (refl , ΣPathP (refl , isSetUnit tt tt refl p)) }
 
 -- D(Unit) ≡ Unit (by univalence)
 D-Unit-Path : D Unit ≡ Unit
@@ -53,26 +56,26 @@ D-Unit-Path = ua D-Unit
 
 -- Iteration of D
 D^_ : ℕ → Type → Type
-D^ zero = λ X → X
-D^ suc n = λ X → D (D^ n X)
+(D^ zero) X = X
+(D^ suc n) X = D ((D^ n) X)
 
 -- For Unit, all iterations equal Unit
-D^n-Unit : ∀ n → D^ n Unit ≡ Unit
+D^n-Unit : ∀ n → (D^ n) Unit ≡ Unit
 D^n-Unit zero = refl
 D^n-Unit (suc n) =
-  D^ suc n Unit    ≡⟨ refl ⟩
-  D (D^ n Unit)    ≡⟨ cong D (D^n-Unit n) ⟩
-  D Unit           ≡⟨ D-Unit-Path ⟩
-  Unit             ∎
+  (D^ suc n) Unit    ≡⟨ refl ⟩
+  D ((D^ n) Unit)    ≡⟨ cong D (D^n-Unit n) ⟩
+  D Unit             ≡⟨ D-Unit-Path ⟩
+  Unit               ∎
 
-open import Cubical.HITs.PropositionalTruncation
+open import Cubical.HITs.PropositionalTruncation as PT
 
 -- Necessity Operator (propositional truncation)
 nec : Type → Type
 nec X = ∥ X ∥₁
 
 nec-idempotent : ∀ {X : Type} → nec (nec X) ≃ nec X
-nec-idempotent {X} = propBiimpl→Equiv isPropPropTrunc isPropPropTrunc (λ x → x) (map (λ x → x))
+nec-idempotent {X} = propBiimpl→Equiv isPropPropTrunc isPropPropTrunc (PT.rec isPropPropTrunc (λ x → x)) ∣_∣₁
 
 nec-idempotent-Path : ∀ {X : Type} → nec (nec X) ≡ nec X
 nec-idempotent-Path = ua nec-idempotent
@@ -83,54 +86,27 @@ D-map f (x , y , p) = (f x , f y , cong f p)
 -- The Semantic Connection (nabla) and Curvature (Riem)
 
 -- nabla X is the path type D (nec X) ≡ nec (D X)
-nabla : Type → Type
+nabla : Type → Type₁
 nabla X = D (nec X) ≡ nec (D X)
 
 -- Riem X is the proposition that nabla X is a proposition (0-type)
 -- This means all paths in nabla X are equal, implying constant curvature (nabla^2 = 0)
-Riem : Type → Type
+Riem : Type → Type₁
 Riem X = isProp (nabla X)
 
--- Proof for Unit (a 0-type)
+{-
+-- Proof for Unit (a 0-type) - requires showing ∥ Unit ∥₁ ≡ Unit
 nabla-Unit : nabla Unit
-nabla-Unit =
-  let lhs-to-unit : D (nec Unit) ≡ Unit
-      lhs-to-unit = 
-        D (nec Unit)                            ≡⟨ cong D nec-idempotent-Path ⟩
-        D Unit                                  ≡⟨ D-Unit-Path ⟩
-        Unit                                    ∎
-  in
-  let rhs-to-unit : nec (D Unit) ≡ Unit
-      rhs-to-unit = 
-        nec (D Unit)                            ≡⟨ cong nec D-Unit-Path ⟩
-        nec Unit                                ≡⟨ nec-idempotent-Path ⟩
-        Unit                                    ∎
-  in
-  lhs-to-unit ∙ sym rhs-to-unit
+nabla-Unit = {!!}
 
 -- Proof for Empty (another 0-type)
 nabla-Empty : nabla ⊥
-nabla-Empty =
-  let ua-D-Empty-Path : D ⊥ ≡ ⊥               -- D(Empty) ≡ Empty via univalence
-      ua-D-Empty-Path = ua D-Empty
-  in
-  let lhs-to-empty : D (nec ⊥) ≡ ⊥
-      lhs-to-empty = 
-        D (nec ⊥)                               ≡⟨ cong D nec-idempotent-Path ⟩
-        D ⊥                                     ≡⟨ ua-D-Empty-Path ⟩
-        ⊥                                       ∎
-  in
-  let rhs-to-empty : nec (D ⊥) ≡ ⊥
-      rhs-to-empty = 
-        nec (D ⊥)                               ≡⟨ cong nec ua-D-Empty-Path ⟩
-        nec ⊥                                   ≡⟨ nec-idempotent-Path ⟩
-        ⊥                                       ∎
-  in
-  lhs-to-empty ∙ sym rhs-to-empty
+nabla-Empty = {!!}
+-}
 
 -- Definition of Autopoietic Structure
 -- T is autopoietic if nabla T is inhabited (nonzero connection) AND nabla T is a proposition (constant curvature)
-is-autopoietic : Type → Type
+is-autopoietic : Type → Type₁
 is-autopoietic X = nabla X × Riem X
 
 {-
