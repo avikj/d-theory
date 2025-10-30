@@ -45,13 +45,10 @@ def main():
     parser = ConversationParser()
 
     try:
-        with open(conversation_path, 'r', encoding='utf-8') as f:
-            text = f.read()
+        statements, intervention_line = parser.parse_file(str(conversation_path))
     except Exception as e:
-        print(f"Error reading file: {e}")
+        print(f"Error parsing file: {e}")
         return
-
-    statements = parser.parse(text)
     print(f"  Extracted {len(statements)} statements")
 
     # Count by phase

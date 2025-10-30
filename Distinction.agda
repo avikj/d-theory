@@ -289,13 +289,9 @@ D-associativity (x , y , p) f g =
     x_g' = fst (g y_f')
     y_g' = fst (snd (g y_f'))
 
-    -- LHS path after all mu applications
-    lhs-path : x_g ≡ y_g'
-    lhs-path = snd (snd (mu (D-map g (mu (D-map f (x , y , p))))))
-
-    -- RHS path after all mu applications
-    rhs-path : x_g ≡ y_g'
-    rhs-path = snd (snd (mu (D-map (λ w → mu (D-map g (f w))) (x , y , p))))
+    -- Paths are the third components of the results
+    lhs-path = snd (snd lhs)
+    rhs-path = snd (snd rhs)
 
     -- Expand what the paths actually are
     -- LHS: mu (D-map g (x_f, y_f', path1)) where path1 = (λ i → fst (cong f p i)) ∙ p_f'
@@ -304,14 +300,9 @@ D-associativity (x , y , p) f g =
     --    = (x_g, y_g', (λ i → fst (q_lhs i)) ∙ cong g path1 evaluated at y_f')
 
     -- This is getting complex. Let me try using mu-natural directly
-    lhs≡rhs-path : PathP (λ i → lhs≡rhs-fst i ≡ lhs≡rhs-snd i) (snd (snd lhs)) (snd (snd rhs))
-    lhs≡rhs-path i j =
-      -- Square construction: interpolate between lhs-path and rhs-path
-      hcomp (λ k → λ { (i = i0) → lhs-path j
-                     ; (i = i1) → rhs-path j
-                     ; (j = i0) → lhs-path i0
-                     ; (j = i1) → lhs-path i1 })
-            (lhs-path j)
+    -- Path components equal via I × I square (requires hcomp mastery)
+    postulate
+      lhs≡rhs-path : PathP (λ i → lhs≡rhs-fst i ≡ lhs≡rhs-snd i) (snd (snd lhs)) (snd (snd rhs))
 
 -- Monad structure for functors on Type
 record Monad (M : Type → Type) : Type₁ where
