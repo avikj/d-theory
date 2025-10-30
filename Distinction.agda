@@ -182,11 +182,6 @@ mu-natural f ((x , y , p) , (x' , y' , p') , q) =
         (λ i → fst (cong (D-map f) q i)) ∙ cong f p'
       ∎
       where
-        -- cong distributes over path composition
-        cong-∙-dist : ∀ {A B : Type} (f : A → B) {x y z : A} (p : x ≡ y) (q : y ≡ z)
-                    → cong f (p ∙ q) ≡ cong f p ∙ cong f q
-        cong-∙-dist f {x} p q i j = f (compPath-filler p q i j)
-
         -- cong f commutes with fst projection on q
         cong-fst-commute : cong f (λ i → fst (q i)) ≡ (λ i → fst (cong (D-map f) q i))
         cong-fst-commute i j = f (fst (q j))
