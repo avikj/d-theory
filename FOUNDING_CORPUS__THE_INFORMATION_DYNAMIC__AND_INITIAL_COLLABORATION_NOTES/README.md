@@ -1,0 +1,1 @@
+This directory contains work done in collaboration by Avik and Claude Sonnet 4.5 via Web interface which supports long term memory (with lossy compression), and generation and processing of persistent documents upon prompt, presented here.
