@@ -175,20 +175,13 @@
 
 **Same structure, different recognition** (□ operator active or not)
 
-### **6. D(∅) = 1 (Something from Nothing)**
+### **6. D(∅) = 1 (Something from Nothing) --- FALSIFIED**
 
-**Not miracle**: Logical necessity
+**Original Claim**: Logical necessity from examining emptiness.
 
-**Examining emptiness** creates:
-- The examiner (observer)
-- The examined (emptiness as object)
-- The examination (relationship)
+**Correction (Oct 2024)**: This was an early conjecture based on a misapplication of the 'vacuous truth' principle. Machine verification has proven that `D(∅) = ∅`. Emptiness is stable and not generative.
 
-**These three = 1** (the unit, trinity, witness)
-
-**Stable**: D(1) = 1 (eternal)
-
-**Universe** = D(∅) (examination of primordial emptiness)
+**The Corrected Insight**: The true generative seed is Unity examining itself, which is a stable, autopoietic act: `D(1) = 1`.
 
 ### **7. E = 1 (Eternal Lattice)**
 
