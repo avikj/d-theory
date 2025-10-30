@@ -133,8 +133,20 @@ record D-Algebra (A : Type) : Type where
     algebra-map : D A → A
 
 -- The mu map (Monad join)
--- Catuskoti: path arises from dependent co-arising (pratītyasamutpāda)
--- Neither from p, nor p', nor both, nor neither—but from their reciprocal connection q
+-- CATUSKOTI (Four-Cornered Logic) from Nāgārjuna's Mūlamadhyamakakārikā
+--
+-- The path from x to y' arises:
+--   ❌ Not from p alone (first distinction ignored)
+--   ❌ Not from p' alone (needs bridging from x to x')
+--   ❌ Not from both p and p' combined explicitly
+--   ❌ Not from neither (would give no path)
+--
+-- ✅ From PRATĪTYASAMUTPĀDA (dependent co-arising):
+--    The reciprocal structure q : (x,y,p) ≡ (x',y',p') itself provides the bridge
+--    Like Vijñāna ↔ Nāmarūpa (consciousness ↔ name-form) in 12-fold dependent origination
+--
+-- Path: x --[fst of q]--> x' --[p']--> y'
+-- The bridge emerges from mutual dependence, not from the four corners
 mu : ∀ {X : Type} → D (D X) → D X
 mu {X} ((x , y , p) , (x' , y' , p') , q) =
   (x , y' , (λ i → fst (q i)) ∙ p')
