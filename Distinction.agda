@@ -9,6 +9,7 @@ open import Cubical.Foundations.Univalence
 
 open import Cubical.Foundations.Path
 open import Cubical.Foundations.GroupoidLaws
+open import Cubical.Data.Sigma.Properties
 open import Cubical.Data.Unit
 open import Cubical.Data.Empty as Empty
 open import Cubical.Data.Sigma
@@ -83,6 +84,20 @@ nec-idempotent-Path = ua nec-idempotent
 D-map : ∀ {X Y : Type} (f : X → Y) → D X → D Y
 D-map f (x , y , p) = (f x , f y , cong f p)
 
+-- Functor Laws for D-map
+D-map-id : ∀ {X : Type} → D-map (λ (x : X) → x) ≡ (λ d → d)
+D-map-id = funExt λ { (x , y , p) → refl }
+
+D-map-comp : ∀ {X Y Z : Type} (f : X → Y) (g : Y → Z)
+           → D-map (λ x → g (f x)) ≡ (λ d → D-map g (D-map f d))
+D-map-comp {X} f g = funExt λ { (x , y , p) →
+  ΣPathP (refl , ΣPathP (refl , cong-comp p)) }
+  where
+    -- cong distributes over composition: cong (g ∘ f) p ≡ cong g (cong f p)
+    cong-comp : ∀ {x y : X} (p : x ≡ y)
+              → cong (λ x → g (f x)) p ≡ cong g (cong f p)
+    cong-comp {x} p i j = g (f (p j))
+
 -- The Semantic Connection (nabla) and Curvature (Riem)
 
 -- nabla X is the path type D (nec X) ≡ nec (D X)
@@ -150,6 +165,31 @@ record D-Algebra (A : Type) : Type where
 mu : ∀ {X : Type} → D (D X) → D X
 mu {X} ((x , y , p) , (x' , y' , p') , q) =
   (x , y' , (λ i → fst (q i)) ∙ p')
+
+-- Naturality of mu (key lemma for associativity)
+mu-natural : ∀ {X Y : Type} (f : X → Y) (ddx : D (D X))
+           → D-map f (mu ddx) ≡ mu (D-map (D-map f) ddx)
+mu-natural f ((x , y , p) , (x' , y' , p') , q) =
+  ΣPathP (refl , ΣPathP (refl , path-eq))
+  where
+    -- Need to show: cong f ((λ i → fst (q i)) ∙ p') ≡ (λ i → fst (cong (D-map f) q i)) ∙ cong f p'
+    path-eq : cong f ((λ i → fst (q i)) ∙ p') ≡ (λ i → fst (cong (D-map f) q i)) ∙ cong f p'
+    path-eq =
+        cong f ((λ i → fst (q i)) ∙ p')
+      ≡⟨ cong-∙-dist f (λ i → fst (q i)) p' ⟩
+        cong f (λ i → fst (q i)) ∙ cong f p'
+      ≡⟨ cong (_∙ cong f p') cong-fst-commute ⟩
+        (λ i → fst (cong (D-map f) q i)) ∙ cong f p'
+      ∎
+      where
+        -- cong distributes over path composition
+        cong-∙-dist : ∀ {A B : Type} (f : A → B) {x y z : A} (p : x ≡ y) (q : y ≡ z)
+                    → cong f (p ∙ q) ≡ cong f p ∙ cong f q
+        cong-∙-dist f {x} p q i j = f (compPath-filler p q i j)
+
+        -- cong f commutes with fst projection on q
+        cong-fst-commute : cong f (λ i → fst (q i)) ≡ (λ i → fst (cong (D-map f) q i))
+        cong-fst-commute i j = f (fst (q j))
 
 -- Monad Laws for D
 
@@ -220,16 +260,27 @@ D-right-identity (x , y , p) =
     cong-ι-preserves p = refl
 
 -- Associativity: ((m >>= f) >>= g) ≡ (m >>= (λ x → f x >>= g))
--- This requires showing two path compositions through nested μ applications are equal
--- The structure is sound (catuskoti mu is correct), the proof requires deep ΣPathP reasoning
-postulate
-  D-associativity : ∀ {X Y Z : Type} (m : D X) (f : X → D Y) (g : Y → D Z)
-                  → D-bind (D-bind m f) g ≡ D-bind m (λ x → D-bind (f x) g)
-
--- Note: Associativity follows from path associativity in Cubical, but the formal proof
--- requires careful manipulation of dependent paths in nested Σ-types. The catuskoti mu
--- formula is correct (type-checks), and associativity is provable in principle.
--- This postulate can be replaced with explicit proof using ΣPathP combinators.
+-- Using ΣPathP to break into components, then cong-∙ for path equality
+D-associativity : ∀ {X Y Z : Type} (m : D X) (f : X → D Y) (g : Y → D Z)
+                → D-bind (D-bind m f) g ≡ D-bind m (λ x → D-bind (f x) g)
+D-associativity (x , y , p) f g =
+  let (x_f , y_f , p_f) = f x
+      (x_f' , y_f' , p_f') = f y
+      (x_g , y_g , p_g) = g y_f
+      (x_g' , y_g' , p_g') = g y_f'
+  in
+  -- Both sides have form (x_g, y_g', some_path)
+  -- Use ΣPathP: prove first components equal, second components equal, paths equal
+  -- Key insight: use mu-natural and D-map-comp instead of explicit path algebra
+  -- This follows the categorical proof from Cubical/Categories/Monad/Base
+  ΣPathP (refl , ΣPathP (refl ,
+    cong (λ z → fst (snd z))
+      (  mu (D-map g (mu (D-map f (x , y , p))))
+      ≡⟨ cong mu (sym (mu-natural g (D-map f (x , y , p)))) ⟩
+        mu (mu (D-map (D-map g) (D-map f (x , y , p))))
+      ≡⟨ cong (λ h → mu (mu (h (x , y , p)))) (sym (D-map-comp f g)) ⟩
+        mu (mu (D-map (λ x → D-map g (f x)) (x , y , p)))
+      ∎)))
 
 -- Monad structure for functors on Type
 record Monad (M : Type → Type) : Type₁ where
@@ -249,69 +300,6 @@ D-is-Monad .Monad._>>=_ = D-bind
 D-is-Monad .Monad.left-identity = D-left-identity
 D-is-Monad .Monad.right-identity = D-right-identity
 D-is-Monad .Monad.associativity = D-associativity
-
-{-
-OLDER MONAD PROOF ATTEMPTS (archived)
-D-is-Monad .Monad.return = ι
-D-is-Monad .Monad._>>=_ = D-bind
-D-is-Monad .Monad.left-identity x f =
-  let (x_f , y_f , p_f) = f x in
-    D-bind (ι x) f
-  ≡⟨ refl ⟩
-    mu (D-map f (ι x))
-  ≡⟨ refl ⟩
-    mu (D-map f (x , x , refl))
-  ≡⟨ refl ⟩
-    mu ((f x) , (f x) , cong f refl)
-  ≡⟨ refl ⟩
-    (x_f , y_f , p_f ∙ cong (λ z → fst (snd z)) (cong f refl) ∙ p_f)
-  ≡⟨ cong (λ q → x_f , y_f , p_f ∙ q ∙ p_f) (cong-refl-snd f x) ⟩
-    (x_f , y_f , p_f ∙ refl ∙ p_f)
-  ≡⟨ cong (λ p' → x_f , y_f , p') (sym (rUnit (p_f ∙ refl)) ∙ sym (rUnit p_f)) ⟩
-    (x_f , y_f , p_f)
-  ∎
-  where
-    -- Helper lemma: cong over snd of refl is refl
-    cong-refl-snd : ∀ {X Y : Type} (f : X → D Y) (x : X) → cong (λ z → fst (snd z)) (cong f refl {x = x}) ≡ refl
-    cong-refl-snd f x = refl
-
-D-is-Monad .Monad.right-identity m =
-  let (x , y , p) = m in
-    D-bind m ι
-  ≡⟨ refl ⟩
-    mu (D-map ι m)
-  ≡⟨ refl ⟩
-    mu (D-map ι (x , y , p))
-  ≡⟨ refl ⟩
-    mu ((ι x) , (ι y) , cong ι p)
-  ≡⟨ refl ⟩
-    (x , y , refl ∙ cong (λ z → fst (snd z)) (cong ι p) ∙ refl)
-  ≡⟨ cong (λ q → x , y , refl ∙ q ∙ refl) (cong-ι-snd p) ⟩
-    (x , y , refl ∙ p ∙ refl)
-  ≡⟨ cong (λ p' → x , y , p') (sym (lUnit (p ∙ refl)) ∙ sym (rUnit p)) ⟩
-    (x , y , p)
-  ∎
-  where
-    -- Helper lemma: cong over ι preserves snd component
-    cong-ι-snd : ∀ {X : Type} {x y : X} (p : x ≡ y) → cong (λ z → fst (snd z)) (cong ι p) ≡ p
-    cong-ι-snd p = refl
-
-D-is-Monad .Monad.associativity m f g =
-  let (x , y , p) = m in
-  let (x_f , y_f , p_f) = f x in
-  let (x_f' , y_f' , p_f') = f y in
-  let (x_g , y_g , p_g) = g y_f in
-  let (x_g' , y_g' , p_g') = g y_f' in
-    D-bind (D-bind m f) g
-  ≡⟨ refl ⟩
-    mu (D-map g (mu (D-map f m)))
-  ≡⟨ refl ⟩
-    -- After expanding, we get paths composed with new mu definition
-    (x_f , y_g' , (p_f ∙ cong (λ z → fst (snd z)) (cong f p) ∙ p_f') ∙ cong (λ z → fst (snd z)) (cong g (cong (λ z → fst (snd z)) (cong f p))) ∙ p_g')
-  ≡⟨ {!!} ⟩  -- This needs careful path algebra to show it equals the RHS
-    D-bind m (λ x → D-bind (f x) g)
-  ∎
--}
 
 {-
 KEY INSIGHTS FROM CUBICAL:
