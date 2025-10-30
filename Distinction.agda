@@ -235,7 +235,66 @@ D-is-Monad .Monad.right-identity m =
     cong-path-snd-fst-ι : ∀ {X : Type} {x y : X} (p : x ≡ y) → (cong ι p .snd .fst) ≡ p
     cong-path-snd-fst-ι {X} {x} {y} p i = p i
 
-D-is-Monad .Monad.associativity m f g = {!!}
+D-is-Monad .Monad.associativity m f g =
+  begin
+    ((m >>= f) >>= g)
+  ≡⟨ refl ⟩
+    mu (D-map g (mu (D-map f m)))
+  ≡⟨ refl ⟩
+    let (x , y , p) = m in
+    let (x_f , y_f , p_f) = f x in
+    let (x_f' , y_f' , p_f') = f y in
+    let q_f = cong f p in
+    let (x_g , y_g , p_g) = g y_f in
+    let (x_g' , y_g' , p_g') = g y_f' in
+    let q_g = cong g (q_f .snd .fst) in
+    (x_f , y_g' , (p_f ∙ (q_f .snd .fst)) ∙ (q_g .snd .fst))
+  ≡⟨ assoc-helper m f g ⟩
+    let (x , y , p) = m in
+    let (x_f , y_f , p_f) = f x in
+    let (x_g , y_g , p_g) = g y_f in
+    let (x_f' , y_f' , p_f') = f y in
+    let (x_g' , y_g' , p_g') = g y_f' in
+    let q_fy = cong f p .snd .fst in
+    let q_g = cong g q_fy in
+    (x_f , y_g' , p_f ∙ (p_g ∙ (q_g .snd .fst)))
+  ≡⟨ refl ⟩
+    (m >>= (λ x → f x >>= g))
+  ∎
+  where
+    assoc-helper : ∀ {X Y Z : Type} (m : D X) (f : X → D Y) (g : Y → D Z)
+                 → let (x , y , p) = m in
+                   let (x_f , y_f , p_f) = f x in
+                   let (x_f' , y_f' , p_f') = f y in
+                   let q_f = cong f p in
+                   let (x_g , y_g , p_g) = g y_f in
+                   let (x_g' , y_g' , p_g') = g y_f' in
+                   let q_g = cong g (q_f .snd .fst) in
+                   (x_f , y_g' , (p_f ∙ (q_f .snd .fst)) ∙ (q_g .snd .fst))
+                 ≡ let (x , y , p) = m in
+                   let (x_f , y_f , p_f) = f x in
+                   let (x_g , y_g , p_g) = g y_f in
+                   let (x_f' , y_f' , p_f') = f y in
+                   let (x_g' , y_g' , p_g') = g y_f' in
+                   let q_fy = cong f p .snd .fst in
+                   let q_g = cong g q_fy in
+                   (x_f , y_g' , p_f ∙ (p_g ∙ (q_g .snd .fst)))
+    assoc-helper (x , y , p) f g = cong (λ path → x_f , y_g' , path) (Path.assoc p_f (q_f .snd .fst) (q_g .snd .fst))
+      where
+        x_f = (f x) .fst
+        y_f = (f x) .snd .fst
+        p_f = (f x) .snd .snd
+        x_f' = (f y) .fst
+        y_f' = (f y) .snd .fst
+        p_f' = (f y) .snd .snd
+        q_f = cong f p
+        x_g = (g y_f) .fst
+        y_g = (g y_f) .snd .fst
+        p_g = (g y_f) .snd .snd
+        x_g' = (g y_f') .fst
+        y_g' = (g y_f') .snd .fst
+        p_g' = (g y_f') .snd .snd
+        q_g = cong g (q_f .snd .fst)
 
 
 {-
