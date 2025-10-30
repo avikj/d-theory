@@ -133,10 +133,10 @@ record D-Algebra (A : Type) : Type where
     algebra-map : D A → A
 
 -- The mu map (Monad join)
--- Extract first x, last y', compose paths
+-- Flatten: take endpoints and bridge via q's first component
 mu : ∀ {X : Type} → D (D X) → D X
 mu {X} ((x , y , p) , (x' , y' , p') , q) =
-  (x , y' , p ∙ sym (cong (λ w → fst (snd (fst w))) q) ∙ cong fst q ∙ p')
+  (x , y' , (λ i → fst (q i)) ∙ p')
 
 -- Monad Laws for D
 
