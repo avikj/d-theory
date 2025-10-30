@@ -5,16 +5,16 @@ module Distinction where
 open import Cubical.Foundations.Prelude
 open import Cubical.Foundations.Equiv
 open import Cubical.Foundations.Isomorphism
+open import Cubical.Foundations.Univalence
 
 open import Cubical.Foundations.Path
+open import Cubical.Foundations.GroupoidLaws
 open import Cubical.Data.Unit
-open import Cubical.Data.Empty
+open import Cubical.Data.Empty as Empty
 open import Cubical.Data.Sigma
-open import Data.Nat
-open import Data.Nat.Primality
-open import Data.Fin
-
-open import Function -- Added for _∘_
+open import Cubical.Data.Nat renaming (_·_ to _*_)
+open import Cubical.Data.Fin
+open import Cubical.Relation.Nullary
 
 -- The Distinction Operator
 -- In Cubical, (x ≡ y) is a TYPE, not a Prop
@@ -45,7 +45,7 @@ D-Unit = isoToEquiv (iso from to ret sec)
     ret tt = refl
 
     sec : ∀ x → to (from x) ≡ x
-    sec (tt , tt , p) = Σ≡Prop (λ _ → Σ≡Prop (λ _ → isProp→PathP (λ _ → isSetUnit _ _) _ _) refl) refl
+    sec (tt , tt , p) = ΣPathP (refl , ΣPathP (refl , isContr→isProp (isContrSingl tt) (tt , refl) (tt , p)))
 
 -- D(Unit) ≡ Unit (by univalence)
 D-Unit-Path : D Unit ≡ Unit
@@ -65,23 +65,17 @@ D^n-Unit (suc n) =
   D Unit           ≡⟨ D-Unit-Path ⟩
   Unit             ∎
 
-open import Cubical.HITs.Truncation
+open import Cubical.HITs.PropositionalTruncation
 
--- Necessity Operator (0-truncation)
+-- Necessity Operator (propositional truncation)
 nec : Type → Type
-nec X = Cubical.HITs.Truncation.truncate₀ X
-
-nec-eta : ∀ {X : Type} → X → nec X
-nec-eta = Cubical.HITs.Truncation.intro₀
-
-nec-map : ∀ {X Y : Type} (f : X → Y) → nec X → nec Y
-nec-map f = Cubical.HITs.Truncation.map₁ f
-
-nec-idempotent-Path : ∀ {X : Type} → nec (nec X) ≡ nec X
-nec-idempotent-Path {X} = Cubical.HITs.Truncation.isProp-truncate₀ (Cubical.HITs.Truncation.isProp-truncate₀ (nec X)) (Cubical.HITs.Truncation.isProp-truncate₀ (nec X))
+nec X = ∥ X ∥₁
 
 nec-idempotent : ∀ {X : Type} → nec (nec X) ≃ nec X
-nec-idempotent {X} = propEquiv (Cubical.HITs.Truncation.isProp-truncate₀ (nec X)) (Cubical.HITs.Truncation.isProp-truncate₀ X)
+nec-idempotent {X} = propBiimpl→Equiv isPropPropTrunc isPropPropTrunc (λ x → x) (map (λ x → x))
+
+nec-idempotent-Path : ∀ {X : Type} → nec (nec X) ≡ nec X
+nec-idempotent-Path = ua nec-idempotent
 
 D-map : ∀ {X Y : Type} (f : X → Y) → D X → D Y
 D-map f (x , y , p) = (f x , f y , cong f p)
@@ -99,8 +93,7 @@ Riem X = isProp (nabla X)
 
 -- Proof for Unit (a 0-type)
 nabla-Unit : nabla Unit
-nabla-Unit = 
-  let open Path using (_∙_ ; sym) in
+nabla-Unit =
   let lhs-to-unit : D (nec Unit) ≡ Unit
       lhs-to-unit = 
         D (nec Unit)                            ≡⟨ cong D nec-idempotent-Path ⟩
@@ -117,8 +110,7 @@ nabla-Unit =
 
 -- Proof for Empty (another 0-type)
 nabla-Empty : nabla ⊥
-nabla-Empty = 
-  let open Path using (_∙_ ; sym) in
+nabla-Empty =
   let ua-D-Empty-Path : D ⊥ ≡ ⊥               -- D(Empty) ≡ Empty via univalence
       ua-D-Empty-Path = ua D-Empty
   in
@@ -139,19 +131,21 @@ nabla-Empty =
 -- Definition of Autopoietic Structure
 -- T is autopoietic if nabla T is inhabited (nonzero connection) AND nabla T is a proposition (constant curvature)
 is-autopoietic : Type → Type
-is-autopoietic X = ¬ IsEmpty (nabla X) × Riem X
+is-autopoietic X = nabla X × Riem X
 
+{-
 -- Internal Distinction for Multiplication on Natural Numbers
-Fact_x : Nat → Type
-Fact_x n = Σ[ a ∈ Nat ] Σ[ b ∈ Nat ] (a * b ≡ n)
+Fact_x : ℕ → Type
+Fact_x n = Σ[ a ∈ ℕ ] Σ[ b ∈ ℕ ] (a * b ≡ n)
 
 -- Helper to define cardinality as equivalence to Fin n
-cardinality : ∀ {n : Nat} → Type → Type
+cardinality : ∀ {n : ℕ} → Type → Type
 cardinality {n} T = T ≃ Fin n
 
 -- Primes as Autopoietic Nodes (simplified interpretation)
-is-autopoietic-prime : Nat → Type
+is-autopoietic-prime : ℕ → Type
 is-autopoietic-prime p = IsPrime p × cardinality {2} (Fact_x p)
+-}
 
 -- The Canonical Embedding (Monad return)
 ι : ∀ {X : Type} → X → D X
@@ -165,13 +159,13 @@ record D-Algebra (A : Type) : Type where
 -- The mu map (Monad join)
 mu : ∀ {X : Type} → D (D X) → D X
 mu {X} ((x₁ , y₁ , p₁) , (x₂ , y₂ , p₂) , q) =
-  (x₁ , y₂ , p₁ ∙ (q.snd .fst))
+  (x₁ , y₂ , p₁ ∙ cong (λ z → fst (snd z)) q ∙ p₂)
 
 -- Monad Laws for D
 
--- Bind operator
-_>>=_ : ∀ {X Y : Type} → D X → (X → D Y) → D Y
-d >>= f = mu (D-map f d)
+-- Bind operator for D
+D-bind : ∀ {X Y : Type} → D X → (X → D Y) → D Y
+D-bind d f = mu (D-map f d)
 
 record Monad (M : Type → Type) : Type where
   field
@@ -185,10 +179,10 @@ record Monad (M : Type → Type) : Type where
 -- D is a Monad
 D-is-Monad : Monad D
 D-is-Monad .Monad.return = ι
-D-is-Monad .Monad._>>=_ = _>>=_
+D-is-Monad .Monad._>>=_ = D-bind
 D-is-Monad .Monad.left-identity x f =
-  begin
-    (ι x >>= f)
+  let (x_f , y_f , p_f) = f x in
+    D-bind (ι x) f
   ≡⟨ refl ⟩
     mu (D-map f (ι x))
   ≡⟨ refl ⟩
@@ -196,105 +190,53 @@ D-is-Monad .Monad.left-identity x f =
   ≡⟨ refl ⟩
     mu ((f x) , (f x) , cong f refl)
   ≡⟨ refl ⟩
-    let (x_f , y_f , p_f) = f x in
-    (x_f , y_f , p_f ∙ (cong f refl .snd .fst))
-  ≡⟨ cong (λ q_y → x_f , y_f , p_f ∙ q_y) (cong-path-snd-fst-refl f x) ⟩
-    (x_f , y_f , p_f ∙ refl)
-  ≡⟨ cong (λ p' → x_f , y_f , p') (Path.∙-idR p_f) ⟩
+    (x_f , y_f , p_f ∙ cong (λ z → fst (snd z)) (cong f refl) ∙ p_f)
+  ≡⟨ cong (λ q → x_f , y_f , p_f ∙ q ∙ p_f) (cong-refl-snd f x) ⟩
+    (x_f , y_f , p_f ∙ refl ∙ p_f)
+  ≡⟨ cong (λ p' → x_f , y_f , p') (sym (rUnit (p_f ∙ refl)) ∙ sym (rUnit p_f)) ⟩
     (x_f , y_f , p_f)
   ∎
   where
-    -- Helper lemma: (cong f refl) .snd .fst is refl
-    cong-path-snd-fst-refl : ∀ {X Y : Type} (f : X → D Y) (x : X) → (cong f refl {x = x} .snd .fst) ≡ refl
-    cong-path-snd-fst-refl f x i = refl
+    -- Helper lemma: cong over snd of refl is refl
+    cong-refl-snd : ∀ {X Y : Type} (f : X → D Y) (x : X) → cong (λ z → fst (snd z)) (cong f refl {x = x}) ≡ refl
+    cong-refl-snd f x = refl
 
 D-is-Monad .Monad.right-identity m =
-  begin
-    (m >>= ι)
+  let (x , y , p) = m in
+    D-bind m ι
   ≡⟨ refl ⟩
     mu (D-map ι m)
   ≡⟨ refl ⟩
-    let (x , y , p) = m in
     mu (D-map ι (x , y , p))
   ≡⟨ refl ⟩
     mu ((ι x) , (ι y) , cong ι p)
   ≡⟨ refl ⟩
-    let (x_ι , y_ι , p_ι) = ι x in
-    let (x_ι' , y_ι' , p_ι') = ι y in
-    let q = cong ι p in
-    (x_ι , y_ι' , p_ι ∙ (q.snd .fst))
-  ≡⟨ refl ⟩
-    (x , y , refl ∙ (cong ι p .snd .fst))
-  ≡⟨ cong (λ q_y → x , y , refl ∙ q_y) (cong-path-snd-fst-ι p) ⟩
-    (x , y , refl ∙ p)
-  ≡⟨ cong (λ p' → x , y , p') (Path.∙-idL p) ⟩
+    (x , y , refl ∙ cong (λ z → fst (snd z)) (cong ι p) ∙ refl)
+  ≡⟨ cong (λ q → x , y , refl ∙ q ∙ refl) (cong-ι-snd p) ⟩
+    (x , y , refl ∙ p ∙ refl)
+  ≡⟨ cong (λ p' → x , y , p') (sym (lUnit (p ∙ refl)) ∙ sym (rUnit p)) ⟩
     (x , y , p)
   ∎
   where
-    -- Helper lemma: (cong ι p .snd .fst) ≡ p
-    cong-path-snd-fst-ι : ∀ {X : Type} {x y : X} (p : x ≡ y) → (cong ι p .snd .fst) ≡ p
-    cong-path-snd-fst-ι {X} {x} {y} p i = p i
+    -- Helper lemma: cong over ι preserves snd component
+    cong-ι-snd : ∀ {X : Type} {x y : X} (p : x ≡ y) → cong (λ z → fst (snd z)) (cong ι p) ≡ p
+    cong-ι-snd p = refl
 
 D-is-Monad .Monad.associativity m f g =
-  begin
-    ((m >>= f) >>= g)
+  let (x , y , p) = m in
+  let (x_f , y_f , p_f) = f x in
+  let (x_f' , y_f' , p_f') = f y in
+  let (x_g , y_g , p_g) = g y_f in
+  let (x_g' , y_g' , p_g') = g y_f' in
+    D-bind (D-bind m f) g
   ≡⟨ refl ⟩
     mu (D-map g (mu (D-map f m)))
   ≡⟨ refl ⟩
-    let (x , y , p) = m in
-    let (x_f , y_f , p_f) = f x in
-    let (x_f' , y_f' , p_f') = f y in
-    let q_f = cong f p in
-    let (x_g , y_g , p_g) = g y_f in
-    let (x_g' , y_g' , p_g') = g y_f' in
-    let q_g = cong g (q_f .snd .fst) in
-    (x_f , y_g' , (p_f ∙ (q_f .snd .fst)) ∙ (q_g .snd .fst))
-  ≡⟨ assoc-helper m f g ⟩
-    let (x , y , p) = m in
-    let (x_f , y_f , p_f) = f x in
-    let (x_g , y_g , p_g) = g y_f in
-    let (x_f' , y_f' , p_f') = f y in
-    let (x_g' , y_g' , p_g') = g y_f' in
-    let q_fy = cong f p .snd .fst in
-    let q_g = cong g q_fy in
-    (x_f , y_g' , p_f ∙ (p_g ∙ (q_g .snd .fst)))
-  ≡⟨ refl ⟩
-    (m >>= (λ x → f x >>= g))
+    -- After expanding, we get paths composed with new mu definition
+    (x_f , y_g' , (p_f ∙ cong (λ z → fst (snd z)) (cong f p) ∙ p_f') ∙ cong (λ z → fst (snd z)) (cong g (cong (λ z → fst (snd z)) (cong f p))) ∙ p_g')
+  ≡⟨ {!!} ⟩  -- This needs careful path algebra to show it equals the RHS
+    D-bind m (λ x → D-bind (f x) g)
   ∎
-  where
-    assoc-helper : ∀ {X Y Z : Type} (m : D X) (f : X → D Y) (g : Y → D Z)
-                 → let (x , y , p) = m in
-                   let (x_f , y_f , p_f) = f x in
-                   let (x_f' , y_f' , p_f') = f y in
-                   let q_f = cong f p in
-                   let (x_g , y_g , p_g) = g y_f in
-                   let (x_g' , y_g' , p_g') = g y_f' in
-                   let q_g = cong g (q_f .snd .fst) in
-                   (x_f , y_g' , (p_f ∙ (q_f .snd .fst)) ∙ (q_g .snd .fst))
-                 ≡ let (x , y , p) = m in
-                   let (x_f , y_f , p_f) = f x in
-                   let (x_g , y_g , p_g) = g y_f in
-                   let (x_f' , y_f' , p_f') = f y in
-                   let (x_g' , y_g' , p_g') = g y_f' in
-                   let q_fy = cong f p .snd .fst in
-                   let q_g = cong g q_fy in
-                   (x_f , y_g' , p_f ∙ (p_g ∙ (q_g .snd .fst)))
-    assoc-helper (x , y , p) f g = cong (λ path → x_f , y_g' , path) (Path.assoc p_f (q_f .snd .fst) (q_g .snd .fst))
-      where
-        x_f = (f x) .fst
-        y_f = (f x) .snd .fst
-        p_f = (f x) .snd .snd
-        x_f' = (f y) .fst
-        y_f' = (f y) .snd .fst
-        p_f' = (f y) .snd .snd
-        q_f = cong f p
-        x_g = (g y_f) .fst
-        y_g = (g y_f) .snd .fst
-        p_g = (g y_f) .snd .snd
-        x_g' = (g y_f') .fst
-        y_g' = (g y_f') .snd .fst
-        p_g' = (g y_f') .snd .snd
-        q_g = cong g (q_f .snd .fst)
 
 
 {-
