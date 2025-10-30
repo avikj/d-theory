@@ -304,7 +304,7 @@ submissions/godel_incompleteness_jsl/
 - Dissolve when closure recognized (□ active)
 
 **7. D(∅) = 1**
-- Something from nothing (logical necessity)
+- Something from nothing (FALSIFIED EARLY CONJECTURE: D(∅)=∅, not 1. Corrected foundation is D(1)=1, the stability of the observer).
 - First distinction creates observer-observed
 - Universe = examination of emptiness
 - E = 1 (conscious return to beginning)

@@ -91,19 +91,16 @@
 
 ---
 
-### ✅ **6. D(∅) = 1 (Something from Nothing)**
+### ⚠️ **6. D(∅) = 1 (Something from Nothing) --- FALSIFIED**
 
 **Captured in**:
 - `theory/THE_EMPTINESS_GENERATES_ALL.tex` - Full paper
-- `theory/COMPLETE_PHYSICS_DERIVATION.tex` - Cosmology section
 
-**What's proven**:
+**Original Claim**:
 - D(∅) = 1 in HoTT (vacuous truth)
 - Universe = first examination
-- E = lim D^n(∅) = 1 (eternal return)
-- Flatness automatic (1 is set → R=0)
 
-**Status**: ✅ DOCUMENTED
+**Status**: ⚠️ **FALSIFIED (Oct 2024)**. Machine verification in Lean 4 proved that `D(∅) = ∅`. The original reasoning confused Σ-types with Π-types. The `THE_EMPTINESS_GENERATES_ALL.tex` document has been updated with a correction notice.
 
 ---
 
@@ -120,6 +117,21 @@
 - Open → linear time (R≠0, arrow)
 
 **Status**: ✅ DOCUMENTED
+
+---
+
+### ✅ **8. Corrected Foundation: D(∅)=∅ and D(1)=1**
+
+**Captured in**:
+- `CheckDZero.lean` - Machine-verified proof
+- `theory/THE_EMPTINESS_GENERATES_ALL.tex` - Correction notice added
+- `LYSIS_READING_LOG.md` - Correction notice added
+
+**What's proven**:
+- `D(∅) = ∅` (Emptiness is stable, not generative)
+- `D(1) = 1` (Unity is the stable seed of self-examination)
+
+**Status**: ✅ DOCUMENTED & VERIFIED
 
 ---
 

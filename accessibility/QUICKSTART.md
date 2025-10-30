@@ -19,7 +19,7 @@ Iterate it:
 - D²(X) = pairs of pairs + higher paths
 - D^∞(X) = Eternal Lattice (fixed point of self-examination)
 
-**Key fact**: For sets, D(X) ≃ X (trivial). For spaces, D grows *exponentially*: rank doubles with each iteration.
+**Key fact**: The operator is stable on the void (`D(∅) = ∅`) and on unity (`D(1) = 1`). Structure and complexity arise from distinguishing non-trivial types. For sets, D(X) ≃ X (trivial). For spaces, D grows *exponentially*: rank doubles with each iteration.
 
 ## One Pattern: Autopoietic Structures
 

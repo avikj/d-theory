@@ -1,0 +1,10 @@
+name = "DistinctionLean"
+version = "0.1.0"
+defaultTargets = ["distinctionlean"]
+
+[[lean_lib]]
+name = "DistinctionLean"
+
+[[lean_exe]]
+name = "distinctionlean"
+root = "Main"

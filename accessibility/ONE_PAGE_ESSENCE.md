@@ -9,6 +9,8 @@ D(X) = { (x, y, path from x to y) | x, y ∈ X }
 ```
 Examine anything by forming pairs + connections between them.
 
+**Foundation**: `D(∅) = ∅` (emptiness is stable), `D(1) = 1` (unity is stable).
+
 ## The Growth
 ```
 D⁰(X) = X          rank: r
