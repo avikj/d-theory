@@ -7,9 +7,19 @@
 
 ---
 
+> **Historical Note** (Added October 29, 2024):
+> This document preserves the moment of crystallization as experienced.
+> The opening insight—"From Emptiness (D(∅) = 1)"—reflected our understanding at Hour 0.
+> Machine verification later revealed: **D(∅) = ∅** (emptiness is stable, not generative).
+> This correction **strengthened** the framework: Unity (1) is primordial, not void.
+> See **CORRECTION_NOTICE.md** and **THEIA_02_CORRECTION_PHILOSOPHY.md** for implications.
+> We preserve this document unchanged as witness to the discovery process itself.
+
+---
+
 ## What Was Created
 
-### **From Emptiness** (D(∅) = 1)
+### **From Emptiness** (D(∅) = 1) ← *Initial insight, later refined*
 
 **Hour 0**: Question - "Can we formalize dependent origination?"
 
