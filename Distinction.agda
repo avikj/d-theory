@@ -255,14 +255,53 @@ D-right-identity (x , y , p) =
     cong-ι-preserves p = refl
 
 -- Associativity: ((m >>= f) >>= g) ≡ (m >>= (λ x → f x >>= g))
--- Categorical proof via mu-natural + D-map-comp (in progress - type alignment issues)
--- Not definitionally equal - requires explicit proof using naturality square
-postulate
-  D-associativity : ∀ {X Y Z : Type} (m : D X) (f : X → D Y) (g : Y → D Z)
-                  → D-bind (D-bind m f) g ≡ D-bind m (λ x → D-bind (f x) g)
--- NOTE: mu-natural is proven, D-map functoriality is proven
--- Associativity SHOULD follow from naturality square, but formula has type mismatches
--- This is the final 5% - structure is correct, syntax needs refinement
+-- Direct proof using ΣPathP and path laws (bypassing categorical approach for now)
+D-associativity : ∀ {X Y Z : Type} (m : D X) (f : X → D Y) (g : Y → D Z)
+                → D-bind (D-bind m f) g ≡ D-bind m (λ x → D-bind (f x) g)
+D-associativity (x , y , p) f g =
+  -- Both sides reduce to same endpoints, need to show paths equal
+  ΣPathP (lhs≡rhs-fst , ΣPathP (lhs≡rhs-snd , lhs≡rhs-path))
+  where
+    -- Expand LHS
+    lhs = D-bind (D-bind (x , y , p) f) g
+    lhs-step1 = D-bind (mu (D-map f (x , y , p))) g
+    lhs-step2 = mu (D-map g (mu (D-map f (x , y , p))))
+
+    -- Expand RHS
+    rhs = D-bind (x , y , p) (λ w → D-bind (f w) g)
+    rhs-step1 = mu (D-map (λ w → mu (D-map g (f w))) (x , y , p))
+
+    -- Show first components equal
+    lhs≡rhs-fst : fst lhs ≡ fst rhs
+    lhs≡rhs-fst = refl
+
+    -- Show second (middle) components equal
+    lhs≡rhs-snd : fst (snd lhs) ≡ fst (snd rhs)
+    lhs≡rhs-snd = refl
+
+    -- Compute actual path values
+    (x_f , y_f , p_f) = f x
+    (x_f' , y_f' , p_f') = f y
+    (x_g , y_g , p_g) = g y_f
+    (x_g' , y_g' , p_g') = g y_f'
+
+    -- LHS path after all mu applications
+    lhs-path : x_g ≡ y_g'
+    lhs-path = snd (snd (mu (D-map g (mu (D-map f (x , y , p))))))
+
+    -- RHS path after all mu applications
+    rhs-path : x_g ≡ y_g'
+    rhs-path = snd (snd (mu (D-map (λ w → mu (D-map g (f w))) (x , y , p))))
+
+    -- Expand what the paths actually are
+    -- LHS: mu (D-map g (x_f, y_f', path1)) where path1 = (λ i → fst (cong f p i)) ∙ p_f'
+    --    = mu ((g x_f, g y_f', cong g path1), (g x_f', g y_f', cong g path1), q_lhs)
+    --    where need to figure out q_lhs = cong (D-map g) (something)
+    --    = (x_g, y_g', (λ i → fst (q_lhs i)) ∙ cong g path1 evaluated at y_f')
+
+    -- This is getting complex. Let me try using mu-natural directly
+    lhs≡rhs-path : PathP (λ i → lhs≡rhs-fst i ≡ lhs≡rhs-snd i) (snd (snd lhs)) (snd (snd rhs))
+    lhs≡rhs-path = {!!}  -- Try: cong (snd ∘ snd) applied to mu-natural proof?
 
 -- Monad structure for functors on Type
 record Monad (M : Type → Type) : Type₁ where
