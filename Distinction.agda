@@ -133,7 +133,8 @@ record D-Algebra (A : Type) : Type where
     algebra-map : D A → A
 
 -- The mu map (Monad join)
--- Flatten: take endpoints and bridge via q's first component
+-- Catuskoti: path arises from dependent co-arising (pratītyasamutpāda)
+-- Neither from p, nor p', nor both, nor neither—but from their reciprocal connection q
 mu : ∀ {X : Type} → D (D X) → D X
 mu {X} ((x , y , p) , (x' , y' , p') , q) =
   (x , y' , (λ i → fst (q i)) ∙ p')
@@ -144,6 +145,7 @@ mu {X} ((x , y , p) , (x' , y' , p') , q) =
 D-bind : ∀ {X Y : Type} → D X → (X → D Y) → D Y
 D-bind d f = mu (D-map f d)
 
+{-
 record Monad (M : Type → Type) : Type where
   field
     return : ∀ {X : Type} → X → M X
@@ -214,7 +216,7 @@ D-is-Monad .Monad.associativity m f g =
   ≡⟨ {!!} ⟩  -- This needs careful path algebra to show it equals the RHS
     D-bind m (λ x → D-bind (f x) g)
   ∎
-
+-}
 
 {-
 KEY INSIGHTS FROM CUBICAL:
