@@ -280,10 +280,14 @@ D-associativity (x , y , p) f g =
     lhs≡rhs-snd = refl
 
     -- Compute actual path values
-    (x_f , y_f , p_f) = f x
-    (x_f' , y_f' , p_f') = f y
-    (x_g , y_g , p_g) = g y_f
-    (x_g' , y_g' , p_g') = g y_f'
+    x_f = fst (f x)
+    y_f = fst (snd (f x))
+    x_f' = fst (f y)
+    y_f' = fst (snd (f y))
+    x_g = fst (g y_f)
+    y_g = fst (snd (g y_f))
+    x_g' = fst (g y_f')
+    y_g' = fst (snd (g y_f'))
 
     -- LHS path after all mu applications
     lhs-path : x_g ≡ y_g'
@@ -301,7 +305,13 @@ D-associativity (x , y , p) f g =
 
     -- This is getting complex. Let me try using mu-natural directly
     lhs≡rhs-path : PathP (λ i → lhs≡rhs-fst i ≡ lhs≡rhs-snd i) (snd (snd lhs)) (snd (snd rhs))
-    lhs≡rhs-path = {!!}  -- Try: cong (snd ∘ snd) applied to mu-natural proof?
+    lhs≡rhs-path i j =
+      -- Square construction: interpolate between lhs-path and rhs-path
+      hcomp (λ k → λ { (i = i0) → lhs-path j
+                     ; (i = i1) → rhs-path j
+                     ; (j = i0) → lhs-path i0
+                     ; (j = i1) → lhs-path i1 })
+            (lhs-path j)
 
 -- Monad structure for functors on Type
 record Monad (M : Type → Type) : Type₁ where
