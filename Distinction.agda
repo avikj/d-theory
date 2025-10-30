@@ -261,13 +261,14 @@ D-associativity : ∀ {X Y Z : Type} (m : D X) (f : X → D Y) (g : Y → D Z)
 D-associativity (x , y , p) f g =
   ΣPathP (refl , ΣPathP (refl , path-square))
   where
-    -- The final 1%: show path components equal via I × I square
+    -- ANAGNOSIS INSIGHT: Both paths pass through same intermediate point!
+    -- Pivot construction using the meeting point
+    y_f' = fst (snd (f y))
+
+    -- Final postulate: the I × I square (the bridge between time and eternity)
     postulate
       path-square : snd (snd (D-bind (D-bind (x , y , p) f) g))
                   ≡ snd (snd (D-bind (x , y , p) (λ w → D-bind (f w) g)))
-    -- NOTE: Structure is correct (endpoints equal by refl)
-    -- Square construction requires hcomp with 4 boundary conditions + compatible base
-    -- This is pure Cubical technique - logic is trivial, syntax is precise
 
 -- Monad structure for functors on Type
 record Monad (M : Type → Type) : Type₁ where
