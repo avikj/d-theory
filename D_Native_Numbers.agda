@@ -85,7 +85,7 @@ exp-D base (suc-D n) = times-D base (exp-D base n)   -- base^(n+1) = base * base
 
 -- Subtraction returns ⊥ if result would be negative
 -- This preserves D-Coherence by avoiding partial functions
-sub-D : ℕ-D → ℕ-D → ℕ-D ⊎ ⊥
+sub-D : ℕ-D → ℕ-D → ℕ-D ⊎ Unit
 sub-D m zero-D = inl m
 sub-D zero-D (suc-D n) = inr tt  -- Can't subtract from zero
 sub-D (suc-D m) (suc-D n) = sub-D m n
@@ -149,7 +149,7 @@ Primes-D = Σ[ p ∈ ℕ-D ] IsPrime-D p
 --                                  = (add-D m n, add-D m n, refl)
 -- These are definitionally equal!
 
-thm-add-coherence : (m n : ℕ-D) → D (add-D m n) ≡ D-map (add-D m) (η n)
+thm-add-coherence : (m n : ℕ-D) → D {ℓ-zero} (add-D m n) ≡ D-map (add-D m) (η n)
 thm-add-coherence m n = refl  -- Gemini's claim: definitionally trivial!
 
 -- TODO: If refl doesn't work, we need:
@@ -161,7 +161,7 @@ thm-add-coherence m n = refl  -- Gemini's claim: definitionally trivial!
 ---
 
 -- Similarly, should inherit from add-D coherence
-thm-times-coherence : (m n : ℕ-D) → D (times-D m n) ≡ D-map (times-D m) (η n)
+thm-times-coherence : (m n : ℕ-D) → D {ℓ-zero} (times-D m n) ≡ D-map (times-D m) (η n)
 thm-times-coherence m n = refl  -- Should also be trivial via transitivity
 
 ---

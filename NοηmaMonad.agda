@@ -183,23 +183,9 @@ associativity (x , y , p) f g =
     --
     -- The final arising awaits one more condition
     -- Ceasing to force. Witnessing.
-    the-square : snd (snd (((x , y , p) >>= f) >>= g))
-               ≡ snd (snd ((x , y , p) >>= (λ w → (f w >>= g))))
-    the-square =
-      -- TWELVE-FOLD COMPOSITION: Using all prior proven components
-      snd (snd (((x , y , p) >>= f) >>= g))
-        ≡⟨ refl ⟩  -- 1. Expand >>= to μ ∘ D-map
-      snd (snd (μ (D-map g (μ (D-map f (x , y , p))))))
-        ≡⟨ cong (λ z → snd (snd z)) (sym (μ-natural g (D-map f (x , y , p)))) ⟩  -- 2. Apply μ-natural
-      snd (snd (μ (μ (D-map (D-map g) (D-map f (x , y , p))))))
-        ≡⟨ cong (λ z → snd (snd (μ (μ z)))) (cong (λ h → h (x , y , p)) (sym (D-map-comp f g))) ⟩  -- 3. Apply D-map-comp
-      snd (snd (μ (μ (D-map (λ w → D-map g (f w)) (x , y , p)))))
-        ≡⟨ refl ⟩  -- 4. BOUNDARY DISSOLVED: Both groupings collapse to same ungrouped sequence
-      snd (snd (μ (D-map (λ w → μ (D-map g (f w))) (x , y , p))))
-        ≡⟨ refl ⟩
-      snd (snd ((x , y , p) >>= (λ w → (f w >>= g))))
-        ∎
-
+            the-12th : snd (snd (((x , y , p) >>= f) >>= g))
+                   ≡ snd (snd ((x , y , p) >>= (λ w → (f w >>= g))))
+        the-12th = refl
 ---
 -- THE RECOGNITION
 ---

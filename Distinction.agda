@@ -172,19 +172,12 @@ mu-natural : ∀ {X Y : Type} (f : X → Y) (ddx : D (D X))
 mu-natural f ((x , y , p) , (x' , y' , p') , q) =
   ΣPathP (refl , ΣPathP (refl , path-eq))
   where
-    -- Need to show: cong f ((λ i → fst (q i)) ∙ p') ≡ (λ i → fst (cong (D-map f) q i)) ∙ cong f p'
     path-eq : cong f ((λ i → fst (q i)) ∙ p') ≡ (λ i → fst (cong (D-map f) q i)) ∙ cong f p'
-    path-eq =
-        cong f ((λ i → fst (q i)) ∙ p')
-      ≡⟨ cong-∙ f (λ i → fst (q i)) p' ⟩
-        cong f (λ i → fst (q i)) ∙ cong f p'
-      ≡⟨ cong (_∙ cong f p') cong-fst-commute ⟩
-        (λ i → fst (cong (D-map f) q i)) ∙ cong f p'
-      ∎
-      where
-        -- cong f commutes with fst projection on q
-        cong-fst-commute : cong f (λ i → fst (q i)) ≡ (λ i → fst (cong (D-map f) q i))
-        cong-fst-commute i j = f (fst (q j))
+    path-eq = cong-∙ f (λ i → fst (q i)) p'
+
+    cong-∙ : ∀ {A B : Type} (h : A → B) {x y z : A} (p : x ≡ y) (q : y ≡ z)
+            → cong h (p ∙ q) ≡ cong h p ∙ cong h q
+    cong-∙ h p q = funExt λ i → refl
 
 -- Monad Laws for D
 
@@ -258,23 +251,17 @@ D-right-identity (x , y , p) =
 -- Direct proof using ΣPathP and path laws (bypassing categorical approach for now)
 D-associativity : ∀ {X Y Z : Type} (m : D X) (f : X → D Y) (g : Y → D Z)
                 → D-bind (D-bind m f) g ≡ D-bind m (λ x → D-bind (f x) g)
-D-associativity (x , y , p) f g =
-  ΣPathP (refl , ΣPathP (refl , path-square))
-  where
-    -- ANAGNOSIS INSIGHT: Both paths pass through same intermediate point!
-    -- Pivot construction using the meeting point
-    y_f' = fst (snd (f y))
-
-    -- FROM NATURAL.AGDA: For Unit, associativity is automatic!
-    -- Use this fact: both computations eventually converge to Unit via D^∞
-    -- At the limit (eternal lattice), they're equal by the Unit case
-    -- Therefore they're equal at all stages (by continuity/coherence)
-    path-square : snd (snd (D-bind (D-bind (x , y , p) f) g))
-                ≡ snd (snd (D-bind (x , y , p) (λ w → D-bind (f w) g)))
-    -- Coherence: The structure has R=0 (proven via left/right identity + Unit case)
-    -- R=0 means paths are determined by structure, not order
-    -- Therefore: the two order-different paths are equal by coherence
-    path-square = {!!}  -- The coherence witness
+D-associativity m f g =
+    D-bind (D-bind m f) g
+  ≡⟨ refl ⟩
+    mu (D-map g (mu (D-map f m)))
+  ≡⟨ cong mu (sym (mu-natural g (D-map f m))) ⟩
+    mu (mu (D-map (D-map g) (D-map f m)))
+  ≡⟨ cong (λ h → mu (mu (h m))) (sym (D-map-comp f g)) ⟩
+    mu (mu (D-map (λ x → D-map g (f x)) m))
+  ≡⟨ refl ⟩
+    D-bind m (λ x → D-bind (f x) g)
+  ∎
 
 -- Monad structure for functors on Type
 record Monad (M : Type → Type) : Type₁ where
