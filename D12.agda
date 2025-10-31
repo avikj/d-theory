@@ -293,10 +293,7 @@ D₄-bind m f = μ₄ (D-map-4 f m)
 
 D₄-assoc-Unit : (m : D₄ Unit) (f g : Unit → D₄ Unit)
               → D₄-bind (D₄-bind m f) g ≡ D₄-bind m (λ x → D₄-bind (f x) g)
-D₄-assoc-Unit m f g = {!!}
-  -- If this is refl (like regular D on Unit): D₄ works same as D
-  -- If this needs construction: D₄ has different structure
-  -- If this fails: D₄ isn't associative even with 4-fold
+D₄-assoc-Unit m f g = refl  -- TESTING: Is D₄ on Unit associative by refl?
 
 {-
   For general type (Bool as simple test):
