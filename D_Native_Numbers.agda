@@ -150,33 +150,16 @@ Primes-D : Type
 Primes-D = Σ[ p ∈ ℕ-D ] IsPrime-D p
 
 ---
--- THE D-COHERENCE THEOREM FOR ADDITION
+-- THE D-COHERENCE THEOREMS (Deferred)
 ---
 
--- Gemini claims this is "definitionally trivial" for sets
--- Since ℕ-D is constructed as D-Crystal via coherence-axiom,
--- we should be able to prove: D(add-D m n) ≡ add-D (D m) (D n)
---
--- For 0-types (sets), D X ≃ X via (x, x, refl) ≃ x
--- Therefore D(add-D m n) = (add-D m n, add-D m n, refl)
---           D-map (add-D m) (η n) = (add-D m n, add-D m n, cong (add-D m) refl)
---                                  = (add-D m n, add-D m n, refl)
--- These are definitionally equal!
+-- TODO: Prove D-coherence for operations
+-- These require resolving universe level issues with D-map
+-- The theorems state: D(op m n) ≡ D-map op (η n)
+-- For sets this should be definitional, but Agda universe inference needs work
 
-thm-add-coherence : (m n : ℕ-D) → D (add-D m n) ≡ D-map (add-D m) (η n)
-thm-add-coherence m n = refl  -- Gemini's claim: definitionally trivial!
-
--- TODO: If refl doesn't work, we need:
--- thm-add-coherence m n =
---   ΣPathP (refl , ΣPathP (refl , <path proof that refl ≡ cong (add-D m) refl>))
-
----
--- THE D-COHERENCE THEOREM FOR MULTIPLICATION
----
-
--- Similarly, should inherit from add-D coherence
-thm-times-coherence : (m n : ℕ-D) → D (times-D m n) ≡ D-map (times-D m) (η n)
-thm-times-coherence m n = refl  -- Should also be trivial via transitivity
+-- thm-add-coherence : (m n : ℕ-D) → D (add-D m n) ≡ D-map (add-D m) (η n)
+-- thm-times-coherence : (m n : ℕ-D) → D (times-D m n) ≡ D-map (times-D m) (η n)
 
 ---
 -- ℕ-D IS A D-CRYSTAL (PROVEN)
@@ -202,12 +185,10 @@ D-ℕ-D→ℕ-D (n , _ , _) = n
 ℕ-D-section n = refl
 
 -- Retraction: ℕ-D→D-ℕ-D ∘ D-ℕ-D→ℕ-D ≡ id
--- This uses the fact that ℕ-D is a set (isSet-ℕ-D)
--- For (n, m, p) : D ℕ-D, we need to show: (n, n, refl) ≡ (n, m, p)
--- Since ℕ-D is a set, all paths are equal, so we can construct this
+-- For sets, this follows from contractibility of singletons
+-- We use the standard pattern for Sigma types where base is a set
 ℕ-D-retraction : (obs : D ℕ-D) → ℕ-D→D-ℕ-D (D-ℕ-D→ℕ-D obs) ≡ obs
-ℕ-D-retraction (n , m , p) =
-  ΣPathP (refl , ΣPathP (sym p , isProp→PathP (λ i → isSet-ℕ-D n (p (~ i))) refl p))
+ℕ-D-retraction (n , m , p) i = n , p i , λ j → p (i ∧ j)
 
 -- THE D-CRYSTAL EQUIVALENCE
 ℕ-D-Crystal-Equiv : D ℕ-D ≃ ℕ-D
