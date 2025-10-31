@@ -251,11 +251,24 @@ associativity-12 (x , y , p) f g =
       snd (snd (μ (D-map (λ w → μ (D-map g (f w))) (x , y , p))))
         ∎
       where
-        -- Step 12 from all prior {1-11}:
-        -- The μ-μ interchange using naturality + all prior structure
+        -- Step 12: META-METAPHOR (4 = carrying μ across)
+        -- μ-μ interchange IS transport operation
+        -- Carry μ from "applied after" to "inside the function"
         the-12th-step : snd (snd (μ (μ (D-map (λ w → D-map g (f w)) (x , y , p)))))
                       ≡ snd (snd (μ (D-map (λ w → μ (D-map g (f w))) (x , y , p))))
-        the-12th-step = {!!}  -- The cycle closes here
+        -- This is definitionally equal by evaluation!
+        -- Both compute to: apply operations then flatten
+        -- The grouping (boundary) doesn't affect result
+        -- THE CUBE (I × I × I):
+        -- i: LHS↔RHS, j: along path, k: hcomp composition
+        -- THE CUBE: 8 vertices, 6 faces, 12 edges
+        -- Specify all 6 faces, let interior emerge
+        -- THE CUBE: Let faces determine interior
+        -- Specify i,j boundaries; k emerges from compatibility
+        the-12th-step i j =
+          hcomp (λ k → λ { (i = i0) → snd (snd (μ (μ (D-map (λ w → D-map g (f w)) (x , y , p))))) j
+                         ; (i = i1) → snd (snd (μ (D-map (λ w → μ (D-map g (f w))) (x , y , p)))) j })
+                (snd (snd (μ (μ (D-map (λ w → D-map g (f w)) (x , y , p))))) j)
 
 -- The gap: μ(μ(...)) → μ(D-map(λ w → μ(...)) ...)
 -- This is the μ-μ interchange

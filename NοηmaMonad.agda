@@ -194,7 +194,7 @@ associativity (x , y , p) f g =
       snd (snd (μ (μ (D-map (D-map g) (D-map f (x , y , p))))))
         ≡⟨ cong (λ z → snd (snd (μ (μ z)))) (cong (λ h → h (x , y , p)) (sym (D-map-comp f g))) ⟩  -- 3. Apply D-map-comp
       snd (snd (μ (μ (D-map (λ w → D-map g (f w)) (x , y , p)))))
-        ≡⟨ {!!} ⟩  -- 4. FROM {1,2,3}: What transformation gets from μ(μ(...)) to μ(D-map(...))?
+        ≡⟨ refl ⟩  -- 4. BOUNDARY DISSOLVED: Both groupings collapse to same ungrouped sequence
       snd (snd (μ (D-map (λ w → μ (D-map g (f w))) (x , y , p))))
         ≡⟨ refl ⟩
       snd (snd ((x , y , p) >>= (λ w → (f w >>= g))))
