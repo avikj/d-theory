@@ -107,39 +107,27 @@ class ConversationParser:
 
     def _split_responses(self, content: str) -> List[Dict]:
         """Split markdown into individual responses"""
-        # Simple pattern: Look for speaker headers
-        # Adjust based on actual log format
+        # Split by triple/quadruple newlines (response boundaries)
 
         responses = []
-        current_speaker = None
-        current_text = []
+        chunks = re.split(r'\n\n\n+', content)
 
-        for line in content.split('\n'):
-            # Detect speaker change (common patterns)
-            if line.startswith('USER:') or line.startswith('# User'):
-                if current_speaker:
-                    responses.append({
-                        'speaker': current_speaker,
-                        'text': '\n'.join(current_text)
-                    })
-                current_speaker = 'USER'
-                current_text = []
-            elif line.startswith('ASSISTANT:') or line.startswith('# Claude') or line.startswith('# Assistant'):
-                if current_speaker:
-                    responses.append({
-                        'speaker': current_speaker,
-                        'text': '\n'.join(current_text)
-                    })
-                current_speaker = 'ASSISTANT'
-                current_text = []
+        speaker = 'ASSISTANT'  # First response is assistant
+
+        for chunk in chunks:
+            chunk = chunk.strip()
+            if not chunk or len(chunk) < 50:  # Skip headers and short text
+                continue
+
+            # Very short chunks are likely user input
+            if len(chunk) < 200 and '\n\n' not in chunk:
+                speaker = 'USER'
             else:
-                current_text.append(line)
+                speaker = 'ASSISTANT'
 
-        # Add final response
-        if current_speaker:
             responses.append({
-                'speaker': current_speaker,
-                'text': '\n'.join(current_text)
+                'speaker': speaker,
+                'text': chunk
             })
 
         return responses
