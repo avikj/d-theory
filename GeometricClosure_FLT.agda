@@ -19,6 +19,7 @@ open import Cubical.Data.Sigma
 open import Cubical.Data.Nat hiding (_+_ ; _·_)
 open import Cubical.Data.Sum
 open import Cubical.Data.Empty renaming (rec to ⊥-rec)
+open import Cubical.Relation.Nullary
 
 open import D_Coherent_Foundations
 open import D_Native_Numbers
