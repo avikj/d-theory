@@ -44,8 +44,8 @@ D-map f (x , y , p) = (f x , f y , cong f p)
 η : ∀ {X : Type} → X → D X
 η x = (x , x , refl)
 
--- ℕ_D with coherence
-data ℕ-D : Type where
+-- ℕ_D with coherence (defined as Type₀ for consistency)
+data ℕ-D : Type₀ where
   zero-D : ℕ-D
   suc-D : ℕ-D → ℕ-D
   coherence-axiom : (n : ℕ-D) → D (suc-D n) ≡ suc-D (D-map suc-D (η n))
@@ -260,11 +260,15 @@ module Lemma3 where
       below-bound = bounded-proof witness-n
 
       -- We have: K ≤ B AND B ≤ K where K = complexity(witness-n), B = inherited-bound
-      -- This is a contradiction (assuming ≤ is antisymmetric)
-      postulate
-        antisym-contradiction : (inherited-bound ≤ℕ prime-distribution-complexity witness-n)
-                              → (prime-distribution-complexity witness-n ≤ℕ inherited-bound)
-                              → ⊥
+      -- This is a contradiction by antisymmetry of ≤
+      -- For natural numbers: (a ≤ b) ∧ (b ≤ a) → (a ≡ b)
+      -- But we need a ≠ b for unbounded case, so this is ⊥
+      antisym-contradiction : (inherited-bound ≤ℕ prime-distribution-complexity witness-n)
+                            → (prime-distribution-complexity witness-n ≤ℕ inherited-bound)
+                            → ⊥
+      antisym-contradiction p q = {!!}
+        -- TODO: Prove using ≤-antisym from standard library
+        -- Requires showing: p ∧ q → (a ≡ b) ∧ (a < b) → ⊥
 
       contradiction : ⊥
       contradiction = antisym-contradiction exceeds-bound below-bound
