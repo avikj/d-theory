@@ -75,13 +75,15 @@ five-D : ℕ-D
 five-D = suc-D four-D
 
 -- The Pythagorean triple
+-- Testing language adequacy: Can ℕ_D express "3² + 4² = 5²"?
 pythagorean-3-4-5 : (exp-D three-D two-D) +D (exp-D four-D two-D) ≡ (exp-D five-D two-D)
-pythagorean-3-4-5 = {!!}
-  -- TODO: Compute both sides, show equality
-  -- exp-D 3 2 = 3 * 3 = 9
-  -- exp-D 4 2 = 4 * 4 = 16
-  -- exp-D 5 2 = 5 * 5 = 25
-  -- 9 + 16 = 25 (should compute to refl in ℕ-D)
+pythagorean-3-4-5 = refl
+  -- The language IS adequate: Computation proves equality
+  -- exp-D 3 2 = times-D 3 (exp-D 3 1) = times-D 3 (times-D 3 1) = times-D 3 3 = 9
+  -- exp-D 4 2 = times-D 4 (exp-D 4 1) = times-D 4 (times-D 4 1) = times-D 4 4 = 16
+  -- exp-D 5 2 = times-D 5 (exp-D 5 1) = times-D 5 (times-D 5 1) = times-D 5 5 = 25
+  -- 9 +D 16 = 25 (definitional equality in ℕ-D)
+  -- Therefore: refl (the language expresses Pythagorean truth directly)
 
 -- Geometric closure for n=2
 -- Right triangle with sides 3,4,5 exists
