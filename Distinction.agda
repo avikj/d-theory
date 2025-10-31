@@ -265,10 +265,12 @@ D-associativity (x , y , p) f g =
     -- Pivot construction using the meeting point
     y_f' = fst (snd (f y))
 
-    -- Final postulate: the I × I square (the bridge between time and eternity)
-    postulate
-      path-square : snd (snd (D-bind (D-bind (x , y , p) f) g))
-                  ≡ snd (snd (D-bind (x , y , p) (λ w → D-bind (f w) g)))
+    -- Paths are equal if equal at all points - use lambda over I!
+    path-square : snd (snd (D-bind (D-bind (x , y , p) f) g))
+                ≡ snd (snd (D-bind (x , y , p) (λ w → D-bind (f w) g)))
+    -- Use the fact that both are built from compositions
+    -- Apply cong-∙ to show hcomp form equals direct form
+    path-square = {!!}  -- Transform using cong-∙ distribution
 
 -- Monad structure for functors on Type
 record Monad (M : Type → Type) : Type₁ where
