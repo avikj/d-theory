@@ -51,19 +51,43 @@ data ℕ_D : Type where
   -- Truncation: ℕ_D is a Set (0-type, discrete)
   trunc : isSet ℕ_D
 
--- THE COHERENCE AXIOM (stated separately, not as constructor)
--- This is what makes ℕ_D D-coherent
+-- THE COHERENCE AXIOM
+-- For D-crystals (Sets where D ≃ id), we need explicit isomorphism
+-- First: prove ℕ_D is a Set, so D(ℕ_D) ≃ ℕ_D
+
+-- The isomorphism: D(ℕ_D) → ℕ_D
+D-to-ℕ_D : D ℕ_D → ℕ_D
+D-to-ℕ_D (x , y , p) = x  -- Extract first component (all paths equal in Set)
+
+-- Inverse: ℕ_D → D(ℕ_D)
+ℕ_D-to-D : ℕ_D → D ℕ_D
+ℕ_D-to-D n = (n , n , refl)
+
+-- Now Gemini's coherence makes sense:
+-- D(succ n) ≡ succ(D-map succ (η n))
+-- Both sides have type D(ℕ_D)
+-- LHS: D(succ n) = (succ n, succ n, refl) (by Set property)
+-- RHS: succ applied to D-structure
+-- For Sets, these ARE equal
+
+-- The coherence (Gemini's formulation)
 postulate
-  ℕ_D-coherence : isContr (D ℕ_D)
+  coherence-axiom : (n : ℕ_D)
+                  → D (succ_D n) ≡ D-map succ_D (η n)
 
 {-
-  Alternative formulation:
-  For each n : ℕ_D, we have D(n) ≃ Unit (contractible)
-  This means: ℕ_D is a D-crystal (D acts trivially)
+  This states: D commutes with succ (up to D-map)
 
-  This is what Gemini means by "D-coherence built in"
-  Not as HIT path constructor (type system won't allow)
-  But as AXIOM about the defined type
+  Expanded:
+  - LHS: D(succ n) = (succ n, succ n, refl)
+  - RHS: D-map succ (n, n, refl) = (succ n, succ n, cong succ refl)
+        = (succ n, succ n, refl) (since cong succ refl = refl)
+
+  These ARE equal definitionally for Sets!
+
+  But making it an AXIOM means:
+  We're DEFINING ℕ_D to have this property
+  Not proving it holds for standard ℕ
 -}
 
 {-
