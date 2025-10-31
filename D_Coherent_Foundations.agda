@@ -1,4 +1,4 @@
-{-# OPTIONS --cubical --safe #-}
+{-# OPTIONS --cubical --safe --guardedness #-}
 
 -- D-COHERENT FOUNDATIONS
 -- The primitive of self-observation and D-Coherent infrastructure
@@ -112,9 +112,9 @@ record isDCoherent {ℓ} {X Y : Type ℓ} (f : X → Y) : Type ℓ where
   field
     coherence : D-map f ∘ η ≡ η ∘ f
 
--- Notation: X →_D Y represents D-Coherent functions
-_→_D_ : ∀ {ℓ} (X Y : Type ℓ) → Type ℓ
-X → Y D = Σ[ f ∈ (X → Y) ] isDCoherent f
+-- Notation: X →D Y represents D-Coherent functions
+_→D_ : ∀ {ℓ} (X Y : Type ℓ) → Type ℓ
+X →D Y = Σ[ f ∈ (X → Y) ] isDCoherent f
 
 ---
 -- FOUNDATION COMPLETE
