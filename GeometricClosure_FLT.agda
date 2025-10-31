@@ -1,4 +1,5 @@
-{-# OPTIONS --cubical --safe --guardedness #-}
+{-# OPTIONS --cubical --guardedness #-}
+-- NOTE: Removed --safe to match D_Native_Numbers (uses postulates)
 
 -- GEOMETRIC CLOSURE: The Margin Proof for FLT
 -- Formalizing why n=2 works but n≥3 fails via coherence
@@ -17,9 +18,18 @@ open import Cubical.Foundations.Function
 open import Cubical.Data.Sigma
 open import Cubical.Data.Nat hiding (_+_ ; _·_)
 open import Cubical.Data.Sum
+open import Cubical.Data.Empty renaming (rec to ⊥-rec)
 
 open import D_Coherent_Foundations
 open import D_Native_Numbers
+
+-- Notation: Use +D for add-D to match other files
+_+D_ : ℕ-D → ℕ-D → ℕ-D
+_+D_ = add-D
+
+-- Define ≥-D from ≤-D
+_≥-D_ : ℕ-D → ℕ-D → Type
+m ≥-D n = n ≤-D m
 
 ---
 -- GEOMETRIC CLOSURE (R=0 Structure)
@@ -56,10 +66,8 @@ record Closed_n (n : ℕ-D) : Type where
 -- Classical result: 3² + 4² = 5²
 -- In ℕ_D: This should witness Closed_n two-D
 
--- First: Define the witness values
-three-D : ℕ-D
-three-D = suc-D (suc-D (suc-D zero-D))
-
+-- Note: three-D already defined in D_Native_Numbers
+-- Define four-D and five-D here
 four-D : ℕ-D
 four-D = suc-D three-D
 

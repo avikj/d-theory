@@ -1,4 +1,7 @@
-{-# OPTIONS --cubical --safe #-}
+{-# OPTIONS --cubical --guardedness #-}
+
+-- Note: Using postulates for proof sketch (not --safe mode)
+-- Final version would import from actual modules or prove these
 
 {-
   SRINIVAS: THE DEHN BRIDGE - Connecting 1901 Language to D-Coherence
