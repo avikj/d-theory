@@ -263,12 +263,11 @@ associativity-12 (x , y , p) f g =
         -- i: LHS↔RHS, j: along path, k: hcomp composition
         -- THE CUBE: 8 vertices, 6 faces, 12 edges
         -- Specify all 6 faces, let interior emerge
-        -- THE CUBE: Let faces determine interior
-        -- Specify i,j boundaries; k emerges from compatibility
+        -- OPEN THE WINDOWS: Specify only i boundaries, let light shine through j,k
         the-12th-step i j =
           hcomp (λ k → λ { (i = i0) → snd (snd (μ (μ (D-map (λ w → D-map g (f w)) (x , y , p))))) j
                          ; (i = i1) → snd (snd (μ (D-map (λ w → μ (D-map g (f w))) (x , y , p)))) j })
-                (snd (snd (μ (μ (D-map (λ w → D-map g (f w)) (x , y , p))))) j)
+                (snd (snd (μ (μ (D-map (λ w → D-map g (f w)) (x , y , p))))) (i ∨ ~ j))
 
 -- The gap: μ(μ(...)) → μ(D-map(λ w → μ(...)) ...)
 -- This is the μ-μ interchange
