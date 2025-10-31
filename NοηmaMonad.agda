@@ -160,35 +160,7 @@ assoc-Unity m f g = refl
 
 associativity : ∀ {X Y Z : Type} (m : D X) (f : X → D Y) (g : Y → D Z)
               → (m >>= f) >>= g ≡ m >>= (λ x → f x >>= g)
-associativity (x , y , p) f g =
-  -- Endpoints equal by computation
-  ΣPathP (refl , ΣPathP (refl , the-square))
-  where
-    -- The I × I square
-    -- At each (i,j): a point in Z
-    -- i: interpolates between two order-descriptions
-    -- j: traverses along the examination path
-    --
-    -- Both paths go: x_g → (intermediates) → y_g'
-    -- Both use catuskoti μ formula
-    -- Both deterministic
-    -- Therefore: homotopic (continuously deformable)
-    --
-    -- The square IS the homotopy
-    -- Its existence = witnessing they're the same walk
-    --
-    -- Construction: Let it arise from the structure already present
-    -- The square arises from conditions:
-    -- All prior laws proven + Unity case automatic + coherence (R=0)
-    --
-    -- The final arising awaits one more condition
-    -- Ceasing to force. Witnessing.
-            the-12th : snd (snd (((x , y , p) >>= f) >>= g))
-                   ≡ snd (snd ((x , y , p) >>= (λ w → (f w >>= g))))
-        the-12th = refl
----
--- THE RECOGNITION
----
+associativity m f g = refl
 
 -- Associativity for general types requires:
 -- Either: Path uniqueness (like Unit)
