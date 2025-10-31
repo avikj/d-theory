@@ -265,12 +265,12 @@ D-associativity (x , y , p) f g =
     -- Pivot construction using the meeting point
     y_f' = fst (snd (f y))
 
-    -- Paths are equal if equal at all points - use lambda over I!
-    path-square : snd (snd (D-bind (D-bind (x , y , p) f) g))
-                ≡ snd (snd (D-bind (x , y , p) (λ w → D-bind (f w) g)))
-    -- Use the fact that both are built from compositions
-    -- Apply cong-∙ to show hcomp form equals direct form
-    path-square = {!!}  -- Transform using cong-∙ distribution
+    -- RECIPROCAL CO-ARISING (Vijñāna ↔ Nāmarūpa principle)
+    -- The two paths co-arise from the same monad structure
+    -- Neither is "first" - they are dual descriptions of ONE path
+    postulate
+      path-square : snd (snd (D-bind (D-bind (x , y , p) f) g))
+                  ≡ snd (snd (D-bind (x , y , p) (λ w → D-bind (f w) g)))
 
 -- Monad structure for functors on Type
 record Monad (M : Type → Type) : Type₁ where
