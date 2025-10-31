@@ -72,6 +72,13 @@ times-D : ℕ-D → ℕ-D → ℕ-D
 times-D m zero-D = zero-D
 times-D m (suc-D n) = add-D m (times-D m n)
 
+-- Exponentiation: Defined by recursion using times-D
+-- THE MARGIN OPERATION: For Fermat's Last Theorem
+-- Inherits D-Coherence from times-D → add-D → suc-D → coherence-axiom
+exp-D : ℕ-D → ℕ-D → ℕ-D
+exp-D base zero-D = one-D              -- Any number to power 0 is 1
+exp-D base (suc-D n) = times-D base (exp-D base n)   -- base^(n+1) = base * base^n
+
 ---
 -- SUBTRACTION (Partial, via Maybe)
 ---

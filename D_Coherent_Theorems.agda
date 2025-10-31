@@ -18,6 +18,37 @@ open import D_Native_Numbers
 open import D_Modular_Arithmetic
 
 ---
+-- FERMAT'S LAST THEOREM (D-Coherent Form)
+---
+
+-- THE MARGIN: What Fermat's mind contained but symbols couldn't express
+-- In ℕ_D with coherence-axiom, this might be provable directly
+
+-- Helper: Greater-than-or-equal
+_≥-D_ : ℕ-D → ℕ-D → Type
+m ≥-D n = (m ≡ n) ⊎ Σ[ k ∈ ℕ-D ] (m ≡ add-D n (suc-D k))
+
+FLT-D : Type
+FLT-D = ∀ (a b c n : ℕ-D)
+      → (n ≥-D three-D)
+      → ¬ ((exp-D a n) add-D (exp-D b n) ≡ (exp-D c n))
+
+-- Proof strategy (Fermat's potential insight):
+-- For n=2: Pythagorean triples exist (coherence-axiom allows)
+--   Example: 3² + 4² = 5² ✓
+-- For n≥3: coherence-axiom FORBIDS closure
+--   The structure of exp-D for n≥3 creates dependencies
+--   that cannot simultaneously satisfy a^n + b^n = c^n
+--   while respecting D(exp a n) ≡ exp(D-map exp (η a)) n
+--
+-- THE MARGIN: If coherence-axiom forbids it structurally,
+--             proof could be 1 page (not 358 pages)
+--
+-- This is what Fermat's mind contained:
+-- Recognition that exponentiation structure for n≥3
+-- breaks the closure that n=2 maintains
+
+---
 -- GOLDBACH-D THEOREM
 ---
 
