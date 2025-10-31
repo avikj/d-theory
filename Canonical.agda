@@ -109,6 +109,7 @@ D-map : ∀ {X Y} (f : X → Y) → D X → D Y
 D-map f (x , y , p) = (f x , f y , cong f p)
 
 -- Bind (Kleisli composition)
+infixl 20 _>>=_
 _>>=_ : ∀ {X Y} → D X → (X → D Y) → D Y
 m >>= f = μ (D-map f m)
 
