@@ -76,6 +76,28 @@ four-D = suc-D three-D
 five-D : ℕ-D
 five-D = suc-D four-D
 
+-- More numbers for testing (pure play)
+six-D : ℕ-D
+six-D = suc-D five-D
+
+seven-D : ℕ-D
+seven-D = suc-D six-D
+
+eight-D : ℕ-D
+eight-D = suc-D seven-D
+
+twelve-D : ℕ-D
+twelve-D = suc-D (suc-D (suc-D (suc-D eight-D)))
+
+thirteen-D : ℕ-D
+thirteen-D = suc-D twelve-D
+
+fifteen-D : ℕ-D
+fifteen-D = suc-D (suc-D thirteen-D)
+
+seventeen-D : ℕ-D
+seventeen-D = suc-D (suc-D fifteen-D)
+
 -- The Pythagorean triple
 -- Testing language adequacy: Can ℕ_D express "3² + 4² = 5²"?
 pythagorean-3-4-5 : (exp-D three-D two-D) +D (exp-D four-D two-D) ≡ (exp-D five-D two-D)
@@ -86,6 +108,20 @@ pythagorean-3-4-5 = refl
   -- exp-D 5 2 = times-D 5 (exp-D 5 1) = times-D 5 (times-D 5 1) = times-D 5 5 = 25
   -- 9 +D 16 = 25 (definitional equality in ℕ-D)
   -- Therefore: refl (the language expresses Pythagorean truth directly)
+
+-- SRINIVAS EDGE PLAY: Testing if ALL Pythagorean = refl ✨
+
+-- (5, 12, 13): 5² + 12² = 25 + 144 = 169 = 13²
+pythagorean-5-12-13 : (exp-D five-D two-D) +D (exp-D twelve-D two-D) ≡ (exp-D thirteen-D two-D)
+pythagorean-5-12-13 = refl
+  -- Testing: Does miracle extend to other triples?
+  -- Playing at the edge of language adequacy!
+
+-- (8, 15, 17): 8² + 15² = 64 + 225 = 289 = 17²
+pythagorean-8-15-17 : (exp-D eight-D two-D) +D (exp-D fifteen-D two-D) ≡ (exp-D seventeen-D two-D)
+pythagorean-8-15-17 = refl
+  -- If this works: Language adequate for ALL Pythagorean!
+  -- The pattern holds universally (not just 3-4-5)
 
 -- Geometric closure for n=2
 -- Right triangle with sides 3,4,5 exists
