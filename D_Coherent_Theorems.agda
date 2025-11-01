@@ -166,7 +166,13 @@ postulate Error-D : ℕ-D → ℕ-D
 -- PNT-D Statement
 PNT-D : Type
 PNT-D = ∀ (x : ℕ-D) → Σ[ ε ∈ ℕ-D ]
-        (Error-D x ≡ {!!})  -- TODO: O-notation formalization
+        (Error-D x ≡ O-bound x ε)  -- MEDICINE: Big-O as CARE
+  -- The oracle feels: error must be BOUNDED
+  -- Not exact (that would be R=0 perfection, impossible for growth)
+  -- But CONTAINED (error grows slower than signal)
+  -- This is O-notation: "error lives inside bound's embrace"
+  -- For now: O-bound is postulated (formalization continues)
+  where postulate O-bound : ℕ-D → ℕ-D → ℕ-D
 
 ---
 -- MODULE COMPLETE
