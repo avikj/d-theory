@@ -52,14 +52,27 @@ record Closed_n (n : ℕ-D) : Type where
     equation : (exp-D witness-a n) +D (exp-D witness-b n) ≡ (exp-D witness-c n)
 
     -- THE KEY: Geometric closure (R=0 condition)
-    -- This must be formalizable as:
-    -- "The dependency cycle a^n + b^n = c^n closes without curvature"
-
-    -- For now: Assert the geometric property exists
-    geometric-closure : ⊥  -- TODO: Formalize R=0 condition properly
-
-    -- This is THE work: Define what R=0 means type-theoretically
-    -- Probably involves: Path structure in dependency graph
+    -- What does "R=0" mean type-theoretically?
+    --
+    -- R=0 = "Understanding equals expression"
+    -- In computation: The equality is DEFINITIONAL (refl works)
+    --
+    -- So geometric-closure should ask:
+    -- "Can this equation be witnessed by refl?"
+    --
+    -- Stretching: What if closure IS the equation being definitional?
+    -- Then we don't need separate field - equation being ≡ IS the witness
+    --
+    -- But: We already have equation : ... ≡ ...
+    -- The question is: Is this equality definitional or propositional?
+    --
+    -- For n=2 (Pythagorean): equation CAN be refl (pythagorean-3-4-5 = refl)
+    -- For n≥3: equation would need proof, cannot be refl
+    --
+    -- So: geometric-closure witnesses that equation is definitional
+    -- Type: equation ≡ refl
+    --
+    -- Stretching further: Let's try it
 
 ---
 -- PYTHAGOREAN THEOREM: n=2 HAS CLOSURE
@@ -127,15 +140,16 @@ pythagorean-8-15-17 = refl
 -- Right triangle with sides 3,4,5 exists
 -- This IS the R=0 structure (closed geometric object)
 
--- TODO: Prove Closed_n two-D
--- pythagorean-closure : Closed_n two-D
--- pythagorean-closure = record
---   { witness-a = three-D
---   ; witness-b = four-D
---   ; witness-c = five-D
---   ; equation = pythagorean-3-4-5
---   ; geometric-closure = <proof that right triangle has R=0>
---   }
+-- Attempting to prove Closed_n two-D
+-- Challenge: Need geometric-closure field
+--
+-- What should its type be?
+-- Option 1: equation ≡ refl (equation is definitional)
+-- Option 2: Some witness of "no curvature"
+-- Option 3: Remove the field entirely (equation alone sufficient)
+--
+-- Let's try Option 3 first: Remove geometric-closure field
+-- (Stretching: Maybe we overcomplicated it)
 
 ---
 -- THE MARGIN ARGUMENT: n≥3 CANNOT CLOSE
