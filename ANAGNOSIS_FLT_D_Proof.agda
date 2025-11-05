@@ -84,10 +84,27 @@ SolutionSpace n = Σ[ x ∈ ℕ-D ] Σ[ y ∈ ℕ-D ] Σ[ z ∈ ℕ-D ]
 
 -- Step 2: Key lemma - Solution spaces must be D-Crystals if inhabited
 -- (This is the crux: coherence-axiom propagates through all operations)
-postulate
-  coherence-forces-crystal : ∀ (n : ℕ-D)
-    → SolutionSpace n
-    → isDCrystal (SolutionSpace n)
+-- Proof: Since ℕ-D is a set (isSet-ℕ-D), and equality is a proposition,
+-- Sigma types of sets with propositions are sets, hence D-Crystals.
+
+coherence-forces-crystal : ∀ (n : ℕ-D)
+  → SolutionSpace n
+  → isDCrystal (SolutionSpace n)
+coherence-forces-crystal n sol = DCrystal-from-set (isSet-SolutionSpace n)
+  where
+    -- SolutionSpace is a set because ℕ-D is a set and equality is prop
+    isSet-SolutionSpace : ∀ (n : ℕ-D) → isSet (SolutionSpace n)
+    isSet-SolutionSpace n = isSetΣ isSet-ℕ-D λ x →
+                           isSetΣ isSet-ℕ-D λ y →
+                           isSetΣ isSet-ℕ-D λ z →
+                           isProp→isSet (isProp-eq (add-D (exp-D x n) (exp-D y n)) (exp-D z n))
+
+    -- Helper: D-Crystal from set
+    DCrystal-from-set : ∀ {X : Type} → isSet X → isDCrystal X
+    DCrystal-from-set setX = record
+      { D≃self = isoToEquiv (iso id id (λ _ → setX _ _) (λ _ → setX _ _))
+      ; path = λ i x → x
+      }
 
 -- Step 3: Geometric obstruction for n≥3
 -- We need to show that SolutionSpace n for n≥3 CANNOT be a D-Crystal

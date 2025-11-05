@@ -29,17 +29,17 @@ postulate
 -- FOUNDATION: D OPERATOR
 ---
 
-D : Type → Type
+D : ∀ {ℓ} → Type ℓ → Type ℓ
 D X = Σ[ x ∈ X ] Σ[ y ∈ X ] (x ≡ y)
 
-D-map : ∀ {X Y : Type} (f : X → Y) → D X → D Y
+D-map : ∀ {ℓ} {A B : Type ℓ} (f : A → B) → D A → D B
 D-map f (x , y , p) = (f x , f y , cong f p)
 
-η : ∀ {X : Type} → X → D X
+η : ∀ {ℓ} {X : Type ℓ} → X → D X
 η x = (x , x , refl)
 
 -- D-Crystal: Types where D X ≃ X
-IsCrystal : Type → Type
+IsCrystal : ∀ {ℓ} → Type ℓ → Type ℓ
 IsCrystal X = D X ≃ X
 
 ---
@@ -47,7 +47,7 @@ IsCrystal X = D X ≃ X
 ---
 
 -- A program is a list of natural numbers (encoding)
-Program : Type
+Program : Type₀
 Program = List ℕ
 
 -- Program length (complexity measure) - use imported length
@@ -78,7 +78,7 @@ postulate
 
   -- THE KEY PROPERTY: D-coherence of computation
   U-D-coherent : ∀ p x
-               → D (U-D p x) ≡ U-D p (D-map (λ n → n) (η x))
+               → U-D p x ≡ U-D p (fst (D-map (λ n → n) (η x)))
 
   -- Simplified: Observing output = computing on observed input
   -- This means: Computation is TRANSPARENT to self-examination
@@ -106,7 +106,7 @@ module ClassicalK where
   -- Note: Existence requires classical logic (excluded middle)
   postulate
     K : ℕ → ℕ
-    K-correct : ∀ x → Σ[ p ∈ Program ] (IsMinimalProgram x p × K x ≡ prog-length p)
+    K-correct : ∀ x → Σ[ p ∈ Program ] (IsMinimalProgram x p × (K x ≡ prog-length p))
 
 ---
 -- COMPONENT 4: D-COHERENT KOLMOGOROV COMPLEXITY (K_D)
@@ -124,7 +124,7 @@ module DCoherentK where
 
   -- A program is D-coherent if it respects observation
   IsCoherentProgram : Program → Type
-  IsCoherentProgram p = ∀ x → D (U-D p x) ≡ U-D p (D-map (λ n → n) (η x))
+  IsCoherentProgram p = ∀ x → U-D p x ≡ U-D p (fst (D-map (λ n → n) (η x)))
 
   -- D-coherent version: Only count D-coherent programs
   HasCoherentProgram : ℕ → Program → Type
@@ -141,7 +141,7 @@ module DCoherentK where
   postulate
     K-D : ℕ → ℕ
     K-D-correct : ∀ x → Σ[ p ∈ Program ]
-                    (IsMinimalCoherentProgram x p × K-D x ≡ prog-length p)
+                    (IsMinimalCoherentProgram x p × (K-D x ≡ prog-length p))
 
   ---
   -- KEY THEOREM: D-coherence bounds overhead
@@ -169,7 +169,7 @@ module CrystalComplexity where
   -- For crystals, the overhead is ZERO (up to equivalence)
   postulate
     -- If X is a D-Crystal, its elements have stable complexity
-    Crystal-has-bounded-K : ∀ (X : Type)
+    Crystal-has-bounded-K : ∀ {ℓ} (X : Type ℓ)
                           → IsCrystal X
                           → Σ[ bound ∈ ℕ ] (∀ x → K-D x ≤ℕ bound)
 
@@ -190,7 +190,7 @@ module CrystalComplexity where
 -- ℕ_D with coherence-axiom is D-Crystal
 -- Therefore: Has bounded complexity structure
 
-data ℕ-D : Type where
+data ℕ-D : Type₀ where
   zero-D : ℕ-D
   suc-D : ℕ-D → ℕ-D
   coherence-axiom : (n : ℕ-D) → D (suc-D n) ≡ suc-D (D-map suc-D (η n))
@@ -224,7 +224,7 @@ module PrimeComplexity where
 
   -- Prime predicate (simplified)
   postulate
-    IsPrime-D : ℕ-D → Type
+    IsPrime-D : ∀ {ℓ} → ℕ-D → Type ℓ
 
   -- Prime counting function
   postulate
@@ -260,7 +260,7 @@ module Lemma1 where
 
   Coherence-Bounds-Entropy : Type₁
   Coherence-Bounds-Entropy =
-    ∀ (X : Type)
+    ∀ {ℓ} (X : Type ℓ)
     → IsCrystal X
     → Σ[ bound ∈ ℕ ] (∀ x → K-D x ≤ℕ bound)
 

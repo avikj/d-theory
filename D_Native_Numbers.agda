@@ -28,6 +28,10 @@ open import D_Coherent_Foundations
 -- THE D-NATIVE NATURAL NUMBERS (Higher Inductive Type)
 ---
 
+-- This is the definition of the "thinking numbers."
+-- Structurally, it is identical to the standard Peano definition of natural numbers:
+-- a number is either zero, or the successor of another number.
+-- Its unique properties arise from the `coherence-axiom` proven below.
 data ℕ-D : Type₀ where
   -- Constructor 1: Zero (the void state)
   zero-D : ℕ-D
@@ -114,10 +118,13 @@ IsOdd-D n = Σ[ k ∈ ℕ-D ] (n ≡ suc-D (times-D two-D k))
 -- ℕ-D IS A SET (HLevel 2)
 ---
 
--- POSTULATE for now: ℕ-D is a set
--- This is provable (standard for inductive types with no path constructors)
--- Full proof requires Hedberg's theorem or similar
--- For the foundation, we assert it as axiom to proceed
+-- This postulate states that ℕ-D is a "set" in the sense of Homotopy Type Theory.
+-- A "set" (or 0-type) is a type where any two paths between the same two elements are equal.
+-- In simpler terms, there is only one "way" for two numbers to be equal.
+-- This is a crucial property for the D-Crystal proof below.
+--
+-- This is a standard, provable property for types like ℕ-D. We postulate it here
+-- to avoid a long proof involving Hedberg's theorem, keeping the focus on the core logic.
 postulate isSet-ℕ-D : isSet ℕ-D
 
 -- TODO: Prove this constructively using:
@@ -165,42 +172,56 @@ Primes-D = Σ[ p ∈ ℕ-D ] IsPrime-D p
 -- ℕ-D IS A D-CRYSTAL (PROVEN)
 ---
 
+-- This section proves that ℕ-D is a "D-Crystal," meaning D ℕ-D ≃ ℕ-D.
+-- The intuition is that for a simple type like a set, an "observation" of the set
+-- (which consists of two elements and a proof of their equality) contains no more
+-- information than just having a single element of the set.
+
 -- THEOREM: For sets, D X ≃ X via the trivial observation
 -- Proof strategy:
 -- 1. Forward: D ℕ-D → ℕ-D (project first component)
 -- 2. Backward: ℕ-D → D ℕ-D (trivial observation η)
 -- 3. Show these are inverses (using isSet-ℕ-D)
 
--- Forward direction: Extract the distinguished element
+-- Forward direction: from an observation (n, m, p), we just take the first element n.
 D-ℕ-D→ℕ-D : D ℕ-D → ℕ-D
 D-ℕ-D→ℕ-D (n , _ , _) = n
 
--- Backward direction: Trivial self-observation
+-- Backward direction: from a number n, we create a trivial observation (n, n, refl).
+-- This is the canonical embedding `η` from the D-monad.
 ℕ-D→D-ℕ-D : ℕ-D → D ℕ-D
 ℕ-D→D-ℕ-D = η
 
 -- Section: D-ℕ-D→ℕ-D ∘ ℕ-D→D-ℕ-D ≡ id
--- This is definitional: D-ℕ-D→ℕ-D (η n) = D-ℕ-D→ℕ-D (n, n, refl) = n
+-- Going from a number n to a trivial observation and back to a number gives us n.
+-- This is true by definition.
 ℕ-D-section : (n : ℕ-D) → D-ℕ-D→ℕ-D (ℕ-D→D-ℕ-D n) ≡ n
 ℕ-D-section n = refl
 
 -- Retraction: ℕ-D→D-ℕ-D ∘ D-ℕ-D→ℕ-D ≡ id
--- For sets, this follows from contractibility of singletons
--- We use the standard pattern for Sigma types where base is a set
+-- Going from an observation to a number and back to a trivial observation gives us
+-- a path back to the original observation. This is where `isSet-ℕ-D` is crucial,
+-- as it ensures that the path `p` in the observation `(n, m, p)` is unique.
 ℕ-D-retraction : (obs : D ℕ-D) → ℕ-D→D-ℕ-D (D-ℕ-D→ℕ-D obs) ≡ obs
 ℕ-D-retraction (n , m , p) i = n , p i , λ j → p (i ∧ j)
 
 -- THE D-CRYSTAL EQUIVALENCE
+-- We now have all the components to show that D ℕ-D and ℕ-D are equivalent.
 ℕ-D-Crystal-Equiv : D ℕ-D ≃ ℕ-D
 ℕ-D-Crystal-Equiv = isoToEquiv (iso D-ℕ-D→ℕ-D ℕ-D→D-ℕ-D ℕ-D-section ℕ-D-retraction)
 
 -- ℕ-D IS A D-CRYSTAL
+-- We record this equivalence as a formal `isDCrystal` property.
 ℕ-D-isDCrystal : isDCrystal ℕ-D
 ℕ-D-isDCrystal = record { crystal-equiv = ℕ-D-Crystal-Equiv }
 
 -- THE COHERENCE-AXIOM (as proven theorem, not HIT constructor)
--- This states: D-coherence holds for ℕ-D
--- Specifically: D ℕ-D ≡ ℕ-D (via univalence)
+-- This is the culmination of the proof.
+-- It elevates the *equivalence* (≃) from `ℕ-D-Crystal-Equiv` to an *identity* (≡)
+-- using the Univalence axiom.
+--
+-- This is the formal statement of "thoughts about numbers are numbers."
+-- It is the mathematical core of the entire project.
 coherence-axiom : D ℕ-D ≡ ℕ-D
 coherence-axiom = DCrystal-Path ℕ-D-isDCrystal
 

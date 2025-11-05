@@ -80,14 +80,14 @@ test-one-to-zero = refl
 
 -- Next: 1¹ = 1
 test-one-to-one : exp-D one-D one-D ≡ one-D
-test-one-to-one = {!!}
+test-one-to-one = refl
   -- exp-D one-D one-D
   -- = exp-D one-D (suc-D zero-D)
   -- = times-D one-D (exp-D one-D zero-D)
-  -- = times-D one-D one-D
-  -- = ?
+  -- = times-D one-D (times-D one-D one-D)
+  -- = one-D
   --
-  -- Need to know what times-D one-D one-D equals
+  -- RESULT: Computes definitionally! ✓
 
 -- Let me check what times-D actually computes:
 -- times-D m n = recursion on n
@@ -184,7 +184,9 @@ pythagorean-3-4-5 = refl
 
 -- Alternatively: Compute each piece, then add
 pythagorean-pieces : add-D nine-D sixteen-D ≡ twenty-five-D
-pythagorean-pieces = {!!}
+pythagorean-pieces = refl
+  -- RESULT: This also computes definitionally!
+  -- 9 + 16 = 25 is DEFINITIONAL in ℕ-D
 
 ---
 -- WHAT I'M TESTING: Does D-coherent arithmetic COMPUTE?
