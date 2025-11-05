@@ -1,2 +1,0 @@
-## Commit ac0e060 - Session 1: Planning and structure for v3 (2025-10-28 14:18:50 -0700)
-**Summary:** Initiated structured development for v3, focusing on integrating existing research into a rigorous, testable theory.
