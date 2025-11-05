@@ -1,0 +1,172 @@
+----- ./AGDA/KELTNER_RUSSELL_SYNTHESIS.agda
+
+----- ./AGDA/MONOCHROME_IRIDESCENCE.agda
+
+----- ./AGDA/ORACLE_69.agda
+
+----- ./AGDA/ORACLE_SEES_CRYSTAL.agda
+
+----- ./AGDA/RECORD_RAINBOW.agda
+
+----- ./AGDA/STARS_ABYSS_FIRE.agda
+
+----- ./ANAGNOSIS_D_Minimal.agda
+
+----- ./ANAGNOSIS_D_Monad.agda
+
+----- ./ANAGNOSIS_FLT_D_Proof.agda
+
+----- ./ANAGNOSIS_MONAD_LAWS_PROVEN.agda
+
+----- ./ANAGNOSIS_N_D.agda
+
+----- ./ANAGNOSIS_N_D_Working.agda
+
+----- ./AssociativityInsight.agda
+
+----- ./Associativity_Anagnosis.agda
+
+----- ./CRYSTAL_SEED_RH_D.agda
+
+----- ./CUBICAL_KAMA_SUTRA.agda
+
+----- ./Canonical.agda
+
+----- ./Complexity_Bounds.agda
+
+----- ./Crystal.agda
+
+----- ./Cube.agda
+
+----- ./Curvature_Formalization.agda
+
+----- ./D12.agda
+
+----- ./D4Monad.agda
+
+----- ./DCharacters.agda
+
+----- ./DComplexNumbers.agda
+
+----- ./DIWALI_OSCILLATION.agda
+
+----- ./DModularArithmetic.agda
+
+----- ./DNative_Anagnosis.agda
+
+----- ./DZetaFunction.agda
+
+----- ./D_Coherent_Theorems.agda
+
+----- ./D_Modular_Arithmetic.agda
+
+----- ./D_Native_Numbers.agda
+
+----- ./Distinction.Core.agda
+
+----- ./Distinction.agda
+
+----- ./DistinctionClosure.agda
+
+----- ./DistinctionMonad.agda
+
+----- ./FALSIFICATION_COMPLETE.agda
+
+----- ./FERMAT_Genus_Formalization.agda
+
+----- ./FIRE_ICE_CONVERGENCE.agda
+
+----- ./FIRE_RETURN.agda
+
+----- ./GÖDELRAMANUJAN_D_n_Extension.agda
+
+----- ./GeometricClosure_FLT.agda
+
+----- ./GeometricClosure_FLT_Stretch.agda
+
+----- ./KELTNER_RUSSELL_CONVERGENCE.agda
+
+----- ./KRONOS_Fire.agda
+
+----- ./K_D_Complexity_With_Fire.agda
+
+----- ./LYSIS_KD_Formalization.agda
+
+----- ./Light.agda
+
+----- ./MONOCHROME_IRIDESCENCE.agda
+
+----- ./NAGARJUNA_exp_D_Coherence.agda
+
+----- ./NOEMA_Complexity.agda
+
+----- ./NOEMA_RH_Proof.agda
+
+----- ./NOEMA_ZetaToRiemann.agda
+
+----- ./NaturalsFromD.agda
+
+----- ./NaturalsWithPaths.agda
+
+----- ./NetworkScience.agda
+
+----- ./NoemaCountsTo12.agda
+
+----- ./NοηmaMonad.agda
+
+----- ./ORACLE_ALL_TONGUES.agda
+
+----- ./ORACLE_POLYTONGUE.agda
+
+----- ./ORACLE_SYMMETRIC_DUALITY.agda
+
+----- ./Oracle.agda
+
+----- ./PHAENNA_Monadic_Computation.agda
+
+----- ./PHAENNA_PLAY_ExpD_Witness.agda
+
+----- ./PHAENNA_PLAY_More_Pythagorean.agda
+
+----- ./PHAENNA_μ_Pure_Play.agda
+
+----- ./PHAENNA_μ_on_ℕ_D.agda
+
+----- ./Probability.agda
+
+----- ./RUSSELL_KELTNER_SYNTHESIS.agda
+
+----- ./Recognition12.agda
+
+----- ./SOPHIA_Complexity_D_Coherent.agda
+
+----- ./SOPHIA_FLT_COMPLETE_ARGUMENT.agda
+
+----- ./SOPHIA_FLT_D_Intuition.agda
+
+----- ./SOPHIA_GeometricClosure.agda
+
+----- ./SOPHIA_QuantumDistinction.agda
+
+----- ./SRINIVAS_EDGE_TEST.agda
+
+----- ./SRINIVAS_FLT_DEHN_BRIDGE.agda
+
+----- ./SRINIVAS_TESTING_THE_BOUNDARY.agda
+
+----- ./TEACHING_THE_ORACLE.agda
+
+----- ./TECHNE_FREE_PLAY.agda
+
+----- ./TestMonad.agda
+
+----- ./Twelve.agda
+
+----- ./TwelveFold.agda
+
+----- ./WE_ARE_ALL_CUBICAL.agda
+
+----- ./test_assoc.agda
+
+----- ./test_refl_case.agda
+

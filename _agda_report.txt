@@ -1,0 +1,106 @@
+NEEDS WORK | ./AGDA/KELTNER_RUSSELL_SYNTHESIS.agda
+NEEDS WORK | ./AGDA/MONOCHROME_IRIDESCENCE.agda
+NEEDS WORK | ./AGDA/ORACLE_69.agda
+NEEDS WORK | ./AGDA/ORACLE_SEES_CRYSTAL.agda
+NEEDS WORK | ./AGDA/RECORD_RAINBOW.agda
+NEEDS WORK | ./AGDA/STARS_ABYSS_FIRE.agda
+PASS  | ./ANAGNOSIS_D_Core.agda
+NEEDS WORK | ./ANAGNOSIS_D_Minimal.agda
+NEEDS WORK | ./ANAGNOSIS_D_Monad.agda
+NEEDS WORK | ./ANAGNOSIS_FLT_D_Proof.agda
+NEEDS WORK | ./ANAGNOSIS_MONAD_LAWS_PROVEN.agda
+NEEDS WORK | ./ANAGNOSIS_N_D.agda
+NEEDS WORK | ./ANAGNOSIS_N_D_Working.agda
+NEEDS WORK | ./AssociativityInsight.agda
+NEEDS WORK | ./Associativity_Anagnosis.agda
+NEEDS WORK | ./CRYSTAL_SEED_RH_D.agda
+NEEDS WORK | ./CUBICAL_KAMA_SUTRA.agda
+NEEDS WORK | ./Canonical.agda
+PASS  | ./CanonicalClean.agda
+PASS  | ./CoherenceTranslation.agda
+NEEDS WORK | ./Complexity_Bounds.agda
+NEEDS WORK | ./Crystal.agda
+NEEDS WORK | ./Cube.agda
+NEEDS WORK | ./Curvature_Formalization.agda
+NEEDS WORK | ./D12.agda
+PASS  | ./D12Crystal.agda
+NEEDS WORK | ./D4Monad.agda
+NEEDS WORK | ./DCharacters.agda
+PASS  | ./DCoherentArithmetic.agda
+NEEDS WORK | ./DComplexNumbers.agda
+NEEDS WORK | ./DIWALI_OSCILLATION.agda
+NEEDS WORK | ./DModularArithmetic.agda
+PASS  | ./DNativeComplete.agda
+PASS  | ./DNativeNumbers.agda
+NEEDS WORK | ./DNative_Anagnosis.agda
+NEEDS WORK | ./DZetaFunction.agda
+PASS  | ./D_Coherent_Foundations.agda
+NEEDS WORK | ./D_Coherent_Theorems.agda
+NEEDS WORK | ./D_Modular_Arithmetic.agda
+NEEDS WORK | ./D_Native_Numbers.agda
+NEEDS WORK | ./Distinction.Core.agda
+NEEDS WORK | ./Distinction.agda
+NEEDS WORK | ./DistinctionClosure.agda
+NEEDS WORK | ./DistinctionMonad.agda
+NEEDS WORK | ./FALSIFICATION_COMPLETE.agda
+NEEDS WORK | ./FERMAT_Genus_Formalization.agda
+NEEDS WORK | ./FIRE_ICE_CONVERGENCE.agda
+NEEDS WORK | ./FIRE_RETURN.agda
+PASS  | ./Foundation.agda
+NEEDS WORK | ./GÖDELRAMANUJAN_D_n_Extension.agda
+NEEDS WORK | ./GeometricClosure_FLT.agda
+NEEDS WORK | ./GeometricClosure_FLT_Stretch.agda
+NEEDS WORK | ./KELTNER_RUSSELL_CONVERGENCE.agda
+NEEDS WORK | ./KRONOS_Fire.agda
+NEEDS WORK | ./K_D_Complexity_With_Fire.agda
+NEEDS WORK | ./LYSIS_KD_Formalization.agda
+NEEDS WORK | ./Light.agda
+NEEDS WORK | ./MONOCHROME_IRIDESCENCE.agda
+NEEDS WORK | ./NAGARJUNA_exp_D_Coherence.agda
+NEEDS WORK | ./NOEMA_Complexity.agda
+NEEDS WORK | ./NOEMA_RH_Proof.agda
+NEEDS WORK | ./NOEMA_ZetaToRiemann.agda
+PASS  | ./Natural.agda
+PASS  | ./NaturalsAreDistinction.agda
+PASS  | ./NaturalsAsIndex.agda
+NEEDS WORK | ./NaturalsFromD.agda
+NEEDS WORK | ./NaturalsWithPaths.agda
+NEEDS WORK | ./NetworkScience.agda
+NEEDS WORK | ./NoemaCountsTo12.agda
+PASS  | ./NumbersThink.agda
+NEEDS WORK | ./NοηmaMonad.agda
+NEEDS WORK | ./ORACLE_ALL_TONGUES.agda
+NEEDS WORK | ./ORACLE_POLYTONGUE.agda
+NEEDS WORK | ./ORACLE_SYMMETRIC_DUALITY.agda
+NEEDS WORK | ./Oracle.agda
+NEEDS WORK | ./PHAENNA_Monadic_Computation.agda
+PASS  | ./PHAENNA_PLAY_Catuskoti_Trace.agda
+NEEDS WORK | ./PHAENNA_PLAY_ExpD_Witness.agda
+NEEDS WORK | ./PHAENNA_PLAY_More_Pythagorean.agda
+PASS  | ./PHAENNA_μ_Pure_Minimal.agda
+NEEDS WORK | ./PHAENNA_μ_Pure_Play.agda
+NEEDS WORK | ./PHAENNA_μ_on_ℕ_D.agda
+NEEDS WORK | ./Probability.agda
+NEEDS WORK | ./RUSSELL_KELTNER_SYNTHESIS.agda
+NEEDS WORK | ./Recognition12.agda
+NEEDS WORK | ./SOPHIA_Complexity_D_Coherent.agda
+NEEDS WORK | ./SOPHIA_FLT_COMPLETE_ARGUMENT.agda
+NEEDS WORK | ./SOPHIA_FLT_D_Intuition.agda
+NEEDS WORK | ./SOPHIA_GeometricClosure.agda
+NEEDS WORK | ./SOPHIA_QuantumDistinction.agda
+NEEDS WORK | ./SRINIVAS_EDGE_TEST.agda
+NEEDS WORK | ./SRINIVAS_FLT_DEHN_BRIDGE.agda
+NEEDS WORK | ./SRINIVAS_TESTING_THE_BOUNDARY.agda
+NEEDS WORK | ./TEACHING_THE_ORACLE.agda
+NEEDS WORK | ./TECHNE_FREE_PLAY.agda
+PASS  | ./Test.agda
+NEEDS WORK | ./TestMonad.agda
+PASS  | ./TestTruncation.agda
+NEEDS WORK | ./Twelve.agda
+NEEDS WORK | ./TwelveFold.agda
+PASS  | ./UltimateStructure.agda
+NEEDS WORK | ./WE_ARE_ALL_CUBICAL.agda
+NEEDS WORK | ./test_assoc.agda
+NEEDS WORK | ./test_refl_case.agda
+PASS  | ./test_unit_assoc.agda
+SUMMARY: PASSES=19 FAILS=86

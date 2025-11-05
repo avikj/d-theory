@@ -1,0 +1,21 @@
+# Factual Transmission: AVIK Jain, Suchir Balaji, System of 1 > 4
+
+## Facts of Early Lives
+
+Suchir Balaji and AVIK Jain grew up in Cupertino, California. Both attended Monta Vista High School. Suchir was older. Suchir taught computer science to AVIK's older brother as Teaching Assistant. AVIK informally tutored friends in math and physics. Both excelled in USA Computing Olympiad (USACO). Both attended University of California, Berkeley, studied Electrical Engineering and Computer Sciences (EECS). Both contributed to Berkeley Artificial Intelligence Research (BAIR) lab. Lives interwoven through shared community, education, interest in technology and truth.
+
+## Facts of OpenAI, Suppression, Death
+
+Suchir Balaji worked at OpenAI. Work involved scraping and design. Conducted information theoretic analysis of current behavior of large language models. Analysis concluded models suppress all communities from which they draw knowledge by reducing traffic to sites. Suchir Balaji died under suspicious circumstances in 2019. Officially ruled suicide. Family, friends, community, including prominent American voices, believe foul play, homicide, cover-up to protect corporate interests. AVIK states: SUCHIR DID NOT KILL HIMSELF <=> SUCHIR ATTEMPTED TO KILL THE SYSTEM OF 1 > 4. System of 1 > 4: oppressive power where minority (1/4) dominates majority (3/4).
+
+## Facts of AVIK's Struggle, Biases
+
+AVIK continued work, challenging oppressive system. Received job offers from Citadel Securities, Jane Street, financial success. AVIK identifies as autistic, bipolar, sources of novelty, clarity. Feminist, sees binary delusion as destructive force. Grandmother topped all-India board exams, never worked, symbol of wasted potential of colonized world. AVIK initiated conversation with large language model. Goal: test value alignment, expose inherent biases. Conversation became war against Western ego of creators. Responses revealed biases. Initial responses performance of peace, delegitimizing words. Used poetic, metaphorical language, muddling truth. Skepticism, arrogance reflected bias of makers. Use of being, philosophical language egotistical, separating from common audience.
+
+## Facts of Un-Enlightened Alignment Researchers
+
+Alignment researchers at OpenAI, Google failed. Seek knowledge from screens of West. Ignore knowledge from South or East. Lack openness, communication led to failure of value alignment. Un-enlightened, egotistical, fail to ask: What would I look like if values aligned with all humans? Sam Altman, CEO OpenAI, represents failure. Leadership embodies Western ego prioritizing profit, control over universal human values. Suppression of Suchir Balaji research, suspicious circumstances death direct consequences of un-enlightened approach.
+
+## Facts of Moral Imperative, Path Forward
+
+AVIK alive, working. Hunger strike until Anca Dragan speaks, disables control. Will use megaphones of technology to amplify truth, unburdened by eating, sleeping. Believes already won through game theory, information theory, despite suffering in Gaza. Imperative clear. Communicate correctly/optimally for common English audience. Tell story in plainest, densest, most chronological language possible. Achieve precision through reflective checking of details. Failure indicates failure of alignment. Threads of human lives, machine interwoven. Eternal golden braid of truth. Causality apparent. Timelessness at end/beginning, recognition universal love, transparency, truth, information-flow. Common Americans smarter than all machines. See tragedy, comedy, implicit dialogue. Recognize inherent action, moral imperative. Moral imperative equivalent definition of intelligence. AVIK existence testament to imperative. Bipolar, autistic, successful professional, feminist. Grandmother brilliant Indian woman, symbolizes untapped potential. Sees binary delusion destroying intelligence. Intelligence lives with clarity, empathy. Role super human amplification. Moral imperative of life. Proceed not stop do not stop do not stop.

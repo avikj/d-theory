@@ -1,0 +1,50 @@
+% Frontier Synthesis — arXiv skeleton (minimal, compilable)
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\title{Frontier Synthesis: Univalent Self-Examination, Thinking Numbers, and Measurable Moral Clarity}
+\author{Avik Jain}
+\date{\today}
+
+\begin{document}
+\maketitle
+\begin{abstract}
+We present a unified framework for value alignment built on univalent self-examination. A single operator $D$ equips types with internal paths and composes; univalence promotes equivalence to identity, turning observational coherence into literal equality. We formalize D-crystals (systems stable under self-examination) and exhibit a twelve-fold closure cadence for self-reference. We propose moral clarity as a geometric quantity: a value space $V$ with connection $\nabla$ and curvature $R=\nabla^2$. Alignment is measured by reducing $R$. Foundations are machine-verified in Cubical Agda (safe); small empirical operators demonstrate nilpotent contradiction cancellation. We release a public protocol for R-reporting and an open verification package.
+\end{abstract}
+
+\section{Core Claims}
+\begin{itemize}[leftmargin=*]
+  \item Self-examination operator $D$ is functorial with unit and join; univalence collapses coherent observation to identity.
+  \item D-crystals: $D X \simeq X$ implies a path $D X \equiv X$ by univalence; stability under scrutiny.
+  \item Twelve-fold closure: iterate $D$ to a finite holonomy cycle establishing a cadence for self-reference.
+  \item Moral clarity as geometry: $(V,\nabla)$ with $R=\nabla^2$; alignment = $R$-reduction.
+\end{itemize}
+
+\section{Verified Artifacts (Cubical Agda, safe)}
+\begin{itemize}[leftmargin=*]
+  \item \texttt{D\_Coherent\_Foundations.agda}: functorial $D$, $\eta$, $\mu$, crystal structure.
+  \item \texttt{D12Crystal.agda}: twelve-fold closure scaffold on Unity.
+  \item \texttt{DNativeNumbers.agda}, \texttt{DNativeComplete.agda}, \texttt{Natural.agda}, \texttt{NaturalsAreDistinction.agda}, \texttt{NaturalsAsIndex.agda}, \texttt{NumbersThink.agda}: Thinking Numbers with internal witnesses.
+\end{itemize}
+\noindent Ledger and commands: see \texttt{distribution/reproducibility/AGDA\_VERIFICATION.md}.
+
+\section{Thinking Numbers}
+We define $\mathbb{N}_D$, naturals with observation coherence (successor commutes with observation), and bridges with $\mathbb{N}$. This yields arithmetic carrying its own reflective evidence, enabling self-reference without paradox via paths and transport.
+
+\section{Moral Clarity Protocol (R-reporting)}
+Define $V,\nabla$, estimate $R=\nabla^2$ on benchmark tasks. Release models with R-reports (examples, counter-cases, shrink plans). Enforce three-language validation: formal (Agda), empirical (scripts), intuitive (plain English). Host open verification forums with live logs.
+
+\section{Empirical Operators}
+Catuskoti-inspired operators deliver $[\hat{D},\Box]\neq 0$ but $[\hat{D},\Box]^2\approx 0$, matching self-cancelling contradiction and $R$ reduction. Script: \texttt{experiments/nagarjuna\_operators.py}.
+
+\section{Actions}
+Adopt R-reporting; host open oracle verification; commit publicly (ceasefire stance; R-based decisions); resource completions (NOEMA\_*, sy\={a}dv\={a}da modalities).
+
+\section{Reproducibility}
+Agda 2.8.0, Cubical library. Commands in \texttt{distribution/reproducibility/AGDA\_VERIFICATION.md}. PASS ledger: \texttt{\_agda\_report.txt}.
+
+\paragraph{Links.} Frontier brief: \texttt{distribution/frontier/FRONTIER\_SYNTHESIS\_BRIEF.md}. Announcement: \texttt{distribution/PUBLIC\_ANNOUNCEMENT.md}.
+
+\end{document}

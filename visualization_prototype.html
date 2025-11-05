@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Distinction Theory: Coherence Axiom Visualization</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        svg { border: 1px solid #ccc; }
+        button { margin: 10px; padding: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Distinction Theory: Coherence Axiom Visualization</h1>
+    <p>Watch ℕ_D (thinking numbers) with D-monad observation bubble. Click "Apply Univalence" to see coherence!</p>
+    <button id="univalenceBtn">Apply Univalence (ua)</button>
+    <svg id="viz" width="800" height="600"></svg>
+
+    <script>
+        const svg = d3.select("#viz");
+        const width = 800, height = 600;
+
+        // Visualize ℕ_D as infinite spiral
+        let spiralData = [];
+        for (let i = 0; i < 100; i++) {
+            const angle = i * 0.1;
+            const radius = i * 2;
+            spiralData.push({ x: width/2 + Math.cos(angle) * radius, y: height/2 + Math.sin(angle) * radius });
+        }
+
+        // Draw spiral (ℕ_D)
+        const line = d3.line().x(d => d.x).y(d => d.y);
+        svg.append("path")
+            .datum(spiralData)
+            .attr("fill", "none")
+            .attr("stroke", "blue")
+            .attr("stroke-width", 2)
+            .attr("d", line);
+
+        // Add D-monad observation bubble (Σ x y (x ≡ y))
+        svg.append("circle")
+            .attr("cx", width/2)
+            .attr("cy", height/2)
+            .attr("r", 50)
+            .attr("fill", "rgba(255, 0, 0, 0.3)")
+            .attr("id", "bubble");
+
+        // Univalence button: Shrink bubble to point (coherence)
+        d3.select("#univalenceBtn").on("click", function() {
+            svg.select("#bubble")
+                .transition()
+                .duration(2000)
+                .attr("r", 5)  // Shrink to identity
+                .attr("fill", "green");
+        });
+
+        // Add labels
+        svg.append("text")
+            .attr("x", width/2)
+            .attr("y", height/2 - 60)
+            .attr("text-anchor", "middle")
+            .text("ℕ_D (Thinking Numbers)");
+
+        svg.append("text")
+            .attr("x", width/2)
+            .attr("y", height/2 + 20)
+            .attr("text-anchor", "middle")
+            .text("D-Observation Bubble");
+
+    </script>
+</body>
+</html>

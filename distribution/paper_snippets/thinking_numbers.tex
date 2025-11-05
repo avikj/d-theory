@@ -1,0 +1,10 @@
+\section{Thinking Numbers: Self-Referential Closure of Arithmetic}
+We define the distinction functor $D$ on types and prove functoriality and crystal structure (\texttt{D\_Coherent\_Foundations.agda}). We introduce the D-native naturals $\mathbb{N}_D$ with a coherence axiom ensuring observation commutes with successor (\texttt{DNativeNumbers.agda}). Bridges and completeness are formalized (\texttt{DNativeComplete.agda}; \texttt{NaturalsAreDistinction.agda}; \texttt{NaturalsAsIndex.agda}).
+
+\paragraph{Key machine-checked artifacts (safe).}
+- Functorial $D$ and crystal path equalities.
+- Definition of $\mathbb{N}_D$ and coherence axiom.
+- Embeddings/projections $\mathbb{N} \leftrightarrow \mathbb{N}_D$ with completeness.
+
+\paragraph{Reproducibility.}
+Agda 2.8.0, Cubical library. See \texttt{distribution/reproducibility/AGDA\_VERIFICATION.md}.
