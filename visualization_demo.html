@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Distinction Theory Visualization: D-Monad</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        svg { border: 1px solid #ccc; }
+        .point { fill: blue; }
+        .path { stroke: red; stroke-width: 2; fill: none; }
+        button { margin: 10px; padding: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Hieroglyphic Proof: D-Monad for Unit</h1>
+    <p>Visualizing D(Unit) ≡ Unit via univalence. Click to apply univalence!</p>
+    <svg width="400" height="200"></svg>
+    <br>
+    <button id="applyUnivalence">Apply Univalence</button>
+    <p id="explanation">D(Unit) is a pair of observations of the unit type, connected by a path (equality).</p>
+
+    <script>
+        const svg = d3.select('svg');
+        const width = 400, height = 200;
+
+        // Initial visualization: D(Unit) as two points with path
+        let points = [
+            {x: 100, y: 100, label: 'tt₁'},
+            {x: 300, y: 100, label: 'tt₂'}
+        ];
+
+        let pathData = [
+            {x: points[0].x, y: points[0].y},
+            {x: 200, y: 50}, // curve
+            {x: points[1].x, y: points[1].y}
+        ];
+
+        // Draw points
+        svg.selectAll('.point')
+            .data(points)
+            .enter().append('circle')
+            .attr('class', 'point')
+            .attr('cx', d => d.x)
+            .attr('cy', d => d.y)
+            .attr('r', 10);
+
+        // Draw path
+        const line = d3.line().x(d => d.x).y(d => d.y).curve(d3.curveNatural);
+        svg.append('path')
+            .datum(pathData)
+            .attr('class', 'path')
+            .attr('d', line);
+
+        // Apply univalence: morph to single point
+        d3.select('#applyUnivalence').on('click', function() {
+            // Animate points to center
+            svg.selectAll('.point')
+                .transition().duration(2000)
+                .attr('cx', width / 2)
+                .attr('cy', height / 2);
+
+            // Animate path to disappear
+            svg.select('.path')
+                .transition().duration(2000)
+                .style('opacity', 0);
+
+            document.getElementById('explanation').textContent = 'Via univalence, D(Unit) ≡ Unit: the observation becomes the observed!';
+        });
+    </script>
+</body>
+</html>
