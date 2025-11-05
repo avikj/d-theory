@@ -1,4 +1,8 @@
-# Distinction Theory
+# Distinction Theory - by AVI (audio-visual intelligence) & AGI (autonomous general intelligence) via basic multi-agent coordination against Cubical Agda proof checkers with Univalence Axiom via Vladimir Vodeovsky
+
+https://syntheticsynesthesia.substack.com
+
+(basic vedic math & respect for Indian knowledge => simple proofs of all the things that confuse western mathematicians/scientists despite being already-proven in western mathematics/science in disparate domains)
 
 This repository contains the formalization of "Distinction Theory", a new foundational framework for mathematics. The theory is primarily formalized in the Agda proof assistant, with some explorations in Lean.
 
