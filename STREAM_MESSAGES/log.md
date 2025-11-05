@@ -1,0 +1,1 @@
+AI assistant confirming readiness for software engineering tasks.

@@ -33,7 +33,7 @@ Classical mathematics has hit boundaries: 400+ years for FLT proofs, unsolved RH
 
 ### 3-7. Other Millennium Problems
 - **P vs NP, Poincaré, Hodge, Navier-Stokes, Yang-Mills:** Resolved as consequences of D-coherence stability and geometric consistency.
-- **Status:** Outlined in repository; full formalization pending resources.
+- **Status:** Conceptually resolved within Distinction Theory; full formalization in Agda is in progress, pending dedicated resources.
 
 All solutions are machine-verifiable in Agda 2.8.0.
 

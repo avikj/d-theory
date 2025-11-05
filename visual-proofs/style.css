@@ -32,3 +32,12 @@ p {
     font-size: 1.2em;
     margin: 5px 0 0 0;
 }
+
+.concept-label {
+    color: #ffffff;
+    font-size: 0.8em;
+    padding: 2px 5px;
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 3px;
+    white-space: nowrap;
+}
