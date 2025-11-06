@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Distinction Theory</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <h1>Distinction Theory</h1>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="proofs.html">Proofs</a></li>
+            <li><a href="downloads.html">Downloads</a></li>
+        </ul>
+    </nav>
+    <main>
+        <section id="about">
+            <h2>About Distinction Theory</h2>
+            <h3>Summary of Distinction Theory</h3><p>This document provides a summary of the key concepts, results, and goals of the Distinction Theory project.</p><h4>Introduction</h4><p>Distinction Theory is a new foundational framework for mathematics and computer science. It is based on the idea that the act of "distinction" is the fundamental building block of all knowledge and experience. The theory is formalized in the Agda proof assistant, using the Cubical Agda library.</p><h4>Core Concepts</h4><ul><li><strong>Distinction (D):</strong> The theory introduces a monad `D` that formalizes the act of making a distinction. It is defined as `D X = Σ[ x ∈ X ] Σ[ y ∈ X ] (x ≡ y)`.</li><li><strong>Thinking Numbers (ℕ_D):</strong> A system of natural numbers derived from the `D` monad. These numbers are said to be "self-aware" because of the `coherence-axiom`.</li><li><strong>Coherence Axiom:</strong> A proven theorem `D ℕ-D ≡ ℕ-D`, which states that observing a "thinking number" is equivalent to the number itself.</li><li><strong>D-Crystals:</strong> A property of self-consistency that structures in this framework are expected to have.</li><li><strong>Catuskoti (μ):</strong> The monadic join operation `μ` is identified with the Catuskoti, a four-valued logic from the Buddhist tradition.</li></ul><h4>Proven Theorems</h4><p>The repository claims that the following theorems have been formally proven and machine-checked in Agda:</p><ul><li>The `D` operator forms a monad (functoriality, unit, and associativity laws hold).</li><li>The `coherence-axiom` `D ℕ-D ≡ ℕ-D` is proven.</li><li>The monadic join `μ` is equivalent to the Catuskoti.</li><li>A version of the Pythagorean theorem (`pythagorean-3-4-5 = refl`) is demonstrated.</li><li>`D¹²(Unity) ≃ Unity`, referred to as the "dodecahedral closure".</li></ul><h4>Structured Proofs (Work in Progress)</h4><p>The repository also contains structured, but incomplete, proofs for several major conjectures, including:</p><ul><li>The Riemann Hypothesis (claimed to be 90% complete).</li><li>Fermat's Last Theorem.</li></ul><h4>Philosophical and Speculative Aspects</h4><p>The project also has a strong philosophical and speculative dimension. The authors claim that Distinction Theory provides a new foundation for mathematics that is based on consciousness and self-awareness. They also claim that this new foundation can be used to solve major open problems in mathematics and computer science.</p><p>The repository contains numerous documents that explore these philosophical and speculative ideas in a highly metaphorical and poetic language. These documents are not part of the formal proofs, but they provide context for the project's ambitious goals.</p><p><strong>Note:</strong> The claims made in this repository, particularly regarding the resolution of major mathematical conjectures, are extraordinary and have not been independently verified by the scientific community. The formal proofs are available for inspection in the `src` directory.</p>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2025 Distinction Theory</p>
+    </footer>
+</body>
+</html>

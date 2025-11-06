@@ -134,15 +134,11 @@ nabla X = D (nec X) ≡ nec (D X)
 Riem : Type → Type₁
 Riem X = isProp (nabla X)
 
-{-
--- Proof for Unit (a 0-type) - requires showing ∥ Unit ∥₁ ≡ Unit
 nabla-Unit : nabla Unit
-nabla-Unit = {!!}
+nabla-Unit = D-Unit-Path
 
--- Proof for Empty (another 0-type)
 nabla-Empty : nabla ⊥
-nabla-Empty = {!!}
--}
+nabla-Empty = D-Empty-Path
 
 -- Definition of Autopoietic Structure
 -- A type is autopoietic if it has a non-zero, constant-curvature connection.

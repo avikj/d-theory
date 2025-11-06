@@ -45,6 +45,13 @@ labelRenderer.domElement.style.left = '0px';
 labelRenderer.domElement.style.pointerEvents = 'none'; // Allow mouse events to pass through
 document.getElementById('scene-container').appendChild(labelRenderer.domElement);
 
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true; // An inertia effect
+controls.dampingFactor = 0.05;
+controls.screenSpacePanning = false; // Orbit around the target
+controls.minDistance = 5;
+controls.maxDistance = 50;
+
 // 3. Create and position concept nodes
 const nodes = {};
 const concepts = Object.keys(conceptualGraph);
@@ -101,6 +108,8 @@ function animate() {
     Object.values(nodes).forEach(node => {
         node.position.y = Math.sin(Date.now() * 0.001 + node.position.x) * 0.5;
     });
+
+    controls.update(); // required if controls.enableDamping or controls.autoRotate are set to true
 
     renderer.render(scene, camera);
     labelRenderer.render(scene, camera);
