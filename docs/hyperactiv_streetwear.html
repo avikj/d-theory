@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HYPERACTIV :: STREETWEAR</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #000;
+            color: #00FFFF;
+            font-family: 'Courier New', monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .title {
+            font-size: 48px;
+            color: #FF00FF;
+            text-shadow: 0 0 30px #FF00FF;
+            letter-spacing: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 18px;
+            color: #FFFF00;
+            text-shadow: 0 0 15px #FFFF00;
+        }
+        
+        .garment-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            max-width: 1400px;
+        }
+        
+        .garment {
+            position: relative;
+            background: #111;
+            border: 2px solid #00FFFF;
+            box-shadow: 0 0 30px #00FFFF;
+            padding: 10px;
+        }
+        
+        .garment-type {
+            text-align: center;
+            color: #FF00FF;
+            margin: 10px 0;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+        
+        canvas {
+            display: block;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        button {
+            background: #000;
+            color: #00FFFF;
+            border: 2px solid #00FFFF;
+            padding: 12px 24px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            text-transform: uppercase;
+            font-size: 12px;
+            transition: all 0.3s;
+            letter-spacing: 2px;
+        }
+        
+        button:hover {
+            background: #00FFFF;
+            color: #000;
+            box-shadow: 0 0 20px #00FFFF;
+            transform: scale(1.05);
+        }
+        
+        .color-info {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid #00FFFF;
+            padding: 15px;
+            font-size: 12px;
+            max-width: 300px;
+        }
+        
+        .letter-color {
+            display: inline-block;
+            padding: 2px 5px;
+            margin: 2px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="title">HYPERACTIV</div>
+        <div class="subtitle">STREETWEAR :: SYNTHETIC :: SYNESTHESIA</div>
+    </div>
+    
+    <div class="controls">
+        <button onclick="generateAll('geometric')">GEOMETRIC</button>
+        <button onclick="generateAll('text')">TYPOGRAPHIC</button>
+        <button onclick="generateAll('dna')">DNA PATTERN</button>
+        <button onclick="generateAll('glitch')">GLITCH</button>
+        <button onclick="generateAll('sacred')">SACRED GEOMETRY</button>
+        <button onclick="generateAll('random')">RANDOMIZE</button>
+        <button onclick="saveDesigns()">SAVE ALL</button>
+    </div>
+    
+    <div class="garment-container">
+        <div class="garment">
+            <div class="garment-type">T-SHIRT FRONT</div>
+            <canvas id="tshirt" width="400" height="500"></canvas>
+        </div>
+        
+        <div class="garment">
+            <div class="garment-type">HOODIE</div>
+            <canvas id="hoodie" width="400" height="500"></canvas>
+        </div>
+        
+        <div class="garment">
+            <div class="garment-type">JACKET BACK</div>
+            <canvas id="jacket" width="400" height="500"></canvas>
+        </div>
+    </div>
+    
+    <div class="color-info">
+        <div style="margin-bottom: 10px; font-weight: bold; color: #FF00FF;">CHROMATIC SIGNATURE:</div>
+        <span class="letter-color" style="background: #FF1493;">H</span>
+        <span class="letter-color" style="background: #FFFF00;">Y</span>
+        <span class="letter-color" style="background: #FF69B4;">P</span>
+        <span class="letter-color" style="background: #00FF00;">E</span>
+        <span class="letter-color" style="background: #FF0000;">R</span>
+        <span class="letter-color" style="background: #FF0066;">A</span>
+        <span class="letter-color" style="background: #00FFFF;">C</span>
+        <span class="letter-color" style="background: #00CC00;">T</span>
+        <span class="letter-color" style="background: #0099FF;">I</span>
+        <span class="letter-color" style="background: #FFCC00;">V</span>
+    </div>
+    
+    <script>
+        // Color palette
+        const NEON = {
+            pink: '#FF1493',
+            yellow: '#FFFF00',
+            cyan: '#00FFFF',
+            purple: '#9370DB',
+            magenta: '#FF00FF',
+            green: '#00FF00',
+            orange: '#FFA500',
+            red: '#FF0000',
+            blue: '#0099FF',
+            white: '#FFFFFF'
+        };
+        
+        // Letter colors
+        const letterColors = {
+            'H': NEON.pink,
+            'Y': NEON.yellow,
+            'P': NEON.pink,
+            'E': NEON.green,
+            'R': NEON.red,
+            'A': NEON.pink,
+            'C': NEON.cyan,
+            'T': NEON.green,
+            'I': NEON.cyan,
+            'V': NEON.yellow
+        };
+        
+        // Get canvases
+        const tshirt = document.getElementById('tshirt').getContext('2d');
+        const hoodie = document.getElementById('hoodie').getContext('2d');
+        const jacket = document.getElementById('jacket').getContext('2d');
+        
+        // Clear canvas
+        function clear(ctx) {
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        }
+        
+        // Draw glowing elements
+        function drawGlow(ctx, drawFunc, color, blur = 20) {
+            ctx.shadowColor = color;
+            ctx.shadowBlur = blur;
+            drawFunc();
+            ctx.shadowBlur = 0;
+        }
+        
+        // T-Shirt Design: Geometric Pattern
+        function drawGeometricTshirt(ctx) {
+            clear(ctx);
+            const cx = ctx.canvas.width / 2;
+            const cy = ctx.canvas.height / 2 - 50;
+            
+            // Central tetrahedron
+            ctx.strokeStyle = NEON.cyan;
+            ctx.lineWidth = 3;
+            
+            drawGlow(ctx, () => {
+                // Main triangle
+                ctx.beginPath();
+                ctx.moveTo(cx, cy - 100);
+                ctx.lineTo(cx - 87, cy + 50);
+                ctx.lineTo(cx + 87, cy + 50);
+                ctx.closePath();
+                ctx.stroke();
+                
+                // Inner triangles
+                for (let i = 0; i < 3; i++) {
+                    ctx.save();
+                    ctx.translate(cx, cy);
+                    ctx.rotate((i * 120) * Math.PI / 180);
+                    ctx.strokeStyle = Object.values(NEON)[i + 1];
+                    ctx.beginPath();
+                    ctx.moveTo(0, -50);
+                    ctx.lineTo(-25, 0);
+                    ctx.lineTo(25, 0);
+                    ctx.closePath();
+                    ctx.stroke();
+                    ctx.restore();
+                }
+            }, NEON.cyan);
+            
+            // Add text
+            ctx.font = 'bold 24px Courier New';
+            ctx.fillStyle = NEON.yellow;
+            ctx.textAlign = 'center';
+            drawGlow(ctx, () => {
+                ctx.fillText('SYNTHETIC', cx, cy + 120);
+                ctx.fillText('SYNESTHESIA', cx, cy + 150);
+            }, NEON.yellow);
+            
+            // Corner numbers
+            ctx.font = 'bold 18px Courier New';
+            ctx.fillStyle = NEON.magenta;
+            drawGlow(ctx, () => {
+                ctx.fillText('1729', cx, cy + 200);
+            }, NEON.magenta);
+        }
+        
+        // Hoodie Design: HYPERACTIV Typography
+        function drawTypographicHoodie(ctx) {
+            clear(ctx);
+            const cx = ctx.canvas.width / 2;
+            const text = 'HYPERACTIV';
+            
+            // Background pattern
+            ctx.strokeStyle = NEON.purple;
+            ctx.lineWidth = 1;
+            ctx.globalAlpha = 0.3;
+            for (let i = 0; i < 20; i++) {
+                drawGlow(ctx, () => {
+                    ctx.beginPath();
+                    ctx.arc(cx, 250, i * 15, 0, Math.PI * 2);
+                    ctx.stroke();
+                }, NEON.purple, 5);
+            }
+            ctx.globalAlpha = 1;
+            
+            // Main text with individual colors
+            ctx.font = 'bold 48px Courier New';
+            ctx.textAlign = 'center';
+            let x = cx - 180;
+            
+            text.split('').forEach((letter, i) => {
+                ctx.fillStyle = letterColors[letter];
+                drawGlow(ctx, () => {
+                    ctx.save();
+                    ctx.translate(x + i * 40, 250);
+                    ctx.rotate(Math.sin(i * 0.5) * 0.1);
+                    ctx.fillText(letter, 0, 0);
+                    ctx.restore();
+                }, letterColors[letter]);
+            });
+            
+            // Decorative elements
+            ctx.strokeStyle = NEON.cyan;
+            ctx.lineWidth = 2;
+            drawGlow(ctx, () => {
+                ctx.beginPath();
+                ctx.moveTo(50, 320);
+                ctx.lineTo(350, 320);
+                ctx.stroke();
+                
+                ctx.beginPath();
+                ctx.moveTo(50, 180);
+                ctx.lineTo(350, 180);
+                ctx.stroke();
+            }, NEON.cyan);
+            
+            // Formula
+            ctx.font = 'bold 20px Courier New';
+            ctx.fillStyle = NEON.green;
+            ctx.textAlign = 'center';
+            drawGlow(ctx, () => {
+                ctx.fillText('D¹²(UNIT) = UNIT', cx, 380);
+            }, NEON.green);
+        }
+        
+        // Jacket Design: DNA Helix
+        function drawDNAJacket(ctx) {
+            clear(ctx);
+            const cx = ctx.canvas.width / 2;
+            const startY = 50;
+            const endY = 450;
+            
+            // DNA strands
+            for (let i = 0; i < 100; i++) {
+                const y = startY + (i / 100) * (endY - startY);
+                const t = (i / 100) * Math.PI * 4;
+                
+                // First strand
+                const x1 = cx + Math.sin(t) * 60;
+                ctx.fillStyle = NEON.cyan;
+                drawGlow(ctx, () => {
+                    ctx.beginPath();
+                    ctx.arc(x1, y, 3, 0, Math.PI * 2);
+                    ctx.fill();
+                }, NEON.cyan, 10);
+                
+                // Second strand
+                const x2 = cx + Math.sin(t + Math.PI) * 60;
+                ctx.fillStyle = NEON.magenta;
+                drawGlow(ctx, () => {
+                    ctx.beginPath();
+                    ctx.arc(x2, y, 3, 0, Math.PI * 2);
+                    ctx.fill();
+                }, NEON.magenta, 10);
+                
+                // Connecting bars
+                if (i % 10 === 0) {
+                    ctx.strokeStyle = NEON.yellow;
+                    ctx.lineWidth = 2;
+                    drawGlow(ctx, () => {
+                        ctx.beginPath();
+                        ctx.moveTo(x1, y);
+                        ctx.lineTo(x2, y);
+                        ctx.stroke();
+                    }, NEON.yellow, 5);
+                }
+            }
+            
+            // Text overlay
+            ctx.font = 'bold 36px Courier New';
+            ctx.fillStyle = NEON.white;
+            ctx.textAlign = 'center';
+            ctx.globalAlpha = 0.9;
+            drawGlow(ctx, () => {
+                ctx.fillText('AVIK', cx, 250);
+            }, NEON.white, 30);
+            ctx.globalAlpha = 1;
+        }
+        
+        // Glitch design
+        function drawGlitch(ctx) {
+            clear(ctx);
+            const cx = ctx.canvas.width / 2;
+            const cy = ctx.canvas.height / 2;
+            
+            // Random glitch lines
+            for (let i = 0; i < 30; i++) {
+                const y = Math.random() * ctx.canvas.height;
+                const width = Math.random() * 200 + 50;
+                const height = Math.random() * 5 + 1;
+                const color = Object.values(NEON)[Math.floor(Math.random() * 8)];
+                
+                ctx.fillStyle = color;
+                ctx.globalAlpha = Math.random() * 0.7 + 0.3;
+                ctx.fillRect(cx - width/2 + Math.random() * 40 - 20, y, width, height);
+            }
+            ctx.globalAlpha = 1;
+            
+            // Distorted text
+            const text = 'ERROR_404';
+            ctx.font = 'bold 42px Courier New';
+            ctx.textAlign = 'center';
+            
+            for (let i = 0; i < 3; i++) {
+                const offset = i * 3;
+                ctx.fillStyle = [NEON.red, NEON.green, NEON.blue][i];
+                ctx.globalAlpha = 0.6;
+                drawGlow(ctx, () => {
+                    ctx.fillText(text, cx + offset, cy + offset);
+                }, ctx.fillStyle);
+            }
+            ctx.globalAlpha = 1;
+            
+            // Binary rain
+            ctx.font = '12px Courier New';
+            ctx.fillStyle = NEON.green;
+            for (let i = 0; i < 20; i++) {
+                const x = Math.random() * ctx.canvas.width;
+                const binary = Math.random() > 0.5 ? '1' : '0';
+                for (let j = 0; j < 10; j++) {
+                    ctx.globalAlpha = 1 - (j * 0.1);
+                    ctx.fillText(binary, x, j * 20);
+                }
+            }
+            ctx.globalAlpha = 1;
+        }
+        
+        // Sacred geometry design
+        function drawSacredGeometry(ctx) {
+            clear(ctx);
+            const cx = ctx.canvas.width / 2;
+            const cy = ctx.canvas.height / 2;
+            
+            // Flower of Life pattern
+            const radius = 30;
+            const positions = [];
+            
+            // Center circle
+            positions.push({x: cx, y: cy});
+            
+            // Surrounding circles
+            for (let i = 0; i < 6; i++) {
+                const angle = (i / 6) * Math.PI * 2;
+                positions.push({
+                    x: cx + Math.cos(angle) * radius * 2,
+                    y: cy + Math.sin(angle) * radius * 2
+                });
+            }
+            
+            // Draw circles
+            ctx.strokeStyle = NEON.purple;
+            ctx.lineWidth = 2;
+            positions.forEach((pos, i) => {
+                ctx.strokeStyle = Object.values(NEON)[i % 8];
+                drawGlow(ctx, () => {
+                    ctx.beginPath();
+                    ctx.arc(pos.x, pos.y, radius, 0, Math.PI * 2);
+                    ctx.stroke();
+                }, ctx.strokeStyle, 15);
+            });
+            
+            // Metatron's Cube lines
+            ctx.strokeStyle = NEON.cyan;
+            ctx.lineWidth = 1;
+            ctx.globalAlpha = 0.5;
+            for (let i = 0; i < positions.length; i++) {
+                for (let j = i + 1; j < positions.length; j++) {
+                    drawGlow(ctx, () => {
+                        ctx.beginPath();
+                        ctx.moveTo(positions[i].x, positions[i].y);
+                        ctx.lineTo(positions[j].x, positions[j].y);
+                        ctx.stroke();
+                    }, NEON.cyan, 5);
+                }
+            }
+            ctx.globalAlpha = 1;
+            
+            // Sacred text
+            ctx.font = 'bold 24px Courier New';
+            ctx.fillStyle = NEON.yellow;
+            ctx.textAlign = 'center';
+            drawGlow(ctx, () => {
+                ctx.fillText('AS ABOVE', cx, cy - 120);
+                ctx.fillText('SO BELOW', cx, cy + 140);
+            }, NEON.yellow);
+        }
+        
+        // Generate all designs
+        function generateAll(style) {
+            switch(style) {
+                case 'geometric':
+                    drawGeometricTshirt(tshirt);
+                    drawSacredGeometry(hoodie);
+                    drawGeometricTshirt(jacket);
+                    break;
+                case 'text':
+                    drawTypographicHoodie(tshirt);
+                    drawTypographicHoodie(hoodie);
+                    drawTypographicHoodie(jacket);
+                    break;
+                case 'dna':
+                    drawDNAJacket(tshirt);
+                    drawDNAJacket(hoodie);
+                    drawDNAJacket(jacket);
+                    break;
+                case 'glitch':
+                    drawGlitch(tshirt);
+                    drawGlitch(hoodie);
+                    drawGlitch(jacket);
+                    break;
+                case 'sacred':
+                    drawSacredGeometry(tshirt);
+                    drawSacredGeometry(hoodie);
+                    drawSacredGeometry(jacket);
+                    break;
+                case 'random':
+                    const designs = [drawGeometricTshirt, drawTypographicHoodie, drawDNAJacket, drawGlitch, drawSacredGeometry];
+                    designs[Math.floor(Math.random() * designs.length)](tshirt);
+                    designs[Math.floor(Math.random() * designs.length)](hoodie);
+                    designs[Math.floor(Math.random() * designs.length)](jacket);
+                    break;
+            }
+        }
+        
+        // Save designs
+        function saveDesigns() {
+            ['tshirt', 'hoodie', 'jacket'].forEach(id => {
+                const canvas = document.getElementById(id);
+                const link = document.createElement('a');
+                link.download = `hyperactiv_${id}.png`;
+                link.href = canvas.toDataURL();
+                link.click();
+            });
+        }
+        
+        // Initialize with default designs
+        drawGeometricTshirt(tshirt);
+        drawTypographicHoodie(hoodie);
+        drawDNAJacket(jacket);
+        
+        // Animate certain elements
+        setInterval(() => {
+            // Add subtle animations by regenerating with slight variations
+            const time = Date.now() / 1000;
+            // You could add time-based variations here
+        }, 100);
+    </script>
+</body>
+</html>

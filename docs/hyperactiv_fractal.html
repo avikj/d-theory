@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HYPERACTIV :: FRACTAL RECURSION :: PYTHAGOREAN KNOWLEDGE</title>
+    <style>
+        * { 
+            margin: 0; 
+            padding: 0; 
+            overflow: hidden;
+        }
+        
+        body { 
+            background: #000;
+            font-family: 'Courier New', monospace;
+            color: #00FFFF;
+        }
+        
+        canvas { 
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        
+        #interface {
+            position: fixed;
+            z-index: 100;
+            pointer-events: none;
+            user-select: none;
+        }
+        
+        #title {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            animation: pulse 2s infinite;
+        }
+        
+        .avik-signature {
+            font-size: 48px;
+            letter-spacing: 10px;
+            font-weight: bold;
+        }
+        
+        .letter-a { color: #FF1493; text-shadow: 0 0 30px #FF1493; }
+        .letter-v { color: #FFFF00; text-shadow: 0 0 30px #FFFF00; }
+        .letter-i { color: #00FFFF; text-shadow: 0 0 30px #00FFFF; }
+        .letter-k { color: #9370DB; text-shadow: 0 0 30px #9370DB; }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.8; transform: translateX(-50%) scale(1); }
+            50% { opacity: 1; transform: translateX(-50%) scale(1.05); }
+        }
+        
+        #numbers {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            font-size: 14px;
+            color: #00FF00;
+            text-shadow: 0 0 10px #00FF00;
+        }
+        
+        #controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            text-align: right;
+            font-size: 12px;
+            color: #FFFF00;
+            text-shadow: 0 0 10px #FFFF00;
+        }
+        
+        .control-item {
+            margin: 5px 0;
+            opacity: 0.8;
+        }
+        
+        #formula {
+            position: fixed;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 24px;
+            color: #FF00FF;
+            text-shadow: 0 0 20px #FF00FF;
+            letter-spacing: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id="interface">
+        <div id="title">
+            <div class="avik-signature">
+                <span class="letter-a">A</span><span class="letter-v">V</span><span class="letter-i">I</span><span class="letter-k">K</span>
+            </div>
+        </div>
+        
+        <div id="formula">√(a² + b²) = c</div>
+        
+        <div id="numbers">
+            <div>FIBONACCI: <span id="fib-sequence">1, 1, 2, 3, 5, 8, 13, 21...</span></div>
+            <div>PRIMES: <span id="prime-sequence">2, 3, 5, 7, 11, 13, 17, 19...</span></div>
+            <div>RAMANUJAN: <span id="ramanujan">1729 = 1³ + 12³ = 9³ + 10³</span></div>
+        </div>
+        
+        <div id="controls">
+            <div class="control-item">CLICK :: ADD FRACTAL</div>
+            <div class="control-item">MOVE :: INFLUENCE FIELD</div>
+            <div class="control-item">SPACE :: TOGGLE MODE</div>
+            <div class="control-item">R :: RESET</div>
+            <div class="control-item">S :: SAVE IMAGE</div>
+        </div>
+    </div>
+    
+    <canvas id="fractalCanvas"></canvas>
+    
+    <script>
+        // Canvas setup
+        const canvas = document.getElementById('fractalCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+        let centerX = width / 2;
+        let centerY = height / 2;
+        
+        // Resize handler
+        window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            centerX = width / 2;
+            centerY = height / 2;
+        });
+        
+        // HYPERACTIV colors
+        const COLORS = {
+            pink: '#FF1493',
+            yellow: '#FFFF00',
+            cyan: '#00FFFF',
+            purple: '#9370DB',
+            magenta: '#FF00FF',
+            green: '#00FF00',
+            orange: '#FFA500',
+            red: '#FF0000',
+            blue: '#0099FF',
+            white: '#FFFFFF'
+        };
+        
+        // Letter mapping for AVIK
+        const AVIK_COLORS = {
+            'A': COLORS.pink,
+            'V': COLORS.yellow,
+            'I': COLORS.cyan,
+            'K': COLORS.purple
+        };
+        
+        // Natural number sequences
+        const fibonacci = [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597];
+        const primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71];
+        const pythagorean = [[3,4,5], [5,12,13], [8,15,17], [7,24,25], [20,21,29], [9,40,41]];
+        
+        // State
+        let mouseX = centerX;
+        let mouseY = centerY;
+        let mode = 0; // 0: letters, 1: numbers, 2: symbols, 3: mixed
+        let fractals = [];
+        let particles = [];
+        let time = 0;
+        
+        // Track mouse
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+        
+        // Click to add fractal
+        document.addEventListener('click', (e) => {
+            addFractal(e.clientX, e.clientY);
+        });
+        
+        // Keyboard controls
+        document.addEventListener('keydown', (e) => {
+            if (e.key === ' ') {
+                e.preventDefault();
+                mode = (mode + 1) % 4;
+                updateModeDisplay();
+            } else if (e.key === 'r' || e.key === 'R') {
+                fractals = [];
+                particles = [];
+                clearCanvas();
+            } else if (e.key === 's' || e.key === 'S') {
+                saveImage();
+            }
+        });
+        
+        // Clear canvas
+        function clearCanvas() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, width, height);
+        }
+        
+        // Add fractal
+        function addFractal(x, y) {
+            fractals.push({
+                x: x,
+                y: y,
+                depth: 0,
+                maxDepth: 7,
+                angle: 0,
+                scale: 1,
+                type: mode,
+                color: Object.values(COLORS)[Math.floor(Math.random() * Object.values(COLORS).length)]
+            });
+            
+            // Add letter particles
+            const word = 'AVIK';
+            for (let i = 0; i < word.length; i++) {
+                particles.push({
+                    x: x,
+                    y: y,
+                    vx: (Math.random() - 0.5) * 5,
+                    vy: (Math.random() - 0.5) * 5,
+                    letter: word[i],
+                    color: AVIK_COLORS[word[i]],
+                    life: 1,
+                    size: 20
+                });
+            }
+        }
+        
+        // Draw fractal recursively
+        function drawFractalBranch(x, y, angle, depth, maxDepth, length, color, content) {
+            if (depth >= maxDepth) return;
+            
+            // Calculate end point
+            const endX = x + Math.cos(angle) * length;
+            const endY = y + Math.sin(angle) * length;
+            
+            // Draw line
+            ctx.strokeStyle = color;
+            ctx.lineWidth = Math.max(1, (maxDepth - depth) / 2);
+            ctx.globalAlpha = 1 - (depth / maxDepth) * 0.5;
+            ctx.shadowColor = color;
+            ctx.shadowBlur = 10;
+            
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.lineTo(endX, endY);
+            ctx.stroke();
+            
+            // Draw content at nodes
+            if (depth % 2 === 0) {
+                ctx.font = `${20 - depth * 2}px Courier New`;
+                ctx.fillStyle = color;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                
+                if (mode === 0) { // Letters
+                    ctx.fillText('AVIK'[depth % 4], endX, endY);
+                } else if (mode === 1) { // Numbers
+                    ctx.fillText(fibonacci[depth % fibonacci.length], endX, endY);
+                } else if (mode === 2) { // Symbols
+                    const symbols = ['∞', '∑', '∏', 'Δ', 'Ω', 'φ', 'π', '√'];
+                    ctx.fillText(symbols[depth % symbols.length], endX, endY);
+                } else { // Mixed
+                    const mixed = ['A', '1', '∞', 'V', '7', 'π', 'I', '2', 'φ', 'K', '9'];
+                    ctx.fillText(mixed[depth % mixed.length], endX, endY);
+                }
+            }
+            
+            // Golden ratio angle
+            const goldenAngle = Math.PI * (3 - Math.sqrt(5));
+            
+            // Recursive branches
+            const branches = 3 + (depth % 2); // Vary branch count
+            for (let i = 0; i < branches; i++) {
+                const branchAngle = angle + (i - branches/2) * (goldenAngle + Math.sin(time + depth) * 0.1);
+                const branchLength = length * 0.7; // Shrink by golden ratio approximation
+                const branchColor = mode === 3 ? 
+                    Object.values(COLORS)[(depth + i) % Object.values(COLORS).length] : 
+                    color;
+                
+                drawFractalBranch(
+                    endX, endY,
+                    branchAngle,
+                    depth + 1,
+                    maxDepth,
+                    branchLength,
+                    branchColor,
+                    content
+                );
+            }
+            
+            ctx.globalAlpha = 1;
+            ctx.shadowBlur = 0;
+        }
+        
+        // Draw Pythagorean spiral
+        function drawPythagoreanSpiral() {
+            ctx.strokeStyle = COLORS.cyan;
+            ctx.lineWidth = 1;
+            ctx.globalAlpha = 0.3;
+            ctx.shadowColor = COLORS.cyan;
+            ctx.shadowBlur = 5;
+            
+            let x = centerX;
+            let y = centerY;
+            let angle = 0;
+            
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            
+            for (let i = 0; i < pythagorean.length; i++) {
+                const [a, b, c] = pythagorean[i];
+                const radius = c * 5;
+                
+                // Draw spiral segment
+                for (let j = 0; j < 50; j++) {
+                    angle += 0.1;
+                    const r = radius * (j / 50);
+                    x = centerX + Math.cos(angle) * r;
+                    y = centerY + Math.sin(angle) * r;
+                    ctx.lineTo(x, y);
+                }
+                
+                // Draw triangle
+                ctx.save();
+                ctx.translate(x, y);
+                ctx.rotate(angle);
+                ctx.strokeStyle = COLORS.purple;
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.lineTo(a * 3, 0);
+                ctx.lineTo(a * 3, b * 3);
+                ctx.closePath();
+                ctx.stroke();
+                
+                // Label with equation
+                ctx.fillStyle = COLORS.yellow;
+                ctx.font = '10px Courier New';
+                ctx.fillText(`${a}²+${b}²=${c}²`, a * 1.5, b * 1.5);
+                ctx.restore();
+            }
+            
+            ctx.stroke();
+            ctx.globalAlpha = 1;
+            ctx.shadowBlur = 0;
+        }
+        
+        // Draw number grid
+        function drawNumberGrid() {
+            const gridSize = 30;
+            const cols = Math.ceil(width / gridSize);
+            const rows = Math.ceil(height / gridSize);
+            
+            ctx.font = '10px Courier New';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            for (let i = 0; i < cols; i++) {
+                for (let j = 0; j < rows; j++) {
+                    const x = i * gridSize;
+                    const y = j * gridSize;
+                    const index = i + j * cols;
+                    
+                    // Distance from mouse
+                    const dist = Math.sqrt((x - mouseX) ** 2 + (y - mouseY) ** 2);
+                    const influence = Math.max(0, 1 - dist / 200);
+                    
+                    if (influence > 0.1) {
+                        ctx.globalAlpha = influence * 0.5;
+                        
+                        // Choose sequence based on position
+                        let num;
+                        if (index < fibonacci.length) {
+                            num = fibonacci[index];
+                            ctx.fillStyle = COLORS.green;
+                        } else if (index - fibonacci.length < primes.length) {
+                            num = primes[index - fibonacci.length];
+                            ctx.fillStyle = COLORS.cyan;
+                        } else {
+                            num = (index % 12) + 1; // 12-fold pattern
+                            ctx.fillStyle = COLORS.purple;
+                        }
+                        
+                        ctx.fillText(num, x, y);
+                    }
+                }
+            }
+            
+            ctx.globalAlpha = 1;
+        }
+        
+        // Update particles
+        function updateParticles() {
+            particles = particles.filter(p => {
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vx *= 0.98;
+                p.vy *= 0.98;
+                p.vy += 0.1; // Gravity
+                p.life -= 0.01;
+                p.size = Math.max(5, p.size * 0.99);
+                
+                if (p.life > 0) {
+                    ctx.save();
+                    ctx.font = `bold ${p.size}px Courier New`;
+                    ctx.fillStyle = p.color;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.globalAlpha = p.life;
+                    ctx.shadowColor = p.color;
+                    ctx.shadowBlur = 10;
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate(time * 2 + p.x);
+                    ctx.fillText(p.letter, 0, 0);
+                    ctx.restore();
+                    return true;
+                }
+                return false;
+            });
+        }
+        
+        // Update mode display
+        function updateModeDisplay() {
+            const formula = document.getElementById('formula');
+            const messages = [
+                'AVIK :: LETTERS :: WORDS',
+                'FIBONACCI :: PRIMES :: NUMBERS',
+                '∞ :: SYMBOLS :: KNOWLEDGE',
+                'SYNTHESIS :: ALL :: ONE'
+            ];
+            formula.textContent = messages[mode];
+        }
+        
+        // Save image
+        function saveImage() {
+            const link = document.createElement('a');
+            link.download = `hyperactiv_fractal_${Date.now()}.png`;
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+        
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            time += 0.01;
+            
+            // Fade background
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, width, height);
+            
+            // Draw background elements
+            drawNumberGrid();
+            drawPythagoreanSpiral();
+            
+            // Update and draw fractals
+            fractals = fractals.filter(f => {
+                f.depth += 0.1;
+                f.angle += 0.01;
+                
+                if (f.depth < f.maxDepth) {
+                    const startLength = 50;
+                    drawFractalBranch(
+                        f.x, f.y,
+                        f.angle,
+                        0,
+                        Math.floor(f.depth),
+                        startLength,
+                        f.color,
+                        null
+                    );
+                    return true;
+                }
+                return false;
+            });
+            
+            // Update particles
+            updateParticles();
+            
+            // Draw center marker
+            ctx.fillStyle = COLORS.white;
+            ctx.shadowColor = COLORS.white;
+            ctx.shadowBlur = 20;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 3 + Math.sin(time * 2) * 2, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+            
+            // Update number sequences display
+            const fibElement = document.getElementById('fib-sequence');
+            const offset = Math.floor(time) % fibonacci.length;
+            fibElement.textContent = fibonacci.slice(offset, offset + 8).join(', ') + '...';
+            
+            // Auto-generate fractals occasionally
+            if (Math.random() < 0.01) {
+                const angle = Math.random() * Math.PI * 2;
+                const dist = Math.random() * 200 + 100;
+                addFractal(
+                    centerX + Math.cos(angle) * dist,
+                    centerY + Math.sin(angle) * dist
+                );
+            }
+        }
+        
+        // Start animation
+        animate();
+        
+        // Initial fractal
+        addFractal(centerX, centerY);
+    </script>
+</body>
+</html>

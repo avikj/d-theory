@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HYPERACTIV :: INTERACTIV :: REFLECTIVE SYMMETRY DANCE</title>
+    <style>
+        * { 
+            margin: 0; 
+            padding: 0; 
+            overflow: hidden;
+            cursor: none;
+        }
+        
+        body { 
+            background: #000;
+            font-family: 'Courier New', monospace;
+            touch-action: none;
+        }
+        
+        canvas { 
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        
+        #interface {
+            position: fixed;
+            z-index: 100;
+            color: #00FFFF;
+            font-size: 12px;
+            pointer-events: none;
+            user-select: none;
+        }
+        
+        #title {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            animation: pulse 2s infinite;
+        }
+        
+        .title-main {
+            font-size: 36px;
+            letter-spacing: 10px;
+            text-shadow: 0 0 30px #FF00FF;
+            color: #FF00FF;
+        }
+        
+        .title-sub {
+            font-size: 14px;
+            letter-spacing: 5px;
+            margin-top: 10px;
+            color: #FFFF00;
+            text-shadow: 0 0 20px #FFFF00;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+        
+        #controls {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            text-shadow: 0 0 10px #00FFFF;
+        }
+        
+        .control-item {
+            margin: 5px 0;
+            opacity: 0.8;
+        }
+        
+        #symmetry-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            font-size: 48px;
+            color: #FFFF00;
+            text-shadow: 0 0 30px #FFFF00;
+        }
+        
+        #cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #00FFFF;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 200;
+            box-shadow: 0 0 20px #00FFFF;
+        }
+        
+        .letter-particle {
+            position: fixed;
+            font-weight: bold;
+            font-size: 24px;
+            pointer-events: none;
+            animation: float 3s ease-out forwards;
+        }
+        
+        @keyframes float {
+            0% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1) rotate(0deg);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -150%) scale(0.5) rotate(720deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="interface">
+        <div id="title">
+            <div class="title-main">HYPERACTIV</div>
+            <div class="title-sub">INTERACTIV :: REFLECTIVE :: SYMMETRY :: DANCE</div>
+        </div>
+        
+        <div id="controls">
+            <div class="control-item">MOVE :: DRAW LIGHT</div>
+            <div class="control-item">CLICK :: EXPLODE COLOR</div>
+            <div class="control-item">SPACE :: CHANGE SYMMETRY</div>
+            <div class="control-item">1-9 :: SET FOLD COUNT</div>
+            <div class="control-item">C :: CLEAR CANVAS</div>
+            <div class="control-item">S :: SAVE IMAGE</div>
+        </div>
+        
+        <div id="symmetry-indicator">◈</div>
+    </div>
+    
+    <div id="cursor"></div>
+    
+    <canvas id="trailCanvas"></canvas>
+    <canvas id="mainCanvas"></canvas>
+    
+    <script>
+        // HYPERACTIV color palette
+        const NEON = [
+            '#FF1493', // pink
+            '#FFFF00', // yellow
+            '#00FFFF', // cyan
+            '#9370DB', // purple
+            '#FF00FF', // magenta
+            '#00FF00', // green
+            '#FFA500', // orange
+            '#FF0000', // red
+            '#0099FF', // blue
+        ];
+        
+        // Letter to color mapping
+        const LETTERS = 'HYPERACTIV';
+        const letterColors = {
+            'H': '#FF1493',
+            'Y': '#FFFF00',
+            'P': '#FF1493',
+            'E': '#00FF00',
+            'R': '#FF0000',
+            'A': '#FF1493',
+            'C': '#00FFFF',
+            'T': '#00FF00',
+            'I': '#00FFFF',
+            'V': '#FFFF00'
+        };
+        
+        // Canvas setup
+        const mainCanvas = document.getElementById('mainCanvas');
+        const mainCtx = mainCanvas.getContext('2d');
+        const trailCanvas = document.getElementById('trailCanvas');
+        const trailCtx = trailCanvas.getContext('2d');
+        
+        // Set canvas size
+        function resizeCanvas() {
+            mainCanvas.width = trailCanvas.width = window.innerWidth;
+            mainCanvas.height = trailCanvas.height = window.innerHeight;
+            centerX = mainCanvas.width / 2;
+            centerY = mainCanvas.height / 2;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        
+        // State variables
+        let centerX = mainCanvas.width / 2;
+        let centerY = mainCanvas.height / 2;
+        let mouseX = centerX;
+        let mouseY = centerY;
+        let prevMouseX = centerX;
+        let prevMouseY = centerY;
+        let isDrawing = false;
+        let symmetryFolds = 6;
+        let currentColorIndex = 0;
+        let time = 0;
+        let particles = [];
+        let trails = [];
+        
+        // Symmetry symbols
+        const symmetrySymbols = ['◈', '◉', '◊', '◆', '✦', '✧', '⬟', '⬢', '◐', '◑', '◒', '◓'];
+        
+        // Custom cursor
+        const cursor = document.getElementById('cursor');
+        
+        // Initialize with background
+        function initCanvas() {
+            // Dark background with subtle gradient
+            const gradient = mainCtx.createRadialGradient(centerX, centerY, 0, centerX, centerY, Math.max(centerX, centerY));
+            gradient.addColorStop(0, '#0a0a0a');
+            gradient.addColorStop(1, '#000000');
+            mainCtx.fillStyle = gradient;
+            mainCtx.fillRect(0, 0, mainCanvas.width, mainCanvas.height);
+            
+            trailCtx.clearRect(0, 0, trailCanvas.width, trailCanvas.height);
+        }
+        initCanvas();
+        
+        // Mouse/Touch events
+        function handleMove(x, y) {
+            prevMouseX = mouseX;
+            prevMouseY = mouseY;
+            mouseX = x;
+            mouseY = y;
+            
+            // Update custom cursor
+            cursor.style.left = x + 'px';
+            cursor.style.top = y + 'px';
+            
+            if (isDrawing) {
+                drawSymmetricTrails();
+            }
+            
+            // Add particles occasionally
+            if (Math.random() < 0.1) {
+                addParticle(x, y);
+            }
+        }
+        
+        document.addEventListener('mousemove', (e) => {
+            handleMove(e.clientX, e.clientY);
+            isDrawing = true;
+        });
+        
+        document.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            handleMove(touch.clientX, touch.clientY);
+            isDrawing = true;
+        });
+        
+        document.addEventListener('mousedown', () => isDrawing = true);
+        document.addEventListener('mouseup', () => isDrawing = false);
+        document.addEventListener('touchstart', () => isDrawing = true);
+        document.addEventListener('touchend', () => isDrawing = false);
+        
+        // Draw symmetrical trails
+        function drawSymmetricTrails() {
+            const dx = mouseX - centerX;
+            const dy = mouseY - centerY;
+            const prevDx = prevMouseX - centerX;
+            const prevDy = prevMouseY - centerY;
+            
+            const radius = Math.sqrt(dx * dx + dy * dy);
+            const angle = Math.atan2(dy, dx);
+            const prevRadius = Math.sqrt(prevDx * prevDx + prevDy * prevDy);
+            const prevAngle = Math.atan2(prevDy, prevDx);
+            
+            for (let i = 0; i < symmetryFolds; i++) {
+                const rotation = (i * 2 * Math.PI) / symmetryFolds;
+                
+                // Calculate symmetrical positions
+                const x1 = centerX + prevRadius * Math.cos(prevAngle + rotation);
+                const y1 = centerY + prevRadius * Math.sin(prevAngle + rotation);
+                const x2 = centerX + radius * Math.cos(angle + rotation);
+                const y2 = centerY + radius * Math.sin(angle + rotation);
+                
+                // Mirror positions
+                const mx1 = centerX + prevRadius * Math.cos(-prevAngle + rotation);
+                const my1 = centerY + prevRadius * Math.sin(-prevAngle + rotation);
+                const mx2 = centerX + radius * Math.cos(-angle + rotation);
+                const my2 = centerY + radius * Math.sin(-angle + rotation);
+                
+                // Draw trails
+                drawGlowingLine(trailCtx, x1, y1, x2, y2, NEON[currentColorIndex], 3);
+                drawGlowingLine(trailCtx, mx1, my1, mx2, my2, NEON[(currentColorIndex + 1) % NEON.length], 3);
+                
+                // Add to trails array for animation
+                trails.push({
+                    x1, y1, x2, y2,
+                    color: NEON[currentColorIndex],
+                    life: 1,
+                    width: 3
+                });
+            }
+            
+            currentColorIndex = (currentColorIndex + 1) % NEON.length;
+        }
+        
+        // Draw glowing line
+        function drawGlowingLine(ctx, x1, y1, x2, y2, color, width) {
+            // Outer glow
+            ctx.shadowColor = color;
+            ctx.shadowBlur = 20;
+            ctx.strokeStyle = color;
+            ctx.lineWidth = width;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            ctx.globalAlpha = 0.8;
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+            
+            // Inner bright line
+            ctx.shadowBlur = 5;
+            ctx.strokeStyle = '#FFFFFF';
+            ctx.lineWidth = width * 0.3;
+            ctx.globalAlpha = 0.9;
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+            
+            ctx.shadowBlur = 0;
+            ctx.globalAlpha = 1;
+        }
+        
+        // Particle system
+        function addParticle(x, y) {
+            particles.push({
+                x: x,
+                y: y,
+                vx: (Math.random() - 0.5) * 4,
+                vy: (Math.random() - 0.5) * 4,
+                color: NEON[Math.floor(Math.random() * NEON.length)],
+                size: Math.random() * 3 + 1,
+                life: 1
+            });
+        }
+        
+        // Letter particles
+        function createLetterParticle(x, y) {
+            const letter = LETTERS[Math.floor(Math.random() * LETTERS.length)];
+            const div = document.createElement('div');
+            div.className = 'letter-particle';
+            div.textContent = letter;
+            div.style.left = x + 'px';
+            div.style.top = y + 'px';
+            div.style.color = letterColors[letter];
+            div.style.textShadow = `0 0 20px ${letterColors[letter]}`;
+            document.body.appendChild(div);
+            
+            setTimeout(() => div.remove(), 3000);
+        }
+        
+        // Click explosion
+        document.addEventListener('click', (e) => {
+            const x = e.clientX;
+            const y = e.clientY;
+            
+            // Create explosion of particles
+            for (let i = 0; i < 50; i++) {
+                const angle = (i / 50) * Math.PI * 2;
+                const speed = Math.random() * 10 + 5;
+                particles.push({
+                    x: x,
+                    y: y,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    color: NEON[i % NEON.length],
+                    size: Math.random() * 5 + 2,
+                    life: 1
+                });
+            }
+            
+            // Create letter particles
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    createLetterParticle(x + Math.random() * 100 - 50, y + Math.random() * 100 - 50);
+                }, i * 100);
+            }
+        });
+        
+        // Keyboard controls
+        document.addEventListener('keydown', (e) => {
+            // Number keys for symmetry
+            if (e.key >= '1' && e.key <= '9') {
+                symmetryFolds = parseInt(e.key);
+                document.getElementById('symmetry-indicator').textContent = 
+                    symmetrySymbols[symmetryFolds % symmetrySymbols.length];
+            }
+            
+            // Space for random symmetry
+            if (e.key === ' ') {
+                e.preventDefault();
+                symmetryFolds = Math.floor(Math.random() * 8) + 3;
+                document.getElementById('symmetry-indicator').textContent = 
+                    symmetrySymbols[symmetryFolds % symmetrySymbols.length];
+            }
+            
+            // C to clear
+            if (e.key === 'c' || e.key === 'C') {
+                initCanvas();
+                particles = [];
+                trails = [];
+            }
+            
+            // S to save
+            if (e.key === 's' || e.key === 'S') {
+                // Combine both canvases
+                const tempCanvas = document.createElement('canvas');
+                tempCanvas.width = mainCanvas.width;
+                tempCanvas.height = mainCanvas.height;
+                const tempCtx = tempCanvas.getContext('2d');
+                tempCtx.drawImage(mainCanvas, 0, 0);
+                tempCtx.drawImage(trailCanvas, 0, 0);
+                
+                const link = document.createElement('a');
+                link.download = `hyperactiv_dance_${Date.now()}.png`;
+                link.href = tempCanvas.toDataURL();
+                link.click();
+            }
+        });
+        
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            time += 0.01;
+            
+            // Fade trail canvas slightly
+            trailCtx.globalAlpha = 0.02;
+            trailCtx.fillStyle = '#000000';
+            trailCtx.fillRect(0, 0, trailCanvas.width, trailCanvas.height);
+            trailCtx.globalAlpha = 1;
+            
+            // Clear main canvas
+            mainCtx.clearRect(0, 0, mainCanvas.width, mainCanvas.height);
+            
+            // Update and draw particles
+            particles = particles.filter(particle => {
+                particle.x += particle.vx;
+                particle.y += particle.vy;
+                particle.vx *= 0.98;
+                particle.vy *= 0.98;
+                particle.life -= 0.01;
+                
+                if (particle.life > 0) {
+                    mainCtx.globalAlpha = particle.life;
+                    mainCtx.fillStyle = particle.color;
+                    mainCtx.shadowColor = particle.color;
+                    mainCtx.shadowBlur = 10;
+                    mainCtx.beginPath();
+                    mainCtx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+                    mainCtx.fill();
+                    return true;
+                }
+                return false;
+            });
+            mainCtx.globalAlpha = 1;
+            mainCtx.shadowBlur = 0;
+            
+            // Draw center point
+            mainCtx.fillStyle = '#FFFFFF';
+            mainCtx.shadowColor = '#FFFFFF';
+            mainCtx.shadowBlur = 20;
+            mainCtx.beginPath();
+            mainCtx.arc(centerX, centerY, 3 + Math.sin(time * 2) * 2, 0, Math.PI * 2);
+            mainCtx.fill();
+            
+            // Draw symmetry guides (subtle)
+            mainCtx.strokeStyle = '#00FFFF';
+            mainCtx.lineWidth = 0.5;
+            mainCtx.globalAlpha = 0.1;
+            for (let i = 0; i < symmetryFolds; i++) {
+                const angle = (i * 2 * Math.PI) / symmetryFolds;
+                mainCtx.beginPath();
+                mainCtx.moveTo(centerX, centerY);
+                mainCtx.lineTo(
+                    centerX + Math.cos(angle) * Math.max(mainCanvas.width, mainCanvas.height),
+                    centerY + Math.sin(angle) * Math.max(mainCanvas.width, mainCanvas.height)
+                );
+                mainCtx.stroke();
+            }
+            mainCtx.globalAlpha = 1;
+            
+            // Animate cursor
+            const cursorSize = 20 + Math.sin(time * 3) * 5;
+            cursor.style.width = cursorSize + 'px';
+            cursor.style.height = cursorSize + 'px';
+            cursor.style.borderColor = NEON[Math.floor(time * 2) % NEON.length];
+            cursor.style.boxShadow = `0 0 ${20 + Math.sin(time * 4) * 10}px ${cursor.style.borderColor}`;
+            
+            // Rotate symmetry indicator
+            document.getElementById('symmetry-indicator').style.transform = 
+                `rotate(${time * 30}deg)`;
+        }
+        
+        animate();
+        
+        // Initial particles
+        for (let i = 0; i < 20; i++) {
+            addParticle(
+                Math.random() * mainCanvas.width,
+                Math.random() * mainCanvas.height
+            );
+        }
+    </script>
+</body>
+</html>

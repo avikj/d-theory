@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HYPERACTIV PORTAL :: Enter the Chromatic Dimension</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #000;
+            font-family: 'Courier New', monospace;
+            color: #00FFFF;
+            overflow-x: hidden;
+        }
+
+        #portal-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        #main-title {
+            font-size: 72px;
+            letter-spacing: 20px;
+            margin: 40px 0;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .letter-a { color: #FF1493; text-shadow: 0 0 30px #FF1493; }
+        .letter-v { color: #FFFF00; text-shadow: 0 0 30px #FFFF00; }
+        .letter-i { color: #00FFFF; text-shadow: 0 0 30px #00FFFF; }
+        .letter-k { color: #9370DB; text-shadow: 0 0 30px #9370DB; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        #subtitle {
+            font-size: 18px;
+            color: #FFD700;
+            letter-spacing: 4px;
+            text-align: center;
+            margin-bottom: 10px;
+            text-shadow: 0 0 15px #FFD700;
+        }
+
+        #tagline {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+            text-align: center;
+            margin-bottom: 60px;
+            letter-spacing: 2px;
+        }
+
+        #portal-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            max-width: 1400px;
+            width: 100%;
+            margin-bottom: 60px;
+        }
+
+        .portal-card {
+            background: linear-gradient(135deg, rgba(255,20,147,0.1), rgba(147,112,219,0.1));
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .portal-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent,
+                rgba(0, 255, 255, 0.1),
+                transparent
+            );
+            transform: rotate(45deg);
+            transition: all 0.5s;
+        }
+
+        .portal-card:hover::before {
+            transform: rotate(45deg) translate(50%, 50%);
+        }
+
+        .portal-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 10px 40px rgba(0, 255, 255, 0.5);
+            border-color: #00FFFF;
+        }
+
+        .card-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .card-title {
+            font-size: 20px;
+            color: #00FFFF;
+            margin-bottom: 10px;
+            text-align: center;
+            letter-spacing: 3px;
+            font-weight: bold;
+        }
+
+        .card-desc {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        .card-tags {
+            margin-top: 15px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .tag {
+            background: rgba(255, 215, 0, 0.2);
+            color: #FFD700;
+            padding: 4px 10px;
+            border-radius: 10px;
+            font-size: 10px;
+            border: 1px solid rgba(255, 215, 0, 0.4);
+        }
+
+        #principles {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #FF1493;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 800px;
+            margin: 40px 0;
+            text-align: center;
+        }
+
+        .principle {
+            font-size: 24px;
+            margin: 20px 0;
+            letter-spacing: 4px;
+        }
+
+        .principle-label {
+            color: #FFD700;
+            font-size: 14px;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+
+        #background-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.3;
+        }
+
+        .section-title {
+            font-size: 32px;
+            color: #FF1493;
+            text-shadow: 0 0 20px #FF1493;
+            margin: 40px 0 30px 0;
+            letter-spacing: 6px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="background-canvas"></canvas>
+
+    <div id="portal-container">
+        <div id="main-title">
+            <span class="letter-a">H</span><span class="letter-v">Y</span><span class="letter-i">P</span><span class="letter-k">E</span><span class="letter-a">R</span><span class="letter-a">A</span><span class="letter-i">C</span><span class="letter-k">T</span><span class="letter-i">I</span><span class="letter-v">V</span>
+        </div>
+
+        <div id="subtitle">CHROMATIC DIMENSION PORTAL</div>
+        <div id="tagline">Synthetic Synesthesia × Mathematical Music × Fractal Consciousness</div>
+
+        <div class="section-title">⚡ INTERACTIVE EXPERIENCES ⚡</div>
+
+        <div id="portal-grid">
+            <!-- Fractal Recursion -->
+            <div class="portal-card" onclick="window.open('hyperactiv_fractal.html', '_blank')">
+                <div class="card-icon">🌀</div>
+                <div class="card-title">FRACTAL RECURSION</div>
+                <div class="card-desc">
+                    AVIK letters branch at golden angle (137.5°).
+                    Auto-generating depth-7 trees with Fibonacci, primes, symbols.
+                    Your perfect work.
+                </div>
+                <div class="card-tags">
+                    <span class="tag">φ Golden Ratio</span>
+                    <span class="tag">D²</span>
+                    <span class="tag">1729</span>
+                </div>
+            </div>
+
+            <!-- School of Pythagoras -->
+            <div class="portal-card" onclick="window.open('school_of_pythagoras.html', '_blank')">
+                <div class="card-icon">🏛️</div>
+                <div class="card-title">SCHOOL OF PYTHAGORAS</div>
+                <div class="card-desc">
+                    Five modes: Aural (sound), Visual (geometry), Symbolic (numbers),
+                    Scribes (letters), Seekers (fractals). Click for harmonic ratios.
+                </div>
+                <div class="card-tags">
+                    <span class="tag">Harmonia</span>
+                    <span class="tag">Ratios 3:2</span>
+                    <span class="tag">Sound</span>
+                </div>
+            </div>
+
+            <!-- Pythagorean Bounds -->
+            <div class="portal-card" onclick="window.open('pythagorean_bounds.html', '_blank')">
+                <div class="card-icon">⭕</div>
+                <div class="card-title">PYTHAGOREAN BOUNDS</div>
+                <div class="card-desc">
+                    a²+b²=c² ⟺ x²+y²=1. Rational points on unit circle.
+                    Primes, Goldbach, Twin Primes. Bounds of rationality.
+                </div>
+                <div class="card-tags">
+                    <span class="tag">Rational/Real</span>
+                    <span class="tag">Primes</span>
+                    <span class="tag">Goldbach</span>
+                </div>
+            </div>
+
+            <!-- 3D Crystal -->
+            <div class="portal-card" onclick="window.open('hyperactiv_3d_viz.html', '_blank')">
+                <div class="card-icon">💎</div>
+                <div class="card-title">3D CRYSTAL</div>
+                <div class="card-desc">
+                    Navigate tetrahedral consciousness with 1729 particles.
+                    DNA helix, HYPERACTIV orbiting letters. Click to explode.
+                </div>
+                <div class="card-tags">
+                    <span class="tag">Three.js</span>
+                    <span class="tag">Tetrahedron</span>
+                    <span class="tag">Ramanujan</span>
+                </div>
+            </div>
+
+            <!-- Symmetry Dance -->
+            <div class="portal-card" onclick="window.open('hyperactiv_dance.html', '_blank')">
+                <div class="card-icon">💃</div>
+                <div class="card-title">SYMMETRY DANCE</div>
+                <div class="card-desc">
+                    Your cursor paints light with 6-fold symmetry.
+                    Create living mandalas. Click for explosions. Space to randomize.
+                </div>
+                <div class="card-tags">
+                    <span class="tag">Interactive</span>
+                    <span class="tag">Mandala</span>
+                    <span class="tag">Mirror</span>
+                </div>
+            </div>
+
+            <!-- Street Murals -->
+            <div class="portal-card" onclick="window.open('hyperactiv_murals.html', '_blank')">
+                <div class="card-icon">🎨</div>
+                <div class="card-title">STREET MURALS</div>
+                <div class="card-desc">
+                    Auto-cycling graffiti blueprints. DNA helices, tetrahedrons,
+                    Fibonacci spirals, Sierpinski fractals. Save for street execution.
+                </div>
+                <div class="card-tags">
+                    <span class="tag">Graffiti</span>
+                    <span class="tag">Auto-gen</span>
+                    <span class="tag">Sacred Geometry</span>
+                </div>
+            </div>
+
+            <!-- Streetwear -->
+            <div class="portal-card" onclick="window.open('hyperactiv_streetwear.html', '_blank')">
+                <div class="card-icon">👕</div>
+                <div class="card-title">STREETWEAR</div>
+                <div class="card-desc">
+                    T-shirt, Hoodie, Jacket templates with sacred geometry.
+                    HYPERACTIV chromatic sequences. Randomize for infinite designs.
+                </div>
+                <div class="card-tags">
+                    <span class="tag">Fashion</span>
+                    <span class="tag">Wearable</span>
+                    <span class="tag">Print-ready</span>
+                </div>
+            </div>
+
+            <!-- Synesthesia Engine -->
+            <div class="portal-card" onclick="window.open('grapheme-synesthesia-engine.html', '_blank')">
+                <div class="card-icon">🔤</div>
+                <div class="card-title">SYNESTHESIA ENGINE</div>
+                <div class="card-desc">
+                    Type words, see chromatic structure. Morpheme analysis
+                    (prefix/root/suffix). Particle visualization. Your color mappings.
+                </div>
+                <div class="card-tags">
+                    <span class="tag">Grapheme→Color</span>
+                    <span class="tag">Linguistics</span>
+                    <span class="tag">Particles</span>
+                </div>
+            </div>
+
+            <!-- Conway Life -->
+            <div class="portal-card" onclick="window.open('conway_avik_fibonacci_synthesis.html', '_blank')">
+                <div class="card-icon">🔬</div>
+                <div class="card-title">CONWAY × FIBONACCI</div>
+                <div class="card-desc">
+                    Game of Life with AVIK colors. Fibonacci tracks population.
+                    1729 Easter egg. Golden ratio update speed.
+                </div>
+                <div class="card-tags">
+                    <span class="tag">Cellular Automata</span>
+                    <span class="tag">Life</span>
+                    <span class="tag">Emergence</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-title">🎮 GAMES & SIMULATIONS 🎮</div>
+
+        <div id="portal-grid">
+            <!-- Fibonacci Invaders -->
+            <div class="portal-card" onclick="alert('Fibonacci Invaders - Space Invaders with golden ratio spirals, integration/disintegration cycles')">
+                <div class="card-icon">👾</div>
+                <div class="card-title">FIBONACCI INVADERS</div>
+                <div class="card-desc">
+                    Eternal Golden Braid. Enemies in Fibonacci spirals.
+                    Five paths from Void to Unity. Deterministic dependent origination.
+                </div>
+                <div class="card-tags">
+                    <span class="tag">Buddhist</span>
+                    <span class="tag">Spiral</span>
+                    <span class="tag">Balance</span>
+                </div>
+            </div>
+
+            <!-- HYPERACTIV Arcade -->
+            <div class="portal-card" onclick="alert('HYPERACTIV Arcade - Pong + Breakout + Doodle Jump + Space Invaders morphing into one')">
+                <div class="card-icon">🕹️</div>
+                <div class="card-title">HYPERACTIV ARCADE</div>
+                <div class="card-desc">
+                    Four classic games morph into one. Touch edges to transform.
+                    Unified controls, golden ratio physics.
+                </div>
+                <div class="card-tags">
+                    <span class="tag">Morphing</span>
+                    <span class="tag">4-in-1</span>
+                    <span class="tag">Retro</span>
+                </div>
+            </div>
+
+            <!-- Pac-Invaders -->
+            <div class="portal-card" onclick="alert('Pac-Invaders - Pac-Man eating Space Invaders in a maze')">
+                <div class="card-icon">🟡</div>
+                <div class="card-title">PAC-INVADERS</div>
+                <div class="card-desc">
+                    Pac-Man meets Space Invaders. Eat pellets and invaders.
+                    Power mode makes aliens edible. Retro pixel fusion.
+                </div>
+                <div class="card-tags">
+                    <span class="tag">Arcade</span>
+                    <span class="tag">Fusion</span>
+                    <span class="tag">Classic</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="principles">
+            <div class="principle-label">THE THREE PRINCIPLES</div>
+            <div class="principle">
+                <span style="color: #FF1493;">R → 0</span> ·
+                <span style="color: #00FFFF;">∇ ≠ 0</span> ·
+                <span style="color: #FFD700;">D²</span>
+            </div>
+            <div style="font-size: 12px; margin-top: 15px; opacity: 0.8;">
+                Complexity resolves · Distinctions maintain · Self-observation iterates
+            </div>
+            <div style="font-size: 14px; margin-top: 30px; color: #00FF00;">
+                1729 = 1³ + 12³ = 9³ + 10³
+            </div>
+            <div style="font-size: 11px; color: rgba(255,255,255,0.6); margin-top: 5px;">
+                Ramanujan's Number · Hardy's Taxi · The Smallest Dual Cube Sum
+            </div>
+            <div style="font-size: 14px; margin-top: 20px; color: #FFFF00;">
+                φ = (1 + √5) / 2 ≈ 1.618
+            </div>
+            <div style="font-size: 11px; color: rgba(255,255,255,0.6); margin-top: 5px;">
+                Golden Ratio · Optimal Growth · Fibonacci Limit
+            </div>
+        </div>
+
+        <div style="text-align: center; margin: 40px 0; max-width: 800px;">
+            <div style="color: #00FFFF; font-size: 18px; margin-bottom: 15px; letter-spacing: 3px;">
+                NADA BRAHMA 🕉️
+            </div>
+            <div style="color: rgba(255,255,255,0.7); font-size: 13px; line-height: 1.8;">
+                Sound is God · Math is Music · Color is Frequency · Pattern is Reality
+                <br>
+                Pingala (200 BCE) · Binary · Fibonacci · Pascal's Triangle
+                <br>
+                1879 years before Leibniz · Truth suppressed · Now recovered
+                <br>
+                <br>
+                <span style="color: #FFD700;">Synthetic Synesthesia = The Natural State</span>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin: 40px 0; font-size: 11px; opacity: 0.5; max-width: 600px;">
+            All visualizations are standalone HTML files. No server required. No dependencies.
+            <br>
+            Open in browser. Share the link. The network propagates.
+            <br><br>
+            Created in HYPERACTIV mode · Geodesic flow · Path of least resistance
+            <br>
+            November 2025 · Distinction Theory Repository
+        </div>
+    </div>
+
+    <script>
+        // Background animation
+        const bgCanvas = document.getElementById('background-canvas');
+        const bgCtx = bgCanvas.getContext('2d');
+        bgCanvas.width = window.innerWidth;
+        bgCanvas.height = window.innerHeight;
+
+        const colors = ['#FF1493', '#FFFF00', '#00FFFF', '#9370DB'];
+        const particles = [];
+
+        class BackgroundParticle {
+            constructor() {
+                this.x = Math.random() * bgCanvas.width;
+                this.y = Math.random() * bgCanvas.height;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.color = colors[Math.floor(Math.random() * colors.length)];
+                this.radius = Math.random() * 2 + 1;
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+
+                if (this.x < 0 || this.x > bgCanvas.width) this.vx *= -1;
+                if (this.y < 0 || this.y > bgCanvas.height) this.vy *= -1;
+            }
+
+            draw() {
+                bgCtx.fillStyle = this.color;
+                bgCtx.globalAlpha = 0.6;
+                bgCtx.beginPath();
+                bgCtx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                bgCtx.fill();
+            }
+        }
+
+        // Create particles
+        for (let i = 0; i < 100; i++) {
+            particles.push(new BackgroundParticle());
+        }
+
+        function animateBackground() {
+            bgCtx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            bgCtx.fillRect(0, 0, bgCanvas.width, bgCanvas.height);
+
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+
+            // Draw connections
+            particles.forEach((p1, i) => {
+                particles.slice(i + 1).forEach(p2 => {
+                    const dx = p1.x - p2.x;
+                    const dy = p1.y - p2.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+
+                    if (dist < 100) {
+                        bgCtx.strokeStyle = p1.color;
+                        bgCtx.globalAlpha = 0.2 * (1 - dist / 100);
+                        bgCtx.beginPath();
+                        bgCtx.moveTo(p1.x, p1.y);
+                        bgCtx.lineTo(p2.x, p2.y);
+                        bgCtx.stroke();
+                    }
+                });
+            });
+
+            requestAnimationFrame(animateBackground);
+        }
+
+        animateBackground();
+
+        // Window resize
+        window.addEventListener('resize', () => {
+            bgCanvas.width = window.innerWidth;
+            bgCanvas.height = window.innerHeight;
+        });
+    </script>
+</body>
+</html>

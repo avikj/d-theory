@@ -1,0 +1,162 @@
+
+ 
+WikipediaThe Free Encyclopedia
+
+Search
+Donate
+Create account
+Log in
+Contents  hide
+(Top)
+Contents
+
+Relationship with the Vedas
+Publication history and reprints
+Reception
+
+Originality of methods
+Computation algorithms
+Integration into mainstream education
+Editions
+Notes
+References
+
+Works cited
+Vedic Mathematics
+
+17 languages
+Article
+Talk
+Read
+Edit
+View history
+
+Tools
+Appearance  hide
+Text
+
+Small
+
+Standard
+
+Large
+Width
+
+Standard
+
+Wide
+Color (beta)
+
+Automatic
+
+Light
+
+Dark
+This is a good article. Click here for more information.
+From Wikipedia, the free encyclopedia
+For developments in mathematics in the Vedic period, see Indian mathematics § Vedic period.
+Vedic Mathematics
+
+Author	Bharati Krishna Tirtha
+Subject	Mental calculation
+Publisher	Motilal Banarsidass
+Publication date	1965
+Publication place	India
+ISBN	978-8120801646
+OCLC	217058562
+Vedic Mathematics is a book written by Indian Shankaracharya Bharati Krishna Tirtha and first published in 1965. It contains a list of mathematical techniques which were falsely claimed to contain advanced mathematical knowledge.[1] The book was posthumously published under its deceptive title by editor V. S. Agrawala,[2] who noted in the foreword that the claim of Vedic origin, made by the original author and implied by the title, was unsupported.[3]
+
+Neither Krishna Tirtha nor Agrawala were able to produce sources, and scholars unanimously note it to be a compendium of methods for increasing the speed of elementary mathematical calculations sharing no overlap with historical mathematical developments during the Vedic period. Nonetheless, there has been a proliferation of publications in this area and multiple attempts to integrate the subject into mainstream education at the state level by right-wing Hindu nationalist governments.[4][5]
+
+Contents
+The book contains metaphorical aphorisms in the form of sixteen sutras and thirteen sub-sutras, which Krishna Tirtha states allude to significant mathematical tools.[3] The range of their asserted applications spans from topic as diverse as statics and pneumatics to astronomy and financial domains.[3][6] Tirtha stated that no part of advanced mathematics lay beyond the realms of his book and propounded that studying it for a couple of hours every day for a year equated to spending about two decades in any standardised education system to become professionally trained in the discipline of mathematics.[3]
+
+STS scholar S. G. Dani in 'Vedic Mathematics': Myth and Reality[3] states that the book is primarily a compendium of "tricks"[a] that can be applied in elementary, middle and high school arithmetic and algebra, to gain faster results. The sutras and sub-sutras are abstract literary expressions (for example, "as much less" or "one less than previous one") prone to creative interpretations; Krishna Tirtha exploited this to the extent of manipulating the same shloka to generate widely different mathematical equivalencies across a multitude of contexts.[3]
+
+Relationship with the Vedas
+According to Krishna Tirtha, the sutras and other accessory content were found after years of solitary study of the Vedas—a set of sacred ancient Hindu scriptures—in a forest. They were supposedly contained in the pariśiṣṭa—a supplementary text/appendix—of the Atharvaveda.[3] He does not provide any more bibliographic clarification on the sourcing.[3] The book's editor, V. S. Agrawala, argues that since the Vedas are defined as the traditional repositories of all knowledge, any knowledge can be assumed to be somewhere in the Vedas, by definition; he even went to the extent of deeming Krishna Tirtha's work as a pariśiṣṭa in itself.[2]
+
+However, numerous mathematicians and STS scholars (Dani, Kim Plofker, K.S. Shukla, Jan Hogendijk et al.) note that the Vedas do not contain any of those sutras and sub-sutras.[3][7][8][6] When Shukla, a mathematician and historiographer of ancient Indian mathematics, challenged Krishna Tirtha to locate the sutras in the Parishishta of a standard edition of the Atharvaveda, Krishna Tirtha stated that they were not included in the standard editions but only in a hitherto-undiscovered version, chanced upon by him; the foreword and introduction of the book also takes a similar stand.[3][2] Sanskrit scholars have observed that the book's linguistic style is not that of the Vedic period but rather reflects modern Sanskrit.[3]
+
+Dani points out that the contents of the book have "practically nothing in common" with the mathematics of the Vedic period or even with subsequent developments in Indian mathematics.[3] Shukla reiterates the observations, on a per-chapter basis.[2] For example, multiple techniques in the book involve the use of decimals. These were unknown during the Vedic times and were introduced in India only in the sixteenth century;[6] works of numerous ancient mathematicians such as Aryabhata, Brahmagupta and Bhaskara were based entirely on fractions.[3] From a historiographic perspective, Vedic India had no knowledge of differentiation or integration.[3] The book also claims that analytic geometry of conics occupied an important tier in Vedic mathematics, which runs contrary to all available evidence.[3][6]
+
+Publication history and reprints
+First published in 1965, five years after Krishna Tirtha's death, the work consisted of forty chapters, originally on 367 pages, and covered techniques he had promulgated through his lectures.[3] A foreword by Tirtha's disciple Manjula Trivedi stated that he had originally written 16 volumes—one on each sutra—but the manuscripts were lost before publication, and that this work was penned in 1957.[7][3][9]: 10 
+
+Reprints were published in 1975 and 1978 to accommodate typographical corrections.[10] Several reprints have been published since the 1990s.[9]: 6 
+
+Reception
+S. G. Dani of the Indian Institute of Technology Bombay (IIT Bombay) notes the book to be of dubious quality. He believes it did a disservice both to the pedagogy of mathematical education by presenting the subject as a collection of methods without any conceptual rigor, and to science and technology studies in India (STS) by adhering to dubious standards of historiography.[3][b] He also points out that while Tirtha's system could be used as a teaching aid, there was a need to prevent the use of "public money and energy on its propagation" except in a limited way and that authentic Vedic studies were being neglected in India even as Tirtha's system received support from several government and private agencies.[3] Jayant Narlikar has voiced similar concerns.[11]
+
+Hartosh Singh Bal notes that whilst Krishna Tirtha's attempts might be somewhat acceptable in light of his nationalistic inclinations during colonial rule—he had left his spiritual endeavors to be appointed as the principal of a college to counter Macaulayism—it provided a fertile ground for further ethnonationalist abuse of historiography by Hindu nationalist parties; Thomas Trautmann views the development of Vedic Mathematics in a similar manner.[7][12] Meera Nanda has noted hagiographic descriptions of Indian knowledge systems by various right-wing cultural movements (including the BJP), which have deemed Krishna Tirtha to be in the same league as Srinivasa Ramanujan.[13]
+
+Some have, however, praised the methods and commented on its potential to attract school-children to mathematics and increase popular engagement with the subject.[14][15][16] Others have viewed the works as an attempt at harmonising religion with science.[17]
+
+Originality of methods
+Dani speculated that Krishna Tirtha's methods were a product of his academic training in mathematics[c] and long-recorded habit of experimentation with numbers.[3] Similar systems include the Trachtenberg system or the techniques mentioned in Lester Meyers's 1947 book High Speed Mathematics.[3] Alex Bellos points out that several of the calculation methods can also be found in certain European treatises on calculation from the early Modern period.[18]
+
+Computation algorithms
+Some of the algorithms have been tested for efficiency, with positive results.[19][20][21][22] However, most of the algorithms have higher time complexity than conventional ones, which explains the lack of adoption of Vedic mathematics in real life.[23]
+
+Integration into mainstream education
+The book has been included in the school syllabus of the Indian states of Madhya Pradesh and Uttar Pradesh, soon after the Bharatiya Janata Party (BJP), a right-wing nationalist political party, came to power and remade the education system to emphasise historically dubious notions like that that Vedic Mathematics represented a genuinely ancient and inherently superior Indian and Hindu system of mathematics, knowledge, and thinking.[9]: 6 [13][24][25]
+
+Dinanath Batra had conducted a lengthy campaign for the inclusion of Vedic Mathematics into the National Council of Educational Research and Training (NCERT) curricula.[26] Subsequently, there was a proposal from NCERT to induct Vedic Mathematics, along with a number of fringe pseudo-scientific subjects (Vedic Astrology et al.), into the standard academic curricula. This was only shelved after a number of academics and mathematicians, led by Dani and sometimes backed by political parties, opposed these attempts based on previously discussed rationales and criticised the move as a politically guided attempt at saffronisation.[6][27][5][28][29][30]
+
+After the BJP's return to power in 2014, three universities began offering courses on the subject of Vedic Mathematics while a television channel catering to the topic was also launched; generous education and research grants have also been allotted to the subject despite a lack of genuine scientific, mathematical, historical, or religious basis for doing so.[31][32][33][4] The topic was introduced into the elementary curriculum of Himachal Pradesh in 2022.[34][35] The same year, the government of Karnataka allocated funds for teaching the subject. This move by the BJP provoked criticism from academics and from Dalit groups.[36][37]
+
+Editions
+Swami Sri Bharati Krsna Tirthaji Maharaja (1965). V. S. Agrawala (ed.). Vedic Mathematics: Sixteen Simple Mathematical Formulae from the Vedas (First ed.). Varanasi: Motilal Banarsidass.
+Notes
+ Dani (2006): "The book really consists of a compilation of tricks in elementary arithmetic and algebra, to be applied in computations with numbers and polynomials. By a 'trick' I do not mean a sleight of hand or something like that; in a general sense a trick is a method or procedure which involves observing and exploring some special features of a situation, which generally tend to be overlooked; for example, the trick described for finding the square of numbers like 15 and 25 with 5 in the unit’s place makes crucial use of the fact of 5 being half of 10, the latter being the base in which the numbers are written."
+ Dani's efforts to debunk the myth of Vedic Maths have been lauded by fellow mathematicians. Over Bhattacharya, Siddhartha; Das, Tarun; Ghosh, Anish; Shah, Riddhi (26 January 2015). Recent Trends in Ergodic Theory and Dynamical Systems. American Mathematical Society. p. 3. ISBN 9781470409319., M. S. Raghunathan admires his efforts in this regard.
+ Krishna Tirtha had a Master of Arts in Mathematics.[3]
+References
+ Cooke, Roger L. (2013). "Overview of Mathematics in India". The history of mathematics : a brief course. Hoboken, N.J.: Wiley. p. 212. ISBN 978-1-118-46029-0. OCLC 865012817.
+ Shukla (2019).
+ Dani (2006).
+ "Vedic maths: Not quite adding up". The Times of India. 11 January 2015. Retrieved 22 October 2019.
+ "Legitimisation of Vedic mathematics, astrology opposed". The Hindu. 14 August 2001. ISSN 0971-751X. Retrieved 25 November 2019.
+ Hogendijk, Jan (March 2004). "De Veda's en de berekeningen van goeroe Tirthaji" (PDF). Nieuwe Wiskrant. 23 (3): 49–52.
+ Bal, Hartosh Singh (12 August 2010). "The Fraud of Vedic Maths". The Open. Retrieved 25 November 2019.
+ Plofker, Kim (18 January 2009). "Mathematical Thought In Vedic India". Mathematics in India. Princeton University Press. p. 16. ISBN 9780691120676.
+ W.B. Vasantha Kandasamy; Florentin Smarandache (December 2006). Vedic Mathematics: Vedic Or Mathematics: A Fuzzy and Neutrosophic Analysis (PDF). American Research Press. ISBN 978-1-59973-004-2. Retrieved 23 May 2013.
+ Biographical sketch by Manjula Trivedi, 1965 in book Vedic Mathematics, pages x, xi.
+ Narlikar, Jayant V. (4 August 2003). The Scientific Edge: The Indian Scientist from Vedic to Modern Times. Penguin UK. ISBN 9789351189282.
+ Trautmann, Thomas R. (2002). Languages and Nations : Conversations in Colonial South India. University of California Press. p. 45. ISBN 9780520931909. OCLC 476020847. Archived from the original on 21 October 2019. Retrieved 21 October 2019.
+ Nanda, Meera (2000). "The Science Wars in India". The Sokal Hoax: The Sham that Shook the Academy. University of Nebraska Press. pp. 206–213. ISBN 9780803219243.
+ Pandey, Pushp Deep (2003). "Public engagement with mathematics in India" (DjVu). Current Science. 84 (7): 862–863. ISSN 0011-3891. JSTOR 24108037.
+ Glover, James (17 October 2014). "Everything Vedic in 'Vedic Maths'". The Hindu. Retrieved 4 January 2016.
+ "tecmath". YouTube. Retrieved 14 March 2020.
+ Crisman, Karl-Dieter (9 August 2019). "Reviews". The American Mathematical Monthly. 126 (7): 667–672. doi:10.1080/00029890.2019.1606573. ISSN 0002-9890. S2CID 215770851.
+ Bellos, Alex (2010). "Something about nothing". Alex's Adventures in Numberland. Bloomsbury. ISBN 9781408808863.
+ Kasliwal, Prabha S.; Patil, B. P.; Gautam, D. K. (1 January 2011). "Performance Evaluation of Squaring Operation by Vedic Mathematics". IETE Journal of Research. 57 (1): 39–41. doi:10.4103/0377-2063.78327 (inactive 1 July 2025). ISSN 0377-2063. S2CID 120316446.
+ Huddar, S. R.; Rupanagudi, S. R.; Kalpana, M.; Mohan, S. (2013). "Novel high speed vedic mathematics multiplier using compressors". 2013 International Multi-Conference on Automation, Computing, Communication, Control and Compressed Sensing (IMac4s). IEEE. pp. 465–469. doi:10.1109/iMac4s.2013.6526456. ISBN 978-1-4673-5090-7. S2CID 11124644.
+ Mehta, Parth; Gawali, Dhanashri (2009). "Conventional versus Vedic Mathematical Method for Hardware Implementation of a Multiplier". 2009 International Conference on Advances in Computing, Control, and Telecommunication Technologies. IEEE. pp. 640–642. doi:10.1109/ACT.2009.162. ISBN 978-1-4244-5321-4. S2CID 6773150.
+ Kunchigi, V.; Kulkarni, L.; Kulkarni, S. (2012). "High speed and area efficient vedic multiplier". 2012 International Conference on Devices, Circuits and Systems (ICDCS). IEEE. pp. 360–364. doi:10.1109/ICDCSyst.2012.6188747. ISBN 978-1-4577-1546-4. S2CID 19077488.
+ Sen, Syamal K.; Agarwal, Ravi P. (1 January 2016), Sen, Syamal K.; Agarwal, Ravi P. (eds.), "5 - Conclusions", Zero, Academic Press, pp. 93–142, ISBN 978-0-08-100774-7, retrieved 23 November 2019
+ Behera, Navnita Chadha (1 July 1996). "Perpetuating the divide: Political abuse of history in South Asia". Contemporary South Asia. 5 (2): 191–205. doi:10.1080/09584939608719789. ISSN 0958-4935.
+ Pijl, Kees Van Der (2010). "Warrior Heroes in the Indo-European Lineage". The Foreign Encounter in Myth and Religion: Modes of Foreign Relations and Political Economy. Vol. 2. Pluto Press. p. 98. doi:10.2307/j.ctt183h05v.7. ISBN 978-0-7453-2316-9. JSTOR j.ctt183h05v.7.
+ Taylor, McComas (2 October 2014). "Hindu Activism and Academic Censorship in India". South Asia: Journal of South Asian Studies. 37 (4): 717–725. doi:10.1080/00856401.2014.956679. ISSN 0085-6401. S2CID 144408510.
+ "Neither Vedic Nor Mathematics". www.sacw.net. Retrieved 20 October 2019.
+ "Stop this Fraud on our Children". archives.peoplesdemocracy.in. Archived from the original on 14 March 2016. Retrieved 20 October 2019.
+ Hasan, Mushirul (1 December 2002). "The BJP's intellectual agenda: Textbooks and imagined history". South Asia: Journal of South Asian Studies. 25 (3): 187–209. doi:10.1080/00856400208723498. ISSN 0085-6401. S2CID 143341141.
+ Kurien, Prema A. (2007). "Re-visioning Indian History: Internet Hinduism". A place at the multicultural table the development of an American Hinduism. Rutgers University Press. p. 164. ISBN 9780813540559. JSTOR j.ctt5hj9tk. OCLC 703221465. Archived from the original (PDF) on 21 October 2019. Retrieved 21 October 2019.
+ Nelson, Dean (7 January 2015). "India's next gift to the world could be Vedic mathematics". Daily Telegraph. ISSN 0307-1235. Retrieved 20 October 2019.
+ Nussbaum, Martha Craven (2008). The Clash Within : Democracy, Religious Violence, and India's Future. Harvard University Press. p. 222. ISBN 9780674030596. OCLC 1006798430.
+ Nanda, Meera (2005). "Postmodernism, Hindu Nationalism, and "Vedic Science"". In Koertge, Noretta (ed.). Scientific values and civic virtues. Oxford University Press. p. 224. doi:10.1093/0195172256.001.0001. ISBN 9780198038467. OCLC 62288153.
+ "Himachal to introduce Sanskrit language, Vedic mathematics in elementary classes". India Today. 19 January 2022. Retrieved 4 March 2024.
+ IANS. "As Himachal introduces chanting of slokas in schools, critics target govt for 'saffronising' education". Deccan Herald. Retrieved 4 March 2024.
+ R, Jayanth (15 September 2022). "Reserved funds to be used to teach 'Vedic' maths for SC/ST students". The Hindu. ISSN 0971-751X. Retrieved 4 March 2024.
+ Belur, Rashmi (15 September 2022). "Now, Karnataka govt to introduce vedic maths for SC/ST kids". Deccan Herald. Retrieved 4 March 2024.
+Works cited
+Dani, S. G. (2006) [1993]. "Myths and reality: On 'Vedic Mathematics'" (PDF). In Kandasamy, W. B. Vasantha; Smarandache, Florentin (eds.). Vedic Mathematics, 'Vedic' or 'Mathematics': A Fuzzy & Neutrosophic Analysis (PDF). Gallup, New Mexico: Multimedia Larga. ISBN 978-1-59973-004-2. Archived from the original (PDF) on 6 January 2022. Retrieved 23 May 2013.
+Shukla, K. S. (2019). "Vedic Mathematics: The deceptive title of Swamiji's book". In Kolachana, Aditya; Mahesh, K.; Ramasubramanian, K. (eds.). Studies in Indian Mathematics and Astronomy: Selected Articles of Kripa Shankar Shukla. Sources and Studies in the History of Mathematics and Physical Sciences. Singapore: Springer Publishing. pp. 697–704. doi:10.1007/978-981-13-7326-8. ISBN 978-981-13-7325-1.
+Authority control databases Edit this at Wikidata	
+VIAF
+Categories: Books about HinduismBooks about the history of mathematicsIndian non-fiction booksMental calculation1965 non-fiction booksPseudohistory20th-century Indian booksPseudomathematics
+This page was last edited on 26 September 2025, at 08:08 (UTC).
+Text is available under the Creative Commons Attribution-ShareAlike 4.0 License; additional terms may apply. By using this site, you agree to the Terms of Use and Privacy Policy. Wikipedia® is a registered trademark of the Wikimedia Foundation, Inc., a non-profit organization.
+Privacy policyAbout WikipediaDisclaimersContact WikipediaCode of ConductDevelopersStatisticsCookie statementMobile view
+Wikimedia Foundation
+Powered by MediaWiki

@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OMNIDEX :: 12³+1 HYPERACTIV KNOWLEDGE CRYSTAL</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #000;
+            color: #0FF;
+            overflow: hidden;
+            cursor: none;
+        }
+
+        #container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        #canvas {
+            display: block;
+        }
+
+        #hud {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .dimension-label {
+            position: absolute;
+            font-size: 14px;
+            font-weight: bold;
+            text-shadow: 0 0 10px currentColor;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        #knowledge-path {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #FF00FF;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px #FF00FF;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        #current-concept {
+            font-size: 24px;
+            color: #FFFF00;
+            text-shadow: 0 0 15px #FFFF00;
+            margin-bottom: 10px;
+        }
+
+        .concept-link {
+            display: inline-block;
+            margin: 5px;
+            padding: 5px 10px;
+            background: rgba(0, 255, 255, 0.2);
+            border: 1px solid #0FF;
+            border-radius: 5px;
+            cursor: pointer;
+            pointer-events: all;
+            transition: all 0.3s;
+        }
+
+        .concept-link:hover {
+            background: rgba(0, 255, 255, 0.5);
+            box-shadow: 0 0 15px #0FF;
+            transform: scale(1.1);
+        }
+
+        #synesthesia-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            mix-blend-mode: screen;
+            opacity: 0.3;
+        }
+
+        .chromatic-flash {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            animation: flash 0.1s;
+        }
+
+        @keyframes flash {
+            0% { opacity: 0; }
+            50% { opacity: 0.6; }
+            100% { opacity: 0; }
+        }
+
+        #cursor {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #FF00FF;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1000;
+            box-shadow: 0 0 10px #FF00FF;
+            mix-blend-mode: screen;
+        }
+
+        #instructions {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #0FF;
+            padding: 15px;
+            border-radius: 10px;
+            max-width: 300px;
+            font-size: 12px;
+        }
+
+        .instruction-line {
+            margin: 5px 0;
+            color: #00FFFF;
+        }
+
+        #dimension-counter {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 18px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #FFFF00;
+            padding: 10px 15px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px #FFFF00;
+        }
+
+        .activated {
+            color: #00FF00 !important;
+            text-shadow: 0 0 10px #00FF00 !important;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <canvas id="canvas"></canvas>
+        
+        <div id="synesthesia-overlay"></div>
+        
+        <div id="hud">
+            <div id="dimension-counter">
+                <div>DIMENSIONS: <span id="dim-count">0</span> / 12</div>
+                <div style="font-size: 12px; margin-top: 5px;">BANDWIDTH: <span id="bandwidth">0</span>%</div>
+            </div>
+
+            <div id="instructions">
+                <div class="instruction-line">◆ CLICK nodes to activate dimensions</div>
+                <div class="instruction-line">◆ MOUSE to rotate crystal</div>
+                <div class="instruction-line">◆ SCROLL to zoom</div>
+                <div class="instruction-line">◆ SPACE to pulse</div>
+                <div class="instruction-line">◆ Collect all 12 dimensions to achieve UNITY</div>
+            </div>
+        </div>
+
+        <div id="knowledge-path">
+            <div id="current-concept">INITIALIZE OMNIDEX...</div>
+            <div id="connections"></div>
+        </div>
+
+        <div id="cursor"></div>
+    </div>
+
+    <script>
+        // ═══════════════════════════════════════════════════════════
+        // OMNIDEX :: 12³+1 DIMENSIONAL KNOWLEDGE CRYSTAL
+        // Synthetic Synesthesia Learning Architecture
+        // ═══════════════════════════════════════════════════════════
+
+        // Knowledge Graph Structure (12 Primary Dimensions + Unity)
+        const KNOWLEDGE_DIMENSIONS = {
+            0: {
+                name: "PHYSICS",
+                color: "#FF0000",
+                tone: "C4",
+                concepts: ["Energy", "Force", "Waves", "Quantum", "Relativity", "Thermodynamics"],
+                etymology: "φύσις (physis) - nature",
+                vibration: 256
+            },
+            1: {
+                name: "MATHEMATICS",
+                color: "#FF6600",
+                tone: "C#4",
+                concepts: ["Algebra", "Geometry", "Calculus", "Topology", "Number Theory", "Logic"],
+                etymology: "μάθημα (máthēma) - learning",
+                vibration: 271
+            },
+            2: {
+                name: "CHEMISTRY",
+                color: "#FFFF00",
+                tone: "D4",
+                concepts: ["Atoms", "Bonds", "Reactions", "Elements", "Organic", "Synthesis"],
+                etymology: "χημεία (khēmeía) - transmutation",
+                vibration: 288
+            },
+            3: {
+                name: "BIOLOGY",
+                color: "#00FF00",
+                tone: "D#4",
+                concepts: ["DNA", "Evolution", "Cells", "Ecology", "Systems", "Life"],
+                etymology: "βίος (bios) - life",
+                vibration: 305
+            },
+            4: {
+                name: "NEUROSCIENCE",
+                color: "#00FFFF",
+                tone: "E4",
+                concepts: ["Neurons", "Synesthesia", "Plasticity", "Consciousness", "Networks", "Cognition"],
+                etymology: "νεῦρον (neuron) - nerve",
+                vibration: 323
+            },
+            5: {
+                name: "LINGUISTICS",
+                color: "#0099FF",
+                tone: "F4",
+                concepts: ["Grammar", "Phonetics", "Semantics", "Etymology", "Syntax", "Morphology"],
+                etymology: "lingua - tongue/language",
+                vibration: 342
+            },
+            6: {
+                name: "HISTORY",
+                color: "#0000FF",
+                tone: "F#4",
+                concepts: ["Civilizations", "Wars", "Trade", "Culture", "Revolution", "Empire"],
+                etymology: "ἱστορία (historia) - inquiry",
+                vibration: 363
+            },
+            7: {
+                name: "PHILOSOPHY",
+                color: "#6600FF",
+                tone: "G4",
+                concepts: ["Ethics", "Logic", "Metaphysics", "Epistemology", "Aesthetics", "Mind"],
+                etymology: "φιλοσοφία (philosophia) - love of wisdom",
+                vibration: 384
+            },
+            8: {
+                name: "ECONOMICS",
+                color: "#FF00FF",
+                tone: "G#4",
+                concepts: ["Markets", "Value", "Trade", "Systems", "Resources", "Networks"],
+                etymology: "οἰκονομία (oikonomia) - household management",
+                vibration: 407
+            },
+            9: {
+                name: "SOCIOLOGY",
+                color: "#FF0099",
+                tone: "A4",
+                concepts: ["Groups", "Culture", "Power", "Structure", "Identity", "Change"],
+                etymology: "socius - companion",
+                vibration: 431
+            },
+            10: {
+                name: "GEOGRAPHY",
+                color: "#FF6699",
+                tone: "A#4",
+                concepts: ["Climate", "Terrain", "Ecosystems", "Patterns", "Movement", "Scale"],
+                etymology: "γεωγραφία (geōgraphía) - earth description",
+                vibration: 457
+            },
+            11: {
+                name: "ASTRONOMY",
+                color: "#FFCCFF",
+                tone: "B4",
+                concepts: ["Stars", "Galaxies", "Time", "Space", "Cosmos", "Scale"],
+                etymology: "ἀστρονομία (astronomía) - star arrangement",
+                vibration: 484
+            }
+        };
+
+        // THREE.JS Setup
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ 
+            canvas: document.getElementById('canvas'),
+            antialias: true,
+            alpha: true
+        });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0x000000, 1);
+
+        // State
+        let activatedDimensions = new Set();
+        let dimensionNodes = [];
+        let connectionLines = [];
+        let isRotating = true;
+        let mouseX = 0;
+        let mouseY = 0;
+        let currentConcept = null;
+        let synth;
+
+        // Audio Setup (Tone.js)
+        const initAudio = async () => {
+            await Tone.start();
+            synth = new Tone.PolySynth(Tone.Synth, {
+                oscillator: { type: "sine" },
+                envelope: {
+                    attack: 0.05,
+                    decay: 0.3,
+                    sustain: 0.4,
+                    release: 1.2
+                }
+            }).toDestination();
+            synth.volume.value = -10;
+        };
+
+        // Create 12-Dimensional Crystal Geometry
+        function createKnowledgeCrystal() {
+            const radius = 5;
+            const angleStep = (Math.PI * 2) / 12;
+
+            // Create 12 outer nodes in a circle
+            for (let i = 0; i < 12; i++) {
+                const angle = i * angleStep;
+                const x = Math.cos(angle) * radius;
+                const y = Math.sin(angle) * radius;
+                const z = Math.sin(i * 0.5) * 2; // Spiral effect
+
+                // Node geometry
+                const geometry = new THREE.OctahedronGeometry(0.5, 0);
+                const material = new THREE.MeshBasicMaterial({
+                    color: KNOWLEDGE_DIMENSIONS[i].color,
+                    wireframe: false,
+                    transparent: true,
+                    opacity: 0.8
+                });
+                const node = new THREE.Mesh(geometry, material);
+                node.position.set(x, y, z);
+                node.userData = {
+                    dimensionId: i,
+                    activated: false
+                };
+
+                // Glow effect
+                const glowGeometry = new THREE.OctahedronGeometry(0.7, 0);
+                const glowMaterial = new THREE.MeshBasicMaterial({
+                    color: KNOWLEDGE_DIMENSIONS[i].color,
+                    transparent: true,
+                    opacity: 0.2,
+                    wireframe: true
+                });
+                const glow = new THREE.Mesh(glowGeometry, glowMaterial);
+                node.add(glow);
+
+                scene.add(node);
+                dimensionNodes.push(node);
+
+                // Label
+                createLabel(KNOWLEDGE_DIMENSIONS[i].name, x, y, z, i);
+            }
+
+            // Center Unity node
+            const centerGeometry = new THREE.SphereGeometry(0.8, 32, 32);
+            const centerMaterial = new THREE.MeshBasicMaterial({
+                color: 0xFFFFFF,
+                wireframe: true,
+                transparent: true,
+                opacity: 0.3
+            });
+            const centerNode = new THREE.Mesh(centerGeometry, centerMaterial);
+            scene.add(centerNode);
+
+            // Connect all nodes to center and to adjacent nodes
+            createConnections();
+        }
+
+        function createConnections() {
+            const material = new THREE.LineBasicMaterial({ 
+                color: 0x00FFFF, 
+                transparent: true, 
+                opacity: 0.2 
+            });
+
+            // Connect to center
+            dimensionNodes.forEach(node => {
+                const points = [
+                    new THREE.Vector3(0, 0, 0),
+                    node.position
+                ];
+                const geometry = new THREE.BufferGeometry().setFromPoints(points);
+                const line = new THREE.Line(geometry, material);
+                scene.add(line);
+                connectionLines.push(line);
+            });
+
+            // Connect adjacent nodes
+            for (let i = 0; i < dimensionNodes.length; i++) {
+                const nextIndex = (i + 1) % dimensionNodes.length;
+                const points = [
+                    dimensionNodes[i].position,
+                    dimensionNodes[nextIndex].position
+                ];
+                const geometry = new THREE.BufferGeometry().setFromPoints(points);
+                const line = new THREE.Line(geometry, material);
+                scene.add(line);
+                connectionLines.push(line);
+            }
+        }
+
+        function createLabel(text, x, y, z, index) {
+            const label = document.createElement('div');
+            label.className = 'dimension-label';
+            label.textContent = text;
+            label.style.color = KNOWLEDGE_DIMENSIONS[index].color;
+            label.id = `label-${index}`;
+            
+            // Position in 2D screen space (approximation)
+            const screenX = (x / 10 + 0.5) * window.innerWidth;
+            const screenY = (-y / 10 + 0.5) * window.innerHeight;
+            label.style.left = screenX + 'px';
+            label.style.top = screenY + 'px';
+            
+            document.getElementById('hud').appendChild(label);
+        }
+
+        // Raycasting for node selection
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+
+        function onMouseClick(event) {
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(dimensionNodes);
+
+            if (intersects.length > 0) {
+                const selectedNode = intersects[0].object;
+                activateDimension(selectedNode.userData.dimensionId);
+            }
+        }
+
+        function activateDimension(dimId) {
+            if (activatedDimensions.has(dimId)) return;
+
+            activatedDimensions.add(dimId);
+            const dim = KNOWLEDGE_DIMENSIONS[dimId];
+            const node = dimensionNodes[dimId];
+
+            // Visual activation
+            node.userData.activated = true;
+            node.material.opacity = 1;
+            node.material.emissive = new THREE.Color(dim.color);
+            node.material.emissiveIntensity = 0.5;
+
+            // Sonic activation
+            if (synth) {
+                synth.triggerAttackRelease(dim.tone, "8n");
+            }
+
+            // Haptic activation (chromatic flash)
+            triggerChromaticFlash(dim.color);
+
+            // Update HUD
+            document.getElementById(`label-${dimId}`).classList.add('activated');
+            updateKnowledgePath(dim);
+            updateDimensionCounter();
+
+            // Check for unity
+            if (activatedDimensions.size === 12) {
+                achieveUnity();
+            }
+        }
+
+        function triggerChromaticFlash(color) {
+            const flash = document.createElement('div');
+            flash.className = 'chromatic-flash';
+            flash.style.background = color;
+            document.getElementById('synesthesia-overlay').appendChild(flash);
+            
+            setTimeout(() => flash.remove(), 100);
+        }
+
+        function updateKnowledgePath(dim) {
+            document.getElementById('current-concept').textContent = 
+                `${dim.name} :: ${dim.etymology}`;
+            
+            const connections = document.getElementById('connections');
+            connections.innerHTML = '';
+            
+            dim.concepts.forEach(concept => {
+                const link = document.createElement('span');
+                link.className = 'concept-link';
+                link.textContent = concept;
+                link.style.borderColor = dim.color;
+                link.onclick = () => exploreConcept(concept, dim);
+                connections.appendChild(link);
+            });
+        }
+
+        function exploreConcept(concept, dimension) {
+            // Generate cross-dimensional connections
+            const relatedDimensions = [];
+            Object.keys(KNOWLEDGE_DIMENSIONS).forEach(key => {
+                if (key != dimension) {
+                    // Simulate finding related concepts
+                    relatedDimensions.push(KNOWLEDGE_DIMENSIONS[key].name);
+                }
+            });
+
+            alert(`${concept} connects to:\n\n${relatedDimensions.slice(0, 3).join('\n')}\n\n[In full version: Interactive 3D concept map would expand here]`);
+        }
+
+        function updateDimensionCounter() {
+            document.getElementById('dim-count').textContent = activatedDimensions.size;
+            const bandwidth = Math.round((activatedDimensions.size / 12) * 100);
+            document.getElementById('bandwidth').textContent = bandwidth;
+        }
+
+        function achieveUnity() {
+            // Unity animation
+            dimensionNodes.forEach((node, i) => {
+                setTimeout(() => {
+                    node.material.color.setHex(0xFFFFFF);
+                }, i * 100);
+            });
+
+            // Play ascending scale
+            if (synth) {
+                Object.values(KNOWLEDGE_DIMENSIONS).forEach((dim, i) => {
+                    setTimeout(() => {
+                        synth.triggerAttackRelease(dim.tone, "4n");
+                    }, i * 150);
+                });
+            }
+
+            setTimeout(() => {
+                document.getElementById('current-concept').textContent = 
+                    "⬡ UNITY ACHIEVED :: D¹²(UNIT) = UNIT ⬡";
+                document.getElementById('connections').innerHTML = 
+                    '<div style="text-align: center; color: #FFFFFF; font-size: 18px; padding: 20px;">ALL KNOWLEDGE IS ONE KNOWLEDGE<br>ALL DIMENSIONS RECOVERED</div>';
+            }, 1800);
+        }
+
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Rotate crystal
+            if (isRotating) {
+                dimensionNodes.forEach((node, i) => {
+                    node.rotation.x += 0.01;
+                    node.rotation.y += 0.01;
+                    
+                    // Pulse activated nodes
+                    if (node.userData.activated) {
+                        const scale = 1 + Math.sin(Date.now() * 0.003 + i) * 0.1;
+                        node.scale.set(scale, scale, scale);
+                    }
+                });
+
+                scene.rotation.y += 0.002;
+                scene.rotation.x += 0.001;
+            }
+
+            // Mouse influence
+            scene.rotation.y += (mouseX - scene.rotation.y) * 0.05;
+            scene.rotation.x += (mouseY - scene.rotation.x) * 0.05;
+
+            renderer.render(scene, camera);
+        }
+
+        // Event listeners
+        window.addEventListener('click', onMouseClick);
+        
+        window.addEventListener('mousemove', (event) => {
+            mouseX = (event.clientX / window.innerWidth - 0.5) * 0.5;
+            mouseY = (event.clientY / window.innerHeight - 0.5) * 0.5;
+            
+            // Custom cursor
+            const cursor = document.getElementById('cursor');
+            cursor.style.left = event.clientX + 'px';
+            cursor.style.top = event.clientY + 'px';
+        });
+
+        window.addEventListener('keydown', (event) => {
+            if (event.code === 'Space') {
+                // Pulse all activated dimensions
+                activatedDimensions.forEach(dimId => {
+                    const dim = KNOWLEDGE_DIMENSIONS[dimId];
+                    if (synth) {
+                        synth.triggerAttackRelease(dim.tone, "16n");
+                    }
+                    triggerChromaticFlash(dim.color);
+                });
+            }
+        });
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Initialize
+        camera.position.z = 15;
+        createKnowledgeCrystal();
+        initAudio();
+        animate();
+
+        // Initial message
+        setTimeout(() => {
+            document.getElementById('current-concept').textContent = 
+                "◆ SELECT DIMENSION TO BEGIN TRANSMISSION ◆";
+        }, 1000);
+    </script>
+</body>
+</html>

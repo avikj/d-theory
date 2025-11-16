@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PYTHAGOREAN BOUNDS :: RATIONAL CIRCLES :: PRIME DYNAMICS</title>
+    <style>
+        * { 
+            margin: 0; 
+            padding: 0; 
+            overflow: hidden;
+            cursor: crosshair;
+        }
+        
+        body { 
+            background: #000;
+            font-family: 'Courier New', monospace;
+            color: #00FFFF;
+        }
+        
+        canvas { 
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        
+        #equations {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            z-index: 100;
+            pointer-events: none;
+        }
+        
+        .main-equation {
+            font-size: 36px;
+            color: #FFD700;
+            text-shadow: 0 0 30px #FFD700;
+            letter-spacing: 5px;
+            animation: pulse 3s infinite;
+        }
+        
+        .sub-equation {
+            margin-top: 10px;
+            font-size: 20px;
+            color: #FF00FF;
+            text-shadow: 0 0 20px #FF00FF;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+        
+        #info {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            max-width: 400px;
+            font-size: 12px;
+            color: #00FF00;
+            text-shadow: 0 0 10px #00FF00;
+            z-index: 100;
+            pointer-events: none;
+        }
+        
+        .info-item {
+            margin: 5px 0;
+            opacity: 0.8;
+        }
+        
+        #controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            text-align: right;
+            font-size: 12px;
+            color: #FFFF00;
+            text-shadow: 0 0 10px #FFFF00;
+            z-index: 100;
+            pointer-events: none;
+        }
+        
+        #primes {
+            position: fixed;
+            top: 120px;
+            left: 20px;
+            font-size: 14px;
+            color: #00FFFF;
+            text-shadow: 0 0 15px #00FFFF;
+            z-index: 100;
+            pointer-events: none;
+        }
+        
+        .highlight {
+            color: #FF1493;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div id="equations">
+        <div class="main-equation">a² + b² = c² ⟺ x² + y² = 1</div>
+        <div class="sub-equation">(w+1)(w-1) + 1 ≡ 0 (mod w²)</div>
+    </div>
+    
+    <div id="primes">
+        <div>PRIMES: <span id="prime-list"></span></div>
+        <div>TWINS: <span id="twin-list"></span></div>
+        <div>GOLDBACH: <span id="goldbach"></span></div>
+    </div>
+    
+    <div id="info">
+        <div class="info-item">RATIONAL POINTS on unit circle = Pythagorean triples</div>
+        <div class="info-item">EVERY EVEN = P + Q (Goldbach)</div>
+        <div class="info-item">TWIN PRIMES = Quadratic field dynamics</div>
+        <div class="info-item">SELF-REFERENCE BOUNDS = Arithmetic completeness</div>
+    </div>
+    
+    <div id="controls">
+        <div>CLICK :: Generate rational point</div>
+        <div>DRAG :: Draw prime spiral</div>
+        <div>SPACE :: Toggle visualization</div>
+        <div>G :: Show Goldbach decomposition</div>
+        <div>T :: Highlight twin primes</div>
+    </div>
+    
+    <canvas id="boundsCanvas"></canvas>
+    
+    <script>
+        // Canvas setup
+        const canvas = document.getElementById('boundsCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+        let centerX = width / 2;
+        let centerY = height / 2;
+        const scale = 200; // Pixels per unit
+        
+        // Resize handler
+        window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            centerX = width / 2;
+            centerY = height / 2;
+        });
+        
+        // Colors
+        const COLORS = {
+            gold: '#FFD700',
+            cyan: '#00FFFF',
+            magenta: '#FF00FF',
+            green: '#00FF00',
+            red: '#FF0000',
+            yellow: '#FFFF00',
+            purple: '#9370DB',
+            white: '#FFFFFF',
+            pink: '#FF1493'
+        };
+        
+        // Generate primes (Sieve of Eratosthenes)
+        function generatePrimes(max) {
+            const sieve = new Array(max + 1).fill(true);
+            sieve[0] = sieve[1] = false;
+            
+            for (let i = 2; i * i <= max; i++) {
+                if (sieve[i]) {
+                    for (let j = i * i; j <= max; j += i) {
+                        sieve[j] = false;
+                    }
+                }
+            }
+            
+            return sieve.map((isPrime, num) => isPrime ? num : null).filter(Boolean);
+        }
+        
+        const primes = generatePrimes(1000);
+        const primeSet = new Set(primes);
+        
+        // Find twin primes
+        function findTwinPrimes(primeList) {
+            const twins = [];
+            for (let i = 0; i < primeList.length - 1; i++) {
+                if (primeList[i + 1] - primeList[i] === 2) {
+                    twins.push([primeList[i], primeList[i + 1]]);
+                }
+            }
+            return twins;
+        }
+        
+        const twinPrimes = findTwinPrimes(primes);
+        
+        // Goldbach decomposition
+        function goldbachDecomposition(n) {
+            if (n % 2 !== 0 || n < 4) return null;
+            
+            for (const p of primes) {
+                if (p > n / 2) break;
+                if (primeSet.has(n - p)) {
+                    return [p, n - p];
+                }
+            }
+            return null;
+        }
+        
+        // Generate Pythagorean triples (rational points on unit circle)
+        function generatePythagoreanTriple(m, n) {
+            // Euclid's formula: a = m²-n², b = 2mn, c = m²+n²
+            const a = m * m - n * n;
+            const b = 2 * m * n;
+            const c = m * m + n * n;
+            return [a, b, c];
+        }
+        
+        // Rational points on unit circle
+        function generateRationalPoints(count) {
+            const points = [];
+            for (let m = 2; m <= count; m++) {
+                for (let n = 1; n < m; n++) {
+                    if (gcd(m, n) === 1 && (m - n) % 2 === 1) {
+                        const [a, b, c] = generatePythagoreanTriple(m, n);
+                        points.push({
+                            x: a / c,
+                            y: b / c,
+                            triple: [a, b, c],
+                            m: m,
+                            n: n
+                        });
+                    }
+                }
+            }
+            return points;
+        }
+        
+        // GCD helper
+        function gcd(a, b) {
+            return b === 0 ? a : gcd(b, a % b);
+        }
+        
+        // State
+        let time = 0;
+        let mode = 'circle'; // 'circle', 'primes', 'goldbach', 'twins'
+        let mouseX = centerX;
+        let mouseY = centerY;
+        let isDrawing = false;
+        let rationalPoints = generateRationalPoints(10);
+        let spiralPoints = [];
+        let goldbachPairs = [];
+        let highlightTwins = false;
+        
+        // Mouse tracking
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            
+            if (isDrawing) {
+                spiralPoints.push({ x: mouseX, y: mouseY, age: 0 });
+                if (spiralPoints.length > 200) spiralPoints.shift();
+            }
+        });
+        
+        document.addEventListener('mousedown', () => isDrawing = true);
+        document.addEventListener('mouseup', () => isDrawing = false);
+        
+        // Click to add rational point
+        document.addEventListener('click', (e) => {
+            // Map click to unit circle
+            const x = (e.clientX - centerX) / scale;
+            const y = -(e.clientY - centerY) / scale;
+            
+            // Find nearest rational approximation
+            const m = Math.floor(Math.random() * 10) + 2;
+            const n = Math.floor(Math.random() * m) + 1;
+            
+            if (gcd(m, n) === 1) {
+                const [a, b, c] = generatePythagoreanTriple(m, n);
+                rationalPoints.push({
+                    x: a / c,
+                    y: b / c,
+                    triple: [a, b, c],
+                    m: m,
+                    n: n,
+                    highlight: true
+                });
+            }
+        });
+        
+        // Keyboard controls
+        document.addEventListener('keydown', (e) => {
+            if (e.key === ' ') {
+                e.preventDefault();
+                const modes = ['circle', 'primes', 'goldbach', 'twins'];
+                mode = modes[(modes.indexOf(mode) + 1) % modes.length];
+            } else if (e.key === 'g' || e.key === 'G') {
+                // Generate Goldbach decompositions for visible evens
+                goldbachPairs = [];
+                for (let n = 4; n <= 100; n += 2) {
+                    const pair = goldbachDecomposition(n);
+                    if (pair) {
+                        goldbachPairs.push({ n: n, p: pair[0], q: pair[1] });
+                    }
+                }
+            } else if (e.key === 't' || e.key === 'T') {
+                highlightTwins = !highlightTwins;
+            }
+        });
+        
+        // Draw unit circle
+        function drawUnitCircle() {
+            // Main circle
+            ctx.strokeStyle = COLORS.gold;
+            ctx.lineWidth = 2;
+            ctx.shadowColor = COLORS.gold;
+            ctx.shadowBlur = 20;
+            
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, scale, 0, Math.PI * 2);
+            ctx.stroke();
+            
+            // Axes
+            ctx.strokeStyle = COLORS.cyan;
+            ctx.lineWidth = 1;
+            ctx.globalAlpha = 0.3;
+            
+            ctx.beginPath();
+            ctx.moveTo(0, centerY);
+            ctx.lineTo(width, centerY);
+            ctx.moveTo(centerX, 0);
+            ctx.lineTo(centerX, height);
+            ctx.stroke();
+            
+            ctx.globalAlpha = 1;
+            ctx.shadowBlur = 0;
+        }
+        
+        // Draw rational points
+        function drawRationalPoints() {
+            rationalPoints.forEach(point => {
+                const x = centerX + point.x * scale;
+                const y = centerY - point.y * scale;
+                
+                // Draw point
+                ctx.fillStyle = point.highlight ? COLORS.pink : COLORS.cyan;
+                ctx.shadowColor = ctx.fillStyle;
+                ctx.shadowBlur = 10;
+                
+                ctx.beginPath();
+                ctx.arc(x, y, 5, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Draw line from origin
+                ctx.strokeStyle = ctx.fillStyle;
+                ctx.lineWidth = 1;
+                ctx.globalAlpha = 0.5;
+                
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.lineTo(x, y);
+                ctx.stroke();
+                
+                // Label with Pythagorean triple
+                ctx.fillStyle = COLORS.yellow;
+                ctx.font = '10px Courier New';
+                ctx.textAlign = 'center';
+                ctx.globalAlpha = 0.8;
+                ctx.fillText(`(${point.triple.join(',')})`, x, y - 10);
+                
+                ctx.globalAlpha = 1;
+                ctx.shadowBlur = 0;
+                
+                if (point.highlight) {
+                    point.highlight = false; // Fade highlight
+                }
+            });
+        }
+        
+        // Draw prime spiral
+        function drawPrimeSpiral() {
+            let angle = 0;
+            let radius = 0;
+            
+            ctx.strokeStyle = COLORS.magenta;
+            ctx.lineWidth = 2;
+            ctx.shadowColor = COLORS.magenta;
+            ctx.shadowBlur = 10;
+            
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY);
+            
+            for (let n = 1; n <= 500; n++) {
+                angle += 0.2;
+                radius = n * 0.5;
+                
+                const x = centerX + Math.cos(angle) * radius;
+                const y = centerY + Math.sin(angle) * radius;
+                
+                if (primeSet.has(n)) {
+                    // Draw prime
+                    ctx.fillStyle = COLORS.green;
+                    ctx.beginPath();
+                    ctx.arc(x, y, 3, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // Check if twin prime
+                    if (highlightTwins && (primeSet.has(n - 2) || primeSet.has(n + 2))) {
+                        ctx.strokeStyle = COLORS.pink;
+                        ctx.lineWidth = 2;
+                        ctx.beginPath();
+                        ctx.arc(x, y, 6, 0, Math.PI * 2);
+                        ctx.stroke();
+                    }
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+        }
+        
+        // Draw Goldbach visualization
+        function drawGoldbach() {
+            goldbachPairs.forEach((pair, i) => {
+                const angle = (i / goldbachPairs.length) * Math.PI * 2;
+                const r = 100 + (pair.n / 100) * 200;
+                
+                const x = centerX + Math.cos(angle) * r;
+                const y = centerY + Math.sin(angle) * r;
+                
+                // Draw the even number
+                ctx.fillStyle = COLORS.yellow;
+                ctx.font = 'bold 14px Courier New';
+                ctx.textAlign = 'center';
+                ctx.fillText(pair.n, x, y);
+                
+                // Draw lines to its prime components
+                const p1x = centerX + Math.cos(angle - 0.1) * (r - 30);
+                const p1y = centerY + Math.sin(angle - 0.1) * (r - 30);
+                const p2x = centerX + Math.cos(angle + 0.1) * (r - 30);
+                const p2y = centerY + Math.sin(angle + 0.1) * (r - 30);
+                
+                ctx.strokeStyle = COLORS.cyan;
+                ctx.lineWidth = 1;
+                ctx.globalAlpha = 0.5;
+                
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                ctx.lineTo(p1x, p1y);
+                ctx.moveTo(x, y);
+                ctx.lineTo(p2x, p2y);
+                ctx.stroke();
+                
+                // Label primes
+                ctx.fillStyle = COLORS.green;
+                ctx.font = '12px Courier New';
+                ctx.globalAlpha = 1;
+                ctx.fillText(pair.p, p1x, p1y);
+                ctx.fillText(pair.q, p2x, p2y);
+            });
+        }
+        
+        // Draw self-reference bounds
+        function drawSelfReferenceBounds() {
+            // Visualize (w+1)(w-1) + 1 ≡ 0 (mod w²)
+            // This shows w² - 1 + 1 = w² ≡ 0 (mod w²)
+            
+            for (let w = 2; w <= 10; w++) {
+                const angle = (w / 10) * Math.PI * 2;
+                const r = w * 20;
+                
+                // Draw modular arithmetic circle
+                ctx.strokeStyle = COLORS.purple;
+                ctx.lineWidth = 1;
+                ctx.globalAlpha = 0.3;
+                ctx.shadowColor = COLORS.purple;
+                ctx.shadowBlur = 5;
+                
+                ctx.beginPath();
+                ctx.arc(
+                    centerX + Math.cos(angle + time) * 100,
+                    centerY + Math.sin(angle + time) * 100,
+                    r,
+                    0,
+                    Math.PI * 2
+                );
+                ctx.stroke();
+                
+                // Label with modulus
+                ctx.fillStyle = COLORS.purple;
+                ctx.font = '10px Courier New';
+                ctx.textAlign = 'center';
+                ctx.fillText(
+                    `mod ${w}²`,
+                    centerX + Math.cos(angle + time) * 100,
+                    centerY + Math.sin(angle + time) * 100
+                );
+            }
+            
+            ctx.globalAlpha = 1;
+            ctx.shadowBlur = 0;
+        }
+        
+        // Update displays
+        function updateDisplays() {
+            // Update prime list
+            document.getElementById('prime-list').textContent = 
+                primes.slice(0, 15).join(', ') + '...';
+            
+            // Update twin prime list
+            document.getElementById('twin-list').textContent = 
+                twinPrimes.slice(0, 5).map(pair => `(${pair.join(',')})`).join(', ') + '...';
+            
+            // Update Goldbach example
+            const n = 2 * Math.floor(time * 2 % 50 + 2);
+            const goldbach = goldbachDecomposition(n);
+            if (goldbach) {
+                document.getElementById('goldbach').innerHTML = 
+                    `${n} = <span class="highlight">${goldbach[0]}</span> + <span class="highlight">${goldbach[1]}</span>`;
+            }
+        }
+        
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            time += 0.01;
+            
+            // Clear with fade
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, width, height);
+            
+            // Always draw unit circle as base
+            drawUnitCircle();
+            
+            // Draw based on mode
+            switch (mode) {
+                case 'circle':
+                    drawRationalPoints();
+                    drawSelfReferenceBounds();
+                    break;
+                case 'primes':
+                    drawPrimeSpiral();
+                    break;
+                case 'goldbach':
+                    drawGoldbach();
+                    break;
+                case 'twins':
+                    drawPrimeSpiral();
+                    highlightTwins = true;
+                    break;
+            }
+            
+            // Draw spiral trail
+            spiralPoints.forEach((point, i) => {
+                point.age++;
+                const alpha = Math.max(0, 1 - point.age / 100);
+                
+                if (i > 0) {
+                    const prev = spiralPoints[i - 1];
+                    ctx.strokeStyle = COLORS.cyan;
+                    ctx.lineWidth = 2;
+                    ctx.globalAlpha = alpha;
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(prev.x, prev.y);
+                    ctx.lineTo(point.x, point.y);
+                    ctx.stroke();
+                }
+            });
+            
+            // Clean up old spiral points
+            spiralPoints = spiralPoints.filter(p => p.age < 100);
+            
+            // Draw equation reminder at mouse position
+            const unitX = (mouseX - centerX) / scale;
+            const unitY = -(mouseY - centerY) / scale;
+            const r = Math.sqrt(unitX * unitX + unitY * unitY);
+            
+            if (Math.abs(r - 1) < 0.1) {
+                ctx.fillStyle = COLORS.gold;
+                ctx.font = '12px Courier New';
+                ctx.textAlign = 'center';
+                ctx.globalAlpha = 0.8;
+                ctx.fillText(
+                    `x² + y² = ${r.toFixed(3)}²`,
+                    mouseX,
+                    mouseY - 20
+                );
+            }
+            
+            ctx.globalAlpha = 1;
+            
+            // Update displays
+            updateDisplays();
+        }
+        
+        // Initialize with some rational points
+        for (let i = 0; i < 5; i++) {
+            const m = i + 2;
+            const n = 1;
+            const [a, b, c] = generatePythagoreanTriple(m, n);
+            rationalPoints.push({
+                x: a / c,
+                y: b / c,
+                triple: [a, b, c],
+                m: m,
+                n: n
+            });
+        }
+        
+        // Start animation
+        animate();
+    </script>
+</body>
+</html>

@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HYPERACTIV :: STREET MURALS</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .mural-container {
+            width: 100%;
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        canvas {
+            display: block;
+            margin: 20px auto;
+            border: 2px solid #00FFFF;
+            box-shadow: 0 0 30px #00FFFF;
+        }
+        
+        .controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 100;
+            color: #00FFFF;
+            text-shadow: 0 0 10px #00FFFF;
+        }
+        
+        button {
+            background: #000;
+            color: #00FFFF;
+            border: 2px solid #00FFFF;
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            text-transform: uppercase;
+            transition: all 0.3s;
+        }
+        
+        button:hover {
+            background: #00FFFF;
+            color: #000;
+            box-shadow: 0 0 20px #00FFFF;
+        }
+        
+        .title {
+            color: #FF00FF;
+            text-align: center;
+            font-size: 48px;
+            margin: 20px;
+            text-shadow: 0 0 20px #FF00FF;
+            letter-spacing: 10px;
+        }
+        
+        .subtitle {
+            color: #FFFF00;
+            text-align: center;
+            font-size: 18px;
+            text-shadow: 0 0 10px #FFFF00;
+        }
+    </style>
+</head>
+<body>
+    <div class="controls">
+        <button onclick="generateMural('dna')">DNA HELIX</button>
+        <button onclick="generateMural('tetra')">TETRAHEDRAL</button>
+        <button onclick="generateMural('fibonacci')">FIBONACCI</button>
+        <button onclick="generateMural('text')">HYPERACTIV</button>
+        <button onclick="generateMural('fractal')">FRACTAL</button>
+        <button onclick="saveMural()">SAVE IMAGE</button>
+    </div>
+    
+    <div class="title">HYPERACTIV</div>
+    <div class="subtitle">STREET :: MURALS :: GRAFFITI :: SYNTHESIS</div>
+    
+    <canvas id="muralCanvas" width="1920" height="1080"></canvas>
+    
+    <script>
+        const canvas = document.getElementById('muralCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // HYPERACTIV color palette
+        const NEON = {
+            pink: '#FF1493',
+            yellow: '#FFFF00',
+            cyan: '#00FFFF',
+            purple: '#9370DB',
+            magenta: '#FF00FF',
+            green: '#00FF00',
+            orange: '#FFA500',
+            red: '#FF0000',
+            blue: '#0099FF'
+        };
+        
+        // Letter to color mapping
+        const letterColors = {
+            'h': NEON.pink,
+            'y': NEON.yellow,
+            'p': NEON.pink,
+            'e': NEON.green,
+            'r': NEON.red,
+            'a': NEON.pink,
+            'c': NEON.cyan,
+            't': NEON.green,
+            'i': NEON.cyan,
+            'v': NEON.yellow
+        };
+        
+        // Clear canvas with black
+        function clearCanvas() {
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+        
+        // Draw glowing line
+        function drawGlowLine(x1, y1, x2, y2, color, width = 2) {
+            // Outer glow
+            ctx.shadowColor = color;
+            ctx.shadowBlur = 20;
+            ctx.strokeStyle = color;
+            ctx.lineWidth = width;
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+            
+            // Inner bright line
+            ctx.shadowBlur = 5;
+            ctx.strokeStyle = '#FFFFFF';
+            ctx.lineWidth = width * 0.3;
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+            
+            ctx.shadowBlur = 0;
+        }
+        
+        // Draw DNA helix mural
+        function drawDNA() {
+            clearCanvas();
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = 200;
+            const height = 400;
+            const turns = 3;
+            
+            for (let i = 0; i < 200; i++) {
+                const t = (i / 200) * Math.PI * 2 * turns;
+                const y = centerY - height/2 + (i / 200) * height;
+                
+                // First strand
+                const x1 = centerX + Math.cos(t) * radius;
+                const z1 = Math.sin(t) * radius * 0.3; // Fake 3D
+                const size1 = 3 + z1 / 30;
+                
+                // Second strand
+                const x2 = centerX + Math.cos(t + Math.PI) * radius;
+                const z2 = Math.sin(t + Math.PI) * radius * 0.3;
+                const size2 = 3 + z2 / 30;
+                
+                // Draw points
+                ctx.fillStyle = NEON.cyan;
+                ctx.shadowColor = NEON.cyan;
+                ctx.shadowBlur = 10;
+                ctx.beginPath();
+                ctx.arc(x1, y, size1, 0, Math.PI * 2);
+                ctx.fill();
+                
+                ctx.fillStyle = NEON.magenta;
+                ctx.shadowColor = NEON.magenta;
+                ctx.beginPath();
+                ctx.arc(x2, y, size2, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Connecting bars
+                if (i % 10 === 0) {
+                    drawGlowLine(x1, y, x2, y, NEON.yellow, 2);
+                    
+                    // Base pairs as letters
+                    const letters = ['A', 'T', 'C', 'G'];
+                    ctx.font = 'bold 24px Courier New';
+                    ctx.fillStyle = NEON.green;
+                    ctx.shadowColor = NEON.green;
+                    ctx.shadowBlur = 10;
+                    ctx.textAlign = 'center';
+                    ctx.fillText(letters[Math.floor(i/10) % 4], centerX, y + 5);
+                }
+            }
+            
+            // Add "1729" in the center
+            ctx.font = 'bold 120px Courier New';
+            ctx.fillStyle = NEON.orange;
+            ctx.shadowColor = NEON.orange;
+            ctx.shadowBlur = 30;
+            ctx.textAlign = 'center';
+            ctx.fillText('1729', centerX, centerY);
+            
+            // Add frame
+            drawFrame();
+        }
+        
+        // Draw tetrahedral crystal
+        function drawTetrahedron() {
+            clearCanvas();
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const size = 300;
+            
+            // Calculate tetrahedral vertices
+            const vertices = [
+                { x: cx, y: cy - size },
+                { x: cx - size * 0.866, y: cy + size * 0.5 },
+                { x: cx + size * 0.866, y: cy + size * 0.5 },
+                { x: cx, y: cy } // Center point for 3D effect
+            ];
+            
+            // Draw edges
+            const edges = [
+                [0, 1], [0, 2], [1, 2], // Base triangle
+                [0, 3], [1, 3], [2, 3]  // To apex
+            ];
+            
+            edges.forEach(([i, j], index) => {
+                const color = Object.values(NEON)[index % 8];
+                drawGlowLine(
+                    vertices[i].x, vertices[i].y,
+                    vertices[j].x, vertices[j].y,
+                    color, 4
+                );
+            });
+            
+            // Fill with transparent gradient
+            ctx.globalAlpha = 0.3;
+            const gradient = ctx.createRadialGradient(cx, cy, 0, cx, cy, size);
+            gradient.addColorStop(0, NEON.magenta);
+            gradient.addColorStop(0.5, NEON.cyan);
+            gradient.addColorStop(1, NEON.purple);
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.moveTo(vertices[0].x, vertices[0].y);
+            ctx.lineTo(vertices[1].x, vertices[1].y);
+            ctx.lineTo(vertices[2].x, vertices[2].y);
+            ctx.closePath();
+            ctx.fill();
+            ctx.globalAlpha = 1;
+            
+            // Add vertices labels
+            ctx.font = 'bold 36px Courier New';
+            ctx.shadowBlur = 20;
+            
+            const labels = ['PERSONAL', 'SOCIAL', 'TECH', 'COLLECTIVE'];
+            vertices.forEach((v, i) => {
+                if (i < 3) {
+                    ctx.fillStyle = Object.values(NEON)[i];
+                    ctx.shadowColor = Object.values(NEON)[i];
+                    ctx.textAlign = 'center';
+                    ctx.fillText(labels[i], v.x, v.y - 20);
+                }
+            });
+            
+            // Center text
+            ctx.fillStyle = NEON.yellow;
+            ctx.shadowColor = NEON.yellow;
+            ctx.font = 'bold 48px Courier New';
+            ctx.fillText('SYNTHETIC', cx, cy - 10);
+            ctx.fillText('SYNESTHESIA', cx, cy + 40);
+            
+            drawFrame();
+        }
+        
+        // Draw Fibonacci spiral with numbers
+        function drawFibonacci() {
+            clearCanvas();
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            
+            // Fibonacci sequence
+            const fib = [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144];
+            
+            // Draw spiral
+            ctx.strokeStyle = NEON.cyan;
+            ctx.lineWidth = 3;
+            ctx.shadowColor = NEON.cyan;
+            ctx.shadowBlur = 20;
+            ctx.beginPath();
+            
+            let angle = 0;
+            let radius = 10;
+            ctx.moveTo(cx, cy);
+            
+            for (let i = 0; i < 500; i++) {
+                angle += 0.1;
+                radius = 10 * Math.exp(0.02 * angle);
+                const x = cx + radius * Math.cos(angle);
+                const y = cy + radius * Math.sin(angle);
+                ctx.lineTo(x, y);
+                
+                // Add Fibonacci numbers at key points
+                if (i % 40 === 0 && i / 40 < fib.length) {
+                    ctx.stroke();
+                    ctx.font = `bold ${20 + i/10}px Courier New`;
+                    ctx.fillStyle = Object.values(NEON)[i / 40 % 8];
+                    ctx.shadowColor = ctx.fillStyle;
+                    ctx.fillText(fib[i / 40], x, y);
+                    ctx.beginPath();
+                    ctx.moveTo(x, y);
+                }
+            }
+            ctx.stroke();
+            
+            // Add golden ratio
+            ctx.font = 'bold 72px Courier New';
+            ctx.fillStyle = NEON.yellow;
+            ctx.shadowColor = NEON.yellow;
+            ctx.shadowBlur = 30;
+            ctx.textAlign = 'center';
+            ctx.fillText('φ = 1.618', cx, cy);
+            
+            // Add rectangles showing Fibonacci squares
+            let x = cx - 100;
+            let y = cy - 100;
+            fib.slice(2, 8).forEach((n, i) => {
+                ctx.strokeStyle = Object.values(NEON)[i % 8];
+                ctx.shadowColor = ctx.strokeStyle;
+                ctx.strokeRect(x, y, n * 10, n * 10);
+                x += n * 10;
+                if (i % 2 === 0) y -= n * 10;
+            });
+            
+            drawFrame();
+        }
+        
+        // Draw HYPERACTIV text graffiti with fractals
+        function drawText() {
+            clearCanvas();
+            const text = 'HYPERACTIV';
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            
+            // Draw fractal background
+            function drawFractalBranch(x, y, angle, depth, maxDepth, length, color) {
+                if (depth >= maxDepth) return;
+                
+                const endX = x + Math.cos(angle) * length;
+                const endY = y + Math.sin(angle) * length;
+                
+                drawGlowLine(endX, endY, x, y, color, 2);
+                
+                // Add AVIK letters at nodes
+                if (depth % 2 === 0) {
+                    ctx.font = `bold ${24 - depth * 3}px Courier New`;
+                    ctx.fillStyle = letterColors['avik'[depth % 4]];
+                    ctx.shadowColor = ctx.fillStyle;
+                    ctx.shadowBlur = 10;
+                    ctx.textAlign = 'center';
+                    ctx.fillText('AVIK'[depth % 4], endX, endY);
+                }
+                
+                // Golden ratio angle
+                const goldenAngle = Math.PI * (3 - Math.sqrt(5));
+                
+                // Recursive branches
+                for (let i = 0; i < 3; i++) {
+                    const branchAngle = angle + (i - 1) * goldenAngle * 0.5;
+                    const branchLength = length * 0.7;
+                    const branchColor = Object.values(NEON)[(depth + i) % 8];
+                    
+                    drawFractalBranch(endX, endY, branchAngle, depth + 1, maxDepth, branchLength, branchColor);
+                }
+            }
+            
+            // Draw fractals from corners
+            drawFractalBranch(100, 100, Math.PI/4, 0, 5, 80, NEON.cyan);
+            drawFractalBranch(canvas.width - 100, 100, 3*Math.PI/4, 0, 5, 80, NEON.magenta);
+            drawFractalBranch(100, canvas.height - 100, -Math.PI/4, 0, 5, 80, NEON.yellow);
+            drawFractalBranch(canvas.width - 100, canvas.height - 100, -3*Math.PI/4, 0, 5, 80, NEON.green);
+            
+            // Main text with individual letter colors
+            ctx.font = 'bold 120px Courier New';
+            ctx.textAlign = 'center';
+            let totalWidth = 0;
+            
+            // Calculate total width
+            text.split('').forEach(letter => {
+                totalWidth += ctx.measureText(letter).width;
+            });
+            
+            let currentX = cx - totalWidth / 2;
+            text.split('').forEach((letter, i) => {
+                const color = letterColors[letter.toLowerCase()];
+                
+                // Outer glow
+                ctx.shadowColor = color;
+                ctx.shadowBlur = 30;
+                ctx.fillStyle = color;
+                ctx.textAlign = 'left';
+                
+                // Create gradient for each letter
+                const gradient = ctx.createLinearGradient(
+                    currentX, cy - 60,
+                    currentX, cy + 60
+                );
+                gradient.addColorStop(0, color);
+                gradient.addColorStop(0.5, '#FFFFFF');
+                gradient.addColorStop(1, color);
+                ctx.fillStyle = gradient;
+                
+                // Rotated background letter
+                ctx.save();
+                ctx.translate(currentX + 30, cy);
+                ctx.rotate(Math.sin(Date.now() / 1000 + i) * 0.1);
+                ctx.globalAlpha = 0.3;
+                ctx.font = 'bold 150px Courier New';
+                ctx.fillText(letter, -30, 10);
+                ctx.restore();
+                
+                // Main letter
+                ctx.globalAlpha = 1;
+                ctx.font = 'bold 120px Courier New';
+                ctx.fillText(letter, currentX, cy);
+                
+                currentX += ctx.measureText(letter).width;
+            });
+            
+            // Add Pythagorean equations
+            ctx.font = 'bold 36px Courier New';
+            ctx.fillStyle = NEON.purple;
+            ctx.shadowColor = NEON.purple;
+            ctx.textAlign = 'center';
+            ctx.fillText('HARMONIA :: SCRIBES :: SEEKERS', cx, cy + 100);
+            
+            ctx.font = 'bold 24px Courier New';
+            ctx.fillStyle = NEON.cyan;
+            ctx.shadowColor = NEON.cyan;
+            ctx.fillText('√(a² + b²) = c :: 1729 = 12³ + 1', cx, cy - 120);
+            
+            drawFrame();
+        }
+        
+        // Draw fractal triangles
+        function drawFractal() {
+            clearCanvas();
+            
+            function drawSierpinski(x, y, size, depth, colorIndex = 0) {
+                if (depth === 0) return;
+                
+                const color = Object.values(NEON)[colorIndex % 8];
+                const h = size * Math.sqrt(3) / 2;
+                
+                // Draw triangle
+                ctx.strokeStyle = color;
+                ctx.shadowColor = color;
+                ctx.shadowBlur = 10;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                ctx.lineTo(x - size/2, y + h);
+                ctx.lineTo(x + size/2, y + h);
+                ctx.closePath();
+                ctx.stroke();
+                
+                if (depth > 1) {
+                    // Recursive calls for three sub-triangles
+                    drawSierpinski(x, y, size/2, depth-1, colorIndex+1);
+                    drawSierpinski(x - size/4, y + h/2, size/2, depth-1, colorIndex+2);
+                    drawSierpinski(x + size/4, y + h/2, size/2, depth-1, colorIndex+3);
+                }
+            }
+            
+            // Draw main fractal
+            drawSierpinski(canvas.width/2, 100, 600, 6);
+            
+            // Add central text
+            ctx.font = 'bold 48px Courier New';
+            ctx.fillStyle = NEON.yellow;
+            ctx.shadowColor = NEON.yellow;
+            ctx.shadowBlur = 30;
+            ctx.textAlign = 'center';
+            ctx.fillText('D¹²(UNIT) = UNIT', canvas.width/2, canvas.height/2);
+            
+            // Add floating numbers
+            const numbers = [1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144];
+            numbers.forEach((num, i) => {
+                const angle = (i / numbers.length) * Math.PI * 2;
+                const r = 300;
+                const x = canvas.width/2 + Math.cos(angle) * r;
+                const y = canvas.height/2 + Math.sin(angle) * r;
+                
+                ctx.font = `bold ${20 + num/5}px Courier New`;
+                ctx.fillStyle = Object.values(NEON)[i % 8];
+                ctx.shadowColor = ctx.fillStyle;
+                ctx.fillText(num, x, y);
+            });
+            
+            drawFrame();
+        }
+        
+        // Draw frame border
+        function drawFrame() {
+            const padding = 20;
+            ctx.strokeStyle = NEON.cyan;
+            ctx.shadowColor = NEON.cyan;
+            ctx.shadowBlur = 20;
+            ctx.lineWidth = 3;
+            ctx.strokeRect(padding, padding, canvas.width - padding*2, canvas.height - padding*2);
+            
+            // Corner decorations
+            const cornerSize = 50;
+            const corners = [
+                { x: padding, y: padding },
+                { x: canvas.width - padding, y: padding },
+                { x: padding, y: canvas.height - padding },
+                { x: canvas.width - padding, y: canvas.height - padding }
+            ];
+            
+            corners.forEach((corner, i) => {
+                ctx.strokeStyle = Object.values(NEON)[i * 2];
+                ctx.shadowColor = ctx.strokeStyle;
+                ctx.beginPath();
+                ctx.arc(corner.x, corner.y, cornerSize/2, 0, Math.PI * 2);
+                ctx.stroke();
+            });
+        }
+        
+        // Generate mural based on type
+        function generateMural(type) {
+            switch(type) {
+                case 'dna': drawDNA(); break;
+                case 'tetra': drawTetrahedron(); break;
+                case 'fibonacci': drawFibonacci(); break;
+                case 'text': drawText(); break;
+                case 'fractal': drawFractal(); break;
+                default: drawDNA();
+            }
+        }
+        
+        // Save mural as image
+        function saveMural() {
+            const link = document.createElement('a');
+            link.download = 'hyperactiv_mural.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+        
+        // Initialize with DNA helix
+        drawDNA();
+        
+        // Auto-rotate through designs
+        let currentDesign = 0;
+        const designs = ['dna', 'tetra', 'fibonacci', 'text', 'fractal'];
+        setInterval(() => {
+            generateMural(designs[currentDesign % designs.length]);
+            currentDesign++;
+        }, 5000);
+    </script>
+</body>
+</html>

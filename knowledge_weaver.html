@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HYPERACTIV KNOWLEDGE WEAVER 2.0</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #000;
+            font-family: 'Courier New', monospace;
+            color: #00FFFF;
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        #ui {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        #title {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            animation: pulse 2s infinite;
+        }
+
+        .main-title {
+            font-size: 36px;
+            letter-spacing: 10px;
+            text-shadow: 0 0 30px #FF00FF;
+            color: #FF00FF;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            letter-spacing: 5px;
+            margin-top: 10px;
+            color: #FFFF00;
+            text-shadow: 0 0 20px #FFFF00;
+        }
+
+        #target-display {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 24px;
+            color: #00FF00;
+            text-shadow: 0 0 20px #00FF00;
+            padding: 10px 20px;
+            background: rgba(0, 255, 0, 0.1);
+            border: 2px solid #00FF00;
+            border-radius: 10px;
+        }
+
+        #score-display {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            font-size: 24px;
+            color: #FFD700;
+            text-shadow: 0 0 20px #FFD700;
+        }
+
+        #instructions {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            font-size: 14px;
+            color: #00FF00;
+            text-shadow: 0 0 10px #00FF00;
+            padding: 10px;
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid #00FF00;
+            border-radius: 5px;
+        }
+        
+        #info-panel {
+            position: fixed;
+            top: 80px;
+            left: 20px;
+            width: 250px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #00FFFF;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 14px;
+            display: none;
+            pointer-events: all;
+        }
+        
+        #info-panel h3 {
+            color: #FF00FF;
+            margin-bottom: 10px;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+    <div id="ui">
+        <div id="title">
+            <div class="main-title">HYPERACTIV KNOWLEDGE WEAVER</div>
+            <div class="subtitle">CONNECT THE UNIVERSE</div>
+        </div>
+        <div id="score-display">SCORE: 0</div>
+        <div id="instructions">
+            CONTROLS:<br>
+            - CLICK a node to select it.<br>
+            - CLICK another node to connect.<br>
+            - GOAL: Find the path to the TARGET node.
+        </div>
+        <div id="target-display">
+            TARGET: <span id="target-node"></span>
+        </div>
+        <div id="info-panel">
+            <h3 id="info-title"></h3>
+            <p id="info-description"></p>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+        let centerX = width / 2;
+        let centerY = height / 2;
+
+        window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            centerX = width / 2;
+            centerY = height / 2;
+        });
+
+        // Game state
+        let knowledgeGraph = null;
+        let nodes = [];
+        let selectedNode = null;
+        let targetNode = null;
+        let score = 0;
+        let particles = [];
+        let connectionAnimations = [];
+        let level = 0;
+
+        // Synesthesia engine
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+        // Embedded knowledge graph data
+        const knowledgeGraphData = {
+          "nodes": [
+            // Level 0: Basics
+            { "id": "physics", "label": "Physics", "description": "The study of matter, energy, and the fundamental forces of nature.", "level": 0, "color": "#FF00FF", "sound": 261.63, "connections": ["gravity", "calculus"] },
+            { "id": "gravity", "label": "Gravity", "description": "The force that attracts a body toward the center of the earth, or toward any other physical body having mass.", "level": 0, "color": "#FF00FF", "sound": 293.66, "connections": ["physics", "newton"] },
+            { "id": "newton", "label": "Isaac Newton", "description": "An English mathematician, physicist, astronomer, theologian, and author who is widely recognised as one of the most influential scientists of all time.", "level": 0, "color": "#00FFFF", "sound": 329.63, "connections": ["gravity", "calculus"] },
+            { "id": "calculus", "label": "Calculus", "description": "The mathematical study of continuous change.", "level": 0, "color": "#FFFF00", "sound": 349.23, "connections": ["physics", "newton", "mathematics"] },
+            { "id": "mathematics", "label": "Mathematics", "description": "The abstract science of number, quantity, and space.", "level": 0, "color": "#FFFF00", "sound": 392.00, "connections": ["calculus", "renaissance"] },
+            
+            // Level 1: Ancient World
+            { "id": "rome", "label": "Roman Empire", "description": "An ancient civilization that began on the Italian Peninsula as a small agricultural community, and grew to be one of the largest empires in the ancient world.", "level": 1, "color": "#00FFFF", "sound": 196.00, "connections": ["latin", "democracy"] },
+            { "id": "latin", "label": "Latin", "description": "The language of ancient Rome and its empire.", "level": 1, "color": "#FF1493", "sound": 220.00, "connections": ["rome", "romance_languages"] },
+            { "id": "democracy", "label": "Democracy", "description": "A system of government by the whole population or all the eligible members of a state, typically through elected representatives.", "level": 1, "color": "#00FF00", "sound": 293.66, "connections": ["rome", "french_revolution", "renaissance"] },
+            { "id": "taoism", "label": "Taoism", "description": "A Chinese philosophy based on the writings of Lao-tzu, advocating humility and religious piety.", "level": 1, "color": "#FFD700", "sound": 277.18, "connections": ["buddhism"] },
+            { "id": "buddhism", "label": "Buddhism", "description": "A widespread Asian religion or philosophy, founded by Siddartha Gautama in northeastern India in the 5th century BC.", "level": 1, "color": "#FFD700", "sound": 311.13, "connections": ["taoism", "mauryan_empire"] },
+
+            // Level 2: Middle Ages & Renaissance
+            { "id": "romance_languages", "label": "Romance Languages", "description": "The modern languages that evolved from Vulgar Latin between the third and eighth centuries.", "level": 2, "color": "#FF1493", "sound": 246.94, "connections": ["latin", "french_revolution"] },
+            { "id": "french_revolution", "label": "French Revolution", "description": "A period of far-reaching social and political upheaval in France and its colonies beginning in 1789.", "level": 2, "color": "#00FFFF", "sound": 261.63, "connections": ["romance_languages", "democracy"] },
+            { "id": "renaissance", "label": "Renaissance", "description": "A period in European history marking the transition from the Middle Ages to modernity and covering the 15th and 16th centuries.", "level": 2, "color": "#00FFFF", "sound": 440.00, "connections": ["mathematics", "art", "democracy", "islamic_golden_age"] },
+            { "id": "islamic_golden_age", "label": "Islamic Golden Age", "description": "A period of cultural, economic, and scientific flourishing in the history of Islam, traditionally dated from the 8th century to the 14th century.", "level": 2, "color": "#FFD700", "sound": 415.30, "connections": ["algebra", "avicenna", "renaissance"] },
+            { "id": "algebra", "label": "Algebra", "description": "The part of mathematics in which letters and other general symbols are used to represent numbers and quantities in formulae and equations.", "level": 2, "color": "#FFFF00", "sound": 466.16, "connections": ["islamic_golden_age", "mathematics"] },
+            
+            // Level 3: Global Empires
+            { "id": "mauryan_empire", "label": "Mauryan Empire", "description": "A geographically extensive Iron Age historical power based in Magadha and founded by Chandragupta Maurya which dominated the Indian subcontinent between 322 and 185 BCE.", "level": 3, "color": "#FFD700", "sound": 369.99, "connections": ["buddhism", "gupta_empire"] },
+            { "id": "gupta_empire", "label": "Gupta Empire", "description": "An ancient Indian empire existing from the mid-to-late 3rd century CE to 543 CE. At its zenith, from approximately 319 to 467 CE, it covered much of the Indian subcontinent.", "level": 3, "color": "#FFD700", "sound": 392.00, "connections": ["mauryan_empire", "mughal_empire"] },
+            { "id": "mughal_empire", "label": "Mughal Empire", "description": "An early-modern empire in South Asia. For some two centuries, the empire stretched from the outer fringes of the Indus basin in the west, northern Afghanistan in the northwest, and Kashmir in the north.", "level": 3, "color": "#FFD700", "sound": 415.30, "connections": ["gupta_empire"] },
+            { "id": "mali_empire", "label": "Mali Empire", "description": "An empire in West Africa from c. 1235 to 1670. The empire was founded by Sundiata Keita and became renowned for the wealth of its rulers, especially Mansa Musa.", "level": 3, "color": "#FFA500", "sound": 220.00, "connections": ["kingdom_of_kush"] },
+            { "id": "kingdom_of_kush", "label": "Kingdom of Kush", "description": "An ancient kingdom in Nubia, centered along the Nile Valley in what is now northern Sudan and southern Egypt.", "level": 3, "color": "#FFA500", "sound": 246.94, "connections": ["mali_empire"] },
+
+            // Level 4: Modern Science
+            { "id": "art", "label": "Art", "description": "The expression or application of human creative skill and imagination.", "level": 4, "color": "#FF1493", "sound": 493.88, "connections": ["renaissance", "anatomy"] },
+            { "id": "anatomy", "label": "Anatomy", "description": "The branch of science concerned with the bodily structure of humans, animals, and other living organisms, especially as revealed by dissection and the separation of parts.", "level": 4, "color": "#FF00FF", "sound": 523.25, "connections": ["art", "medicine"] },
+            { "id": "medicine", "label": "Medicine", "description": "The science and practice of the diagnosis, treatment, and prevention of disease.", "level": 4, "color": "#FF00FF", "sound": 587.33, "connections": ["anatomy", "avicenna"] },
+            { "id": "avicenna", "label": "Avicenna", "description": "A Persian polymath who is regarded as one of the most significant physicians, astronomers, thinkers and writers of the Islamic Golden Age.", "level": 4, "color": "#FFD700", "sound": 622.25, "connections": ["medicine", "islamic_golden_age"] }
+          ]
+        };
+
+        knowledgeGraph = knowledgeGraphData;
+        initializeGraph();
+        setNewTarget();
+        gameLoop();
+
+
+        function initializeGraph() {
+            nodes = knowledgeGraph.nodes
+                .filter(node => node.level <= level)
+                .map(nodeData => ({
+                    ...nodeData,
+                    x: Math.random() * (width - 200) + 100,
+                    y: Math.random() * (height - 200) + 100,
+                    vx: (Math.random() - 0.5) * 2,
+                    vy: (Math.random() - 0.5) * 2,
+                    radius: 40
+            }));
+        }
+
+        function setNewTarget() {
+            const availableNodes = nodes.filter(n => n.level === level);
+            if (availableNodes.length > 0) {
+                targetNode = availableNodes[Math.floor(Math.random() * availableNodes.length)];
+                document.getElementById('target-node').textContent = targetNode.label;
+            } else {
+                level++;
+                initializeGraph();
+                setNewTarget();
+            }
+        }
+
+        function gameLoop() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+            ctx.fillRect(0, 0, width, height);
+
+            updateNodes();
+            drawConnections();
+            drawNodes();
+            updateParticles();
+            drawConnectionAnimations();
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        function updateNodes() {
+            nodes.forEach(node => {
+                node.x += node.vx;
+                node.y += node.vy;
+
+                if (node.x < node.radius || node.x > width - node.radius) node.vx *= -1;
+                if (node.y < node.radius || node.y > height - node.radius) node.vy *= -1;
+
+                nodes.forEach(otherNode => {
+                    if (node === otherNode) return;
+                    const dx = otherNode.x - node.x;
+                    const dy = otherNode.y - node.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 200) {
+                        node.vx -= dx / dist * 0.05;
+                        node.vy -= dy / dist * 0.05;
+                    }
+                });
+                
+                const dx = centerX - node.x;
+                const dy = centerY - node.y;
+                node.vx += dx * 0.0001;
+                node.vy += dy * 0.0001;
+
+                const speed = Math.sqrt(node.vx * node.vx + node.vy * node.vy);
+                if (speed > 0.5) {
+                    node.vx *= 0.99;
+                    node.vy *= 0.99;
+                }
+            });
+        }
+
+        function drawConnections() {
+            nodes.forEach(node => {
+                node.connections.forEach(connectionId => {
+                    const target = nodes.find(n => n.id === connectionId);
+                    if (target) {
+                        ctx.strokeStyle = 'rgba(0, 255, 255, 0.05)';
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(node.x, node.y);
+                        ctx.lineTo(target.x, target.y);
+                        ctx.stroke();
+                    }
+                });
+            });
+        }
+
+        function drawNodes() {
+            nodes.forEach(node => {
+                ctx.fillStyle = node.color;
+                ctx.shadowColor = node.color;
+                ctx.shadowBlur = 20;
+
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
+                ctx.fill();
+
+                if (node === targetNode) {
+                    ctx.strokeStyle = '#00FF00';
+                    ctx.lineWidth = 4;
+                    ctx.stroke();
+                }
+
+                ctx.fillStyle = '#000';
+                ctx.shadowBlur = 0;
+                ctx.font = '12px Courier New';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(node.label, node.x, node.y);
+
+                if (selectedNode === node) {
+                    ctx.strokeStyle = '#FFFF00';
+                    ctx.lineWidth = 3;
+                    ctx.stroke();
+                }
+            });
+        }
+
+        function updateParticles() {
+            particles.forEach((p, index) => {
+                p.x += p.vx;
+                p.y += p.vy;
+                p.alpha -= 0.02;
+                if (p.alpha <= 0) {
+                    particles.splice(index, 1);
+                }
+
+                ctx.fillStyle = p.color;
+                ctx.globalAlpha = p.alpha;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            ctx.globalAlpha = 1;
+        }
+        
+        function drawConnectionAnimations() {
+            connectionAnimations.forEach((anim, index) => {
+                anim.progress += 0.05;
+                if (anim.progress >= 1) {
+                    connectionAnimations.splice(index, 1);
+                }
+
+                const x = anim.from.x + (anim.to.x - anim.from.x) * anim.progress;
+                const y = anim.from.y + (anim.to.y - anim.from.y) * anim.progress;
+
+                ctx.strokeStyle = anim.color;
+                ctx.lineWidth = 5;
+                ctx.shadowColor = anim.color;
+                ctx.shadowBlur = 20;
+                ctx.beginPath();
+                ctx.moveTo(anim.from.x, anim.from.y);
+                ctx.lineTo(x, y);
+                ctx.stroke();
+                ctx.shadowBlur = 0;
+            });
+        }
+
+        canvas.addEventListener('click', (e) => {
+            if (audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+            const mouseX = e.clientX;
+            const mouseY = e.clientY;
+
+            const clickedNode = nodes.find(node => {
+                const dist = Math.sqrt((mouseX - node.x) ** 2 + (mouseY - node.y) ** 2);
+                return dist < node.radius;
+            });
+
+            if (clickedNode) {
+                if (!selectedNode) {
+                    selectedNode = clickedNode;
+                    playSound(selectedNode.sound);
+                    showInfoPanel(selectedNode);
+                } else {
+                    if (selectedNode !== clickedNode) {
+                        if (selectedNode.connections.includes(clickedNode.id)) {
+                            score += 10;
+                            document.getElementById('score-display').textContent = `SCORE: ${score}`;
+                            
+                            const blendedColor = blendColors(selectedNode.color, clickedNode.color);
+                            createParticles(selectedNode.x, selectedNode.y, blendedColor);
+                            createParticles(clickedNode.x, clickedNode.y, blendedColor);
+                            connectionAnimations.push({ from: selectedNode, to: clickedNode, color: blendedColor, progress: 0 });
+                            playChord(selectedNode.sound, clickedNode.sound);
+
+                            if (clickedNode === targetNode) {
+                                score += 100;
+                                document.getElementById('score-display').textContent = `SCORE: ${score}`;
+                                level++;
+                                initializeGraph();
+                                setNewTarget();
+                            }
+                            
+                            selectedNode = clickedNode;
+                            showInfoPanel(selectedNode);
+
+                        } else {
+                            glitchEffect();
+                            shakeScreen();
+                            selectedNode = null;
+                            hideInfoPanel();
+                        }
+                    } else {
+                        selectedNode = null;
+                        hideInfoPanel();
+                    }
+                }
+            }
+        });
+
+        function showInfoPanel(node) {
+            const infoPanel = document.getElementById('info-panel');
+            document.getElementById('info-title').textContent = node.label;
+            document.getElementById('info-description').textContent = node.description;
+            infoPanel.style.display = 'block';
+        }
+
+        function hideInfoPanel() {
+            document.getElementById('info-panel').style.display = 'none';
+        }
+
+        function playSound(freq) {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            oscillator.type = 'sine';
+            oscillator.frequency.value = freq;
+            gainNode.gain.setValueAtTime(0.5, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.5);
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.5);
+        }
+
+        function playChord(freq1, freq2) {
+            playSound(freq1);
+            playSound(freq2);
+        }
+
+        function blendColors(color1, color2) {
+            const c1 = parseInt(color1.slice(1), 16);
+            const c2 = parseInt(color2.slice(1), 16);
+            const r = Math.floor((((c1 >> 16) & 0xFF) + ((c2 >> 16) & 0xFF)) / 2);
+            const g = Math.floor((((c1 >> 8) & 0xFF) + ((c2 >> 8) & 0xFF)) / 2);
+            const b = Math.floor(((c1 & 0xFF) + (c2 & 0xFF)) / 2);
+            return `#${(r << 16 | g << 8 | b).toString(16).padStart(6, '0')}`;
+        }
+
+        function createParticles(x, y, color) {
+            for (let i = 0; i < 20; i++) {
+                particles.push({
+                    x,
+                    y,
+                    vx: (Math.random() - 0.5) * 10,
+                    vy: (Math.random() - 0.5) * 10,
+                    radius: Math.random() * 3 + 1,
+                    color,
+                    alpha: 1
+                });
+            }
+        }
+
+        function glitchEffect() {
+            const originalImageData = ctx.getImageData(0, 0, width, height);
+            const glitchData = new ImageData(new Uint8ClampedArray(originalImageData.data), width, height);
+            for (let i = 0; i < 10; i++) {
+                const y = Math.floor(Math.random() * height);
+                const h = Math.floor(Math.random() * 20) + 5;
+                const offset = (Math.random() - 0.5) * 40;
+                for (let row = y; row < y + h && row < height; row++) {
+                    for (let col = 0; col < width; col++) {
+                        const index = (row * width + col) * 4;
+                        const targetIndex = (row * width + (col + offset)) * 4;
+                        if (targetIndex >= 0 && targetIndex < glitchData.data.length) {
+                            glitchData.data[index] = originalImageData.data[targetIndex];
+                            glitchData.data[index + 1] = originalImageData.data[targetIndex + 1];
+                            glitchData.data[index + 2] = originalImageData.data[targetIndex + 2];
+                        }
+                    }
+                }
+            }
+            ctx.putImageData(glitchData, 0, 0);
+        }
+        
+        function shakeScreen() {
+            canvas.style.animation = 'shake 0.5s';
+            setTimeout(() => {
+                canvas.style.animation = '';
+            }, 500);
+        }
+        
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes shake {
+                10%, 90% { transform: translate3d(-1px, 0, 0); }
+                20%, 80% { transform: translate3d(2px, 0, 0); }
+                30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+                40%, 60% { transform: translate3d(4px, 0, 0); }
+            }
+        `;
+        document.head.appendChild(style);
+
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SCHOOL OF PYTHAGORAS :: HARMONIA :: SYNTHETIC SYNESTHESIA</title>
+    <style>
+        * { 
+            margin: 0; 
+            padding: 0; 
+            overflow: hidden;
+            cursor: crosshair;
+        }
+        
+        body { 
+            background: #000;
+            font-family: 'Courier New', monospace;
+        }
+        
+        canvas { 
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        
+        #interface {
+            position: fixed;
+            z-index: 100;
+            pointer-events: none;
+            user-select: none;
+        }
+        
+        #title {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+        }
+        
+        .school-title {
+            font-size: 24px;
+            color: #FFD700;
+            text-shadow: 0 0 20px #FFD700;
+            letter-spacing: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .harmonia {
+            font-size: 48px;
+            letter-spacing: 15px;
+            animation: chromatic 3s infinite;
+        }
+        
+        @keyframes chromatic {
+            0% { color: #FF1493; text-shadow: 0 0 30px #FF1493; }
+            25% { color: #FFFF00; text-shadow: 0 0 30px #FFFF00; }
+            50% { color: #00FFFF; text-shadow: 0 0 30px #00FFFF; }
+            75% { color: #9370DB; text-shadow: 0 0 30px #9370DB; }
+            100% { color: #FF1493; text-shadow: 0 0 30px #FF1493; }
+        }
+        
+        #modes {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            color: #00FF00;
+            font-size: 14px;
+            text-shadow: 0 0 10px #00FF00;
+        }
+        
+        .mode-item {
+            margin: 5px 0;
+            opacity: 0.5;
+            transition: all 0.3s;
+        }
+        
+        .mode-item.active {
+            opacity: 1;
+            transform: translateX(10px);
+        }
+        
+        #controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            text-align: right;
+            color: #FFFF00;
+            font-size: 12px;
+            text-shadow: 0 0 10px #FFFF00;
+        }
+        
+        #ratios {
+            position: fixed;
+            top: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            color: #00FFFF;
+            font-size: 18px;
+            text-shadow: 0 0 15px #00FFFF;
+        }
+        
+        #audio-viz {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 200px;
+            height: 60px;
+            border: 1px solid #00FFFF;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <div id="interface">
+        <div id="title">
+            <div class="school-title">SCHOOL OF PYTHAGORAS</div>
+            <div class="harmonia">HARMONIA</div>
+        </div>
+        
+        <div id="ratios">
+            <span id="current-ratio">2:1 OCTAVE</span>
+        </div>
+        
+        <canvas id="audio-viz"></canvas>
+        
+        <div id="modes">
+            <div class="mode-item active" data-mode="aural">AURAL :: FREQUENCIES</div>
+            <div class="mode-item" data-mode="visual">VISUAL :: GEOMETRIES</div>
+            <div class="mode-item" data-mode="symbolic">SYMBOLIC :: NUMBERS</div>
+            <div class="mode-item" data-mode="scribes">SCRIBES :: LETTERS</div>
+            <div class="mode-item" data-mode="seekers">SEEKERS :: FRACTALS</div>
+        </div>
+        
+        <div id="controls">
+            <div>CLICK :: GENERATE HARMONIC</div>
+            <div>DRAG :: DRAW RESONANCE</div>
+            <div>1-9 :: SET RATIO</div>
+            <div>SPACE :: CYCLE MODE</div>
+            <div>A/V/I/K :: COLOR MODE</div>
+        </div>
+    </div>
+    
+    <canvas id="harmoniaCanvas"></canvas>
+    
+    <script>
+        // Canvas setup
+        const canvas = document.getElementById('harmoniaCanvas');
+        const ctx = canvas.getContext('2d');
+        const audioCanvas = document.getElementById('audio-viz');
+        const audioCtx = audioCanvas.getContext('2d');
+        
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+        let centerX = width / 2;
+        let centerY = height / 2;
+        
+        audioCanvas.width = 200;
+        audioCanvas.height = 60;
+        
+        // Resize handler
+        window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            centerX = width / 2;
+            centerY = height / 2;
+        });
+        
+        // HYPERACTIV color palette
+        const COLORS = {
+            A: '#FF1493', // pink
+            V: '#FFFF00', // yellow
+            I: '#00FFFF', // cyan
+            K: '#9370DB', // purple
+            H: '#00FF00', // green
+            white: '#FFFFFF',
+            gold: '#FFD700'
+        };
+        
+        // Pythagorean ratios (musical intervals)
+        const RATIOS = {
+            '1:1': { name: 'UNISON', freq: 1 },
+            '2:1': { name: 'OCTAVE', freq: 2 },
+            '3:2': { name: 'PERFECT FIFTH', freq: 1.5 },
+            '4:3': { name: 'PERFECT FOURTH', freq: 1.333 },
+            '5:4': { name: 'MAJOR THIRD', freq: 1.25 },
+            '6:5': { name: 'MINOR THIRD', freq: 1.2 },
+            '8:5': { name: 'MINOR SIXTH', freq: 1.6 },
+            '5:3': { name: 'MAJOR SIXTH', freq: 1.667 },
+            '9:8': { name: 'MAJOR SECOND', freq: 1.125 }
+        };
+        
+        // Natural number sequences
+        const SEQUENCES = {
+            fibonacci: [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377],
+            primes: [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47],
+            triangular: [1, 3, 6, 10, 15, 21, 28, 36, 45, 55, 66, 78, 91],
+            squares: [1, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144],
+            pythagorean: [[3,4,5], [5,12,13], [8,15,17], [7,24,25], [20,21,29]]
+        };
+        
+        // State
+        let mode = 'aural';
+        let currentRatio = '2:1';
+        let colorMode = 'A';
+        let mouseX = centerX;
+        let mouseY = centerY;
+        let isDrawing = false;
+        let time = 0;
+        
+        // Harmonic nodes
+        let harmonics = [];
+        let resonanceLines = [];
+        let fractals = [];
+        let particles = [];
+        
+        // Audio context for sound generation
+        let audioContext = null;
+        let oscillators = [];
+        
+        // Initialize audio on first interaction
+        function initAudio() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+        
+        // Generate harmonic sound
+        function playHarmonic(baseFreq, ratio) {
+            initAudio();
+            
+            // Clear old oscillators
+            oscillators.forEach(osc => {
+                osc.stop();
+                osc.disconnect();
+            });
+            oscillators = [];
+            
+            // Create new oscillators for harmonic series
+            const frequencies = [
+                baseFreq,
+                baseFreq * ratio,
+                baseFreq * ratio * 2,
+                baseFreq * ratio * 3
+            ];
+            
+            frequencies.forEach((freq, i) => {
+                const osc = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                
+                osc.frequency.value = freq;
+                osc.type = 'sine';
+                gain.gain.value = 0.1 / (i + 1); // Decrease volume for higher harmonics
+                
+                osc.connect(gain);
+                gain.connect(audioContext.destination);
+                
+                osc.start();
+                oscillators.push(osc);
+                
+                // Fade out
+                gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 2);
+                
+                setTimeout(() => {
+                    osc.stop();
+                    osc.disconnect();
+                }, 2000);
+            });
+        }
+        
+        // Mouse tracking
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            
+            if (isDrawing) {
+                addResonanceLine();
+            }
+        });
+        
+        document.addEventListener('mousedown', () => isDrawing = true);
+        document.addEventListener('mouseup', () => isDrawing = false);
+        
+        // Click to add harmonic node
+        document.addEventListener('click', (e) => {
+            addHarmonic(e.clientX, e.clientY);
+            const ratio = RATIOS[currentRatio].freq;
+            playHarmonic(220, ratio); // A3 base frequency
+        });
+        
+        // Keyboard controls
+        document.addEventListener('keydown', (e) => {
+            if (e.key >= '1' && e.key <= '9') {
+                const ratioKeys = Object.keys(RATIOS);
+                currentRatio = ratioKeys[(parseInt(e.key) - 1) % ratioKeys.length];
+                updateRatioDisplay();
+            } else if (e.key === ' ') {
+                e.preventDefault();
+                cycleMode();
+            } else if ('AVIK'.includes(e.key.toUpperCase())) {
+                colorMode = e.key.toUpperCase();
+            }
+        });
+        
+        // Add harmonic node
+        function addHarmonic(x, y) {
+            const ratio = RATIOS[currentRatio];
+            
+            harmonics.push({
+                x: x,
+                y: y,
+                radius: 20,
+                ratio: ratio,
+                color: COLORS[colorMode],
+                phase: 0,
+                life: 1
+            });
+            
+            // Add fractal at this point
+            if (mode === 'seekers') {
+                fractals.push({
+                    x: x,
+                    y: y,
+                    depth: 0,
+                    maxDepth: 6,
+                    angle: -Math.PI/2,
+                    color: COLORS[colorMode]
+                });
+            }
+            
+            // Add letter particles
+            'AVIK'.split('').forEach((letter, i) => {
+                particles.push({
+                    x: x,
+                    y: y,
+                    vx: Math.cos(i * Math.PI / 2) * 5,
+                    vy: Math.sin(i * Math.PI / 2) * 5,
+                    letter: letter,
+                    color: COLORS[letter],
+                    size: 20,
+                    life: 1
+                });
+            });
+        }
+        
+        // Add resonance line
+        function addResonanceLine() {
+            resonanceLines.push({
+                x: mouseX,
+                y: mouseY,
+                age: 0,
+                color: COLORS[colorMode]
+            });
+            
+            // Keep only recent lines
+            if (resonanceLines.length > 100) {
+                resonanceLines.shift();
+            }
+        }
+        
+        // Draw fractal branch (from the beautiful fractal code)
+        function drawFractalBranch(x, y, angle, depth, maxDepth, length, color) {
+            if (depth >= maxDepth) return;
+            
+            const endX = x + Math.cos(angle) * length;
+            const endY = y + Math.sin(angle) * length;
+            
+            // Draw line
+            ctx.strokeStyle = color;
+            ctx.lineWidth = Math.max(1, (maxDepth - depth) / 2);
+            ctx.globalAlpha = 1 - (depth / maxDepth) * 0.5;
+            ctx.shadowColor = color;
+            ctx.shadowBlur = 10;
+            
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.lineTo(endX, endY);
+            ctx.stroke();
+            
+            // Add content at nodes based on mode
+            if (depth % 2 === 0) {
+                ctx.font = `${20 - depth * 2}px Courier New`;
+                ctx.fillStyle = color;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                
+                if (mode === 'scribes') {
+                    ctx.fillText('AVIK'[depth % 4], endX, endY);
+                } else if (mode === 'symbolic') {
+                    ctx.fillText(SEQUENCES.fibonacci[depth % SEQUENCES.fibonacci.length], endX, endY);
+                }
+            }
+            
+            // Golden ratio angle
+            const goldenAngle = Math.PI * (3 - Math.sqrt(5));
+            
+            // Recursive branches
+            const branches = 3;
+            for (let i = 0; i < branches; i++) {
+                const branchAngle = angle + (i - 1) * goldenAngle * 0.5;
+                const branchLength = length * 0.7;
+                
+                drawFractalBranch(endX, endY, branchAngle, depth + 1, maxDepth, branchLength, color);
+            }
+            
+            ctx.globalAlpha = 1;
+            ctx.shadowBlur = 0;
+        }
+        
+        // Draw Pythagorean triangles
+        function drawPythagoreanTriangles() {
+            SEQUENCES.pythagorean.forEach(([a, b, c], i) => {
+                const scale = 10;
+                const x = centerX + Math.cos(i * Math.PI / 2.5) * 200;
+                const y = centerY + Math.sin(i * Math.PI / 2.5) * 200;
+                
+                ctx.save();
+                ctx.translate(x, y);
+                ctx.rotate(time + i);
+                
+                ctx.strokeStyle = Object.values(COLORS)[i % 4];
+                ctx.lineWidth = 2;
+                ctx.globalAlpha = 0.5;
+                ctx.shadowColor = ctx.strokeStyle;
+                ctx.shadowBlur = 10;
+                
+                // Draw triangle
+                ctx.beginPath();
+                ctx.moveTo(0, 0);
+                ctx.lineTo(a * scale, 0);
+                ctx.lineTo(a * scale, b * scale);
+                ctx.closePath();
+                ctx.stroke();
+                
+                // Label with equation
+                ctx.fillStyle = COLORS.gold;
+                ctx.font = '12px Courier New';
+                ctx.textAlign = 'center';
+                ctx.fillText(`${a}²+${b}²=${c}²`, a * scale / 2, b * scale / 2);
+                
+                ctx.restore();
+            });
+        }
+        
+        // Draw harmonic circles
+        function drawHarmonicCircles() {
+            harmonics.forEach((h, i) => {
+                h.phase += 0.05;
+                h.radius = 20 + Math.sin(h.phase) * 5;
+                
+                // Draw concentric circles based on ratio
+                const ratioValue = h.ratio.freq;
+                for (let r = 1; r <= 3; r++) {
+                    ctx.strokeStyle = h.color;
+                    ctx.lineWidth = 1;
+                    ctx.globalAlpha = 0.5 / r;
+                    ctx.shadowColor = h.color;
+                    ctx.shadowBlur = 20;
+                    
+                    ctx.beginPath();
+                    ctx.arc(h.x, h.y, h.radius * r * ratioValue, 0, Math.PI * 2);
+                    ctx.stroke();
+                }
+                
+                // Draw ratio label
+                ctx.fillStyle = h.color;
+                ctx.font = 'bold 14px Courier New';
+                ctx.textAlign = 'center';
+                ctx.globalAlpha = 1;
+                ctx.fillText(h.ratio.name, h.x, h.y);
+            });
+            
+            ctx.globalAlpha = 1;
+            ctx.shadowBlur = 0;
+        }
+        
+        // Draw number grid
+        function drawNumberGrid() {
+            const gridSize = 50;
+            const sequence = SEQUENCES[Object.keys(SEQUENCES)[Math.floor(time) % 4]];
+            
+            ctx.font = '10px Courier New';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            for (let i = 0; i < 20; i++) {
+                for (let j = 0; j < 15; j++) {
+                    const x = i * gridSize;
+                    const y = j * gridSize;
+                    const dist = Math.sqrt((x - mouseX) ** 2 + (y - mouseY) ** 2);
+                    const influence = Math.max(0, 1 - dist / 300);
+                    
+                    if (influence > 0.1) {
+                        const index = (i + j) % sequence.length;
+                        const value = Array.isArray(sequence[index]) ? 
+                            sequence[index].join(',') : sequence[index];
+                        
+                        ctx.fillStyle = Object.values(COLORS)[index % 4];
+                        ctx.globalAlpha = influence * 0.3;
+                        ctx.fillText(value, x, y);
+                    }
+                }
+            }
+            ctx.globalAlpha = 1;
+        }
+        
+        // Draw audio visualization
+        function drawAudioVisualization() {
+            audioCtx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+            audioCtx.fillRect(0, 0, 200, 60);
+            
+            // Draw waveform based on current harmonics
+            audioCtx.strokeStyle = COLORS[colorMode];
+            audioCtx.lineWidth = 2;
+            audioCtx.beginPath();
+            
+            for (let x = 0; x < 200; x++) {
+                let y = 30;
+                harmonics.forEach(h => {
+                    const freq = h.ratio.freq;
+                    y += Math.sin((x / 200) * Math.PI * 2 * freq + h.phase) * 10;
+                });
+                
+                if (x === 0) {
+                    audioCtx.moveTo(x, y);
+                } else {
+                    audioCtx.lineTo(x, y);
+                }
+            }
+            audioCtx.stroke();
+        }
+        
+        // Update particles
+        function updateParticles() {
+            particles = particles.filter(p => {
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vx *= 0.98;
+                p.vy *= 0.98;
+                p.life -= 0.01;
+                p.size = Math.max(5, p.size * 0.99);
+                
+                if (p.life > 0) {
+                    ctx.save();
+                    ctx.font = `bold ${p.size}px Courier New`;
+                    ctx.fillStyle = p.color;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.globalAlpha = p.life;
+                    ctx.shadowColor = p.color;
+                    ctx.shadowBlur = 10;
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate(time * 2 + p.x);
+                    ctx.fillText(p.letter, 0, 0);
+                    ctx.restore();
+                    return true;
+                }
+                return false;
+            });
+        }
+        
+        // Cycle through modes
+        function cycleMode() {
+            const modes = ['aural', 'visual', 'symbolic', 'scribes', 'seekers'];
+            const currentIndex = modes.indexOf(mode);
+            mode = modes[(currentIndex + 1) % modes.length];
+            
+            // Update UI
+            document.querySelectorAll('.mode-item').forEach(item => {
+                item.classList.toggle('active', item.dataset.mode === mode);
+            });
+        }
+        
+        // Update ratio display
+        function updateRatioDisplay() {
+            document.getElementById('current-ratio').textContent = 
+                `${currentRatio} ${RATIOS[currentRatio].name}`;
+        }
+        
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            time += 0.01;
+            
+            // Fade background
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, width, height);
+            
+            // Draw based on mode
+            switch(mode) {
+                case 'aural':
+                    drawHarmonicCircles();
+                    drawAudioVisualization();
+                    break;
+                case 'visual':
+                    drawPythagoreanTriangles();
+                    drawHarmonicCircles();
+                    break;
+                case 'symbolic':
+                    drawNumberGrid();
+                    break;
+                case 'scribes':
+                    updateParticles();
+                    break;
+                case 'seekers':
+                    fractals = fractals.filter(f => {
+                        f.depth += 0.1;
+                        if (f.depth < f.maxDepth) {
+                            drawFractalBranch(f.x, f.y, f.angle + time * 0.1, 0, Math.floor(f.depth), 50, f.color);
+                            return true;
+                        }
+                        return false;
+                    });
+                    break;
+            }
+            
+            // Always draw resonance lines
+            resonanceLines.forEach((line, i) => {
+                line.age++;
+                const alpha = Math.max(0, 1 - line.age / 50);
+                
+                if (i > 0) {
+                    const prevLine = resonanceLines[i - 1];
+                    ctx.strokeStyle = line.color;
+                    ctx.lineWidth = 2;
+                    ctx.globalAlpha = alpha;
+                    ctx.shadowColor = line.color;
+                    ctx.shadowBlur = 10;
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(prevLine.x, prevLine.y);
+                    ctx.lineTo(line.x, line.y);
+                    ctx.stroke();
+                }
+            });
+            
+            // Clean up old resonance lines
+            resonanceLines = resonanceLines.filter(line => line.age < 50);
+            
+            // Update particles in all modes
+            if (mode !== 'scribes') {
+                updateParticles();
+            }
+            
+            // Draw center marker
+            ctx.fillStyle = COLORS.white;
+            ctx.shadowColor = COLORS.white;
+            ctx.shadowBlur = 20;
+            ctx.globalAlpha = 0.5;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 3 + Math.sin(time * 2) * 2, 0, Math.PI * 2);
+            ctx.fill();
+            
+            ctx.globalAlpha = 1;
+            ctx.shadowBlur = 0;
+        }
+        
+        // Start animation
+        animate();
+        
+        // Initial harmonic at center
+        addHarmonic(centerX, centerY);
+    </script>
+</body>
+</html>

@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HYPERACTIV ARCADE :: UNIFIED FIELD GAMING</title>
+    <style>
+        * { 
+            margin: 0; 
+            padding: 0; 
+            overflow: hidden;
+            cursor: none;
+        }
+        
+        body { 
+            background: #000;
+            font-family: 'Courier New', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        canvas { 
+            display: block;
+            border: 2px solid;
+            animation: borderPulse 4s infinite;
+        }
+        
+        @keyframes borderPulse {
+            0% { border-color: #FF1493; box-shadow: 0 0 30px #FF1493; }
+            25% { border-color: #FFFF00; box-shadow: 0 0 30px #FFFF00; }
+            50% { border-color: #00FFFF; box-shadow: 0 0 30px #00FFFF; }
+            75% { border-color: #9370DB; box-shadow: 0 0 30px #9370DB; }
+            100% { border-color: #FF1493; box-shadow: 0 0 30px #FF1493; }
+        }
+        
+        #ui {
+            position: fixed;
+            top: 20px;
+            width: 100%;
+            text-align: center;
+            z-index: 100;
+            pointer-events: none;
+        }
+        
+        #game-mode {
+            font-size: 36px;
+            font-weight: bold;
+            letter-spacing: 10px;
+            animation: chromatic 3s infinite;
+            text-shadow: 0 0 30px currentColor;
+        }
+        
+        #score {
+            margin-top: 10px;
+            font-size: 24px;
+            color: #FFD700;
+            text-shadow: 0 0 20px #FFD700;
+        }
+        
+        #combo {
+            margin-top: 5px;
+            font-size: 18px;
+            color: #00FF00;
+            text-shadow: 0 0 15px #00FF00;
+        }
+        
+        @keyframes chromatic {
+            0% { color: #FF1493; }
+            25% { color: #FFFF00; }
+            50% { color: #00FFFF; }
+            75% { color: #9370DB; }
+            100% { color: #FF1493; }
+        }
+        
+        #instructions {
+            position: fixed;
+            bottom: 20px;
+            width: 100%;
+            text-align: center;
+            font-size: 14px;
+            color: #00FFFF;
+            text-shadow: 0 0 10px #00FFFF;
+            z-index: 100;
+            pointer-events: none;
+        }
+        
+        .mode-indicator {
+            position: fixed;
+            font-size: 12px;
+            opacity: 0.5;
+            color: #FFFF00;
+            text-shadow: 0 0 10px #FFFF00;
+        }
+        
+        #mode-left { left: 20px; top: 50%; }
+        #mode-right { right: 20px; top: 50%; }
+        #mode-top { top: 80px; left: 50%; transform: translateX(-50%); }
+        #mode-bottom { bottom: 60px; left: 50%; transform: translateX(-50%); }
+    </style>
+</head>
+<body>
+    <div id="ui">
+        <div id="game-mode">HYPERACTIV</div>
+        <div id="score">SCORE: <span id="score-value">0</span></div>
+        <div id="combo">COMBO: <span id="combo-value">0</span>x</div>
+    </div>
+    
+    <div id="mode-left" class="mode-indicator">← PONG</div>
+    <div id="mode-right" class="mode-indicator">INVADERS →</div>
+    <div id="mode-top" class="mode-indicator">↑ DOODLE</div>
+    <div id="mode-bottom" class="mode-indicator">↓ BREAKER</div>
+    
+    <div id="instructions">
+        <div>MOUSE/TOUCH :: CONTROL ALL</div>
+        <div>REACH EDGES :: MORPH GAMES</div>
+        <div>SURVIVE :: TRANSCEND</div>
+    </div>
+    
+    <canvas id="gameCanvas"></canvas>
+    
+    <script>
+        // Canvas setup
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = 800;
+        canvas.height = 600;
+        
+        // Golden ratio constants
+        const PHI = (1 + Math.sqrt(5)) / 2;
+        const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5));
+        
+        // HYPERACTIV colors
+        const COLORS = {
+            A: '#FF1493', // pink
+            V: '#FFFF00', // yellow
+            I: '#00FFFF', // cyan
+            K: '#9370DB', // purple
+            H: '#00FF00', // green
+            Y: '#FFD700', // gold
+            P: '#FF00FF', // magenta
+            E: '#FF0000', // red
+            R: '#FFA500', // orange
+            white: '#FFFFFF'
+        };
+        
+        const colorArray = Object.values(COLORS);
+        
+        // Game state
+        const game = {
+            mode: 'UNIFIED', // PONG, BREAKER, DOODLE, INVADERS, UNIFIED
+            score: 0,
+            combo: 0,
+            lives: 3,
+            time: 0,
+            transition: 0,
+            morphing: false,
+            particles: [],
+            trails: []
+        };
+        
+        // Universal player/paddle
+        const player = {
+            x: canvas.width / 2,
+            y: canvas.height - 100,
+            width: 80,
+            height: 15,
+            vx: 0,
+            vy: 0,
+            color: COLORS.Y,
+            trail: [],
+            mode: 'paddle' // paddle, jumper, shooter
+        };
+        
+        // Universal ball/projectile
+        class Ball {
+            constructor(x, y) {
+                this.x = x || canvas.width / 2;
+                this.y = y || canvas.height / 2;
+                this.vx = (Math.random() - 0.5) * 8;
+                this.vy = -5;
+                this.radius = 8;
+                this.color = COLORS.I;
+                this.trail = [];
+                this.bounces = 0;
+                this.mode = 'ball'; // ball, bullet, platform
+            }
+            
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                
+                // Add to trail
+                this.trail.push({ x: this.x, y: this.y });
+                if (this.trail.length > 20) this.trail.shift();
+                
+                // Bounce off walls
+                if (this.x <= this.radius || this.x >= canvas.width - this.radius) {
+                    this.vx *= -1;
+                    this.bounces++;
+                    this.checkModeTransition('horizontal');
+                }
+                
+                if (this.y <= this.radius) {
+                    this.vy *= -1;
+                    this.bounces++;
+                    this.checkModeTransition('top');
+                }
+                
+                // Bottom boundary behavior depends on mode
+                if (this.y >= canvas.height - this.radius) {
+                    if (game.mode === 'PONG' || game.mode === 'UNIFIED') {
+                        this.vy *= -1;
+                        this.checkModeTransition('bottom');
+                    } else {
+                        this.respawn();
+                    }
+                }
+                
+                // Apply golden ratio to velocity occasionally
+                if (this.bounces % 5 === 0) {
+                    this.vx *= PHI / 1.618;
+                    this.vy *= PHI / 1.618;
+                }
+            }
+            
+            checkModeTransition(edge) {
+                if (game.mode !== 'UNIFIED') return;
+                
+                // Transition to different games based on edge hit
+                if (edge === 'horizontal') {
+                    if (this.x < canvas.width / 2) {
+                        initiateTransition('PONG');
+                    } else {
+                        initiateTransition('INVADERS');
+                    }
+                } else if (edge === 'top') {
+                    initiateTransition('DOODLE');
+                } else if (edge === 'bottom') {
+                    initiateTransition('BREAKER');
+                }
+            }
+            
+            respawn() {
+                this.x = canvas.width / 2;
+                this.y = canvas.height / 2;
+                this.vx = (Math.random() - 0.5) * 8;
+                this.vy = -5;
+                game.combo = 0;
+            }
+            
+            draw() {
+                // Draw trail
+                ctx.strokeStyle = this.color;
+                ctx.lineWidth = 2;
+                ctx.globalAlpha = 0.3;
+                ctx.beginPath();
+                this.trail.forEach((point, i) => {
+                    if (i === 0) ctx.moveTo(point.x, point.y);
+                    else ctx.lineTo(point.x, point.y);
+                });
+                ctx.stroke();
+                ctx.globalAlpha = 1;
+                
+                // Draw ball with chromatic effect
+                const gradient = ctx.createRadialGradient(
+                    this.x, this.y, 0,
+                    this.x, this.y, this.radius
+                );
+                gradient.addColorStop(0, COLORS.white);
+                gradient.addColorStop(0.5, this.color);
+                gradient.addColorStop(1, colorArray[this.bounces % colorArray.length]);
+                
+                ctx.fillStyle = gradient;
+                ctx.shadowColor = this.color;
+                ctx.shadowBlur = 20;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            }
+        }
+        
+        // Bricks for Breakout mode
+        class Brick {
+            constructor(x, y, row, col) {
+                this.x = x;
+                this.y = y;
+                this.width = 70;
+                this.height = 20;
+                this.hits = Math.floor(row / 2) + 1;
+                this.maxHits = this.hits;
+                this.color = colorArray[row % colorArray.length];
+                this.active = true;
+                this.fibValue = fibonacci[col % fibonacci.length];
+            }
+            
+            hit() {
+                this.hits--;
+                if (this.hits <= 0) {
+                    this.active = false;
+                    game.score += this.fibValue * 10;
+                    game.combo++;
+                    
+                    // Create particles
+                    for (let i = 0; i < 10; i++) {
+                        game.particles.push(new Particle(this.x + this.width/2, this.y + this.height/2, this.color));
+                    }
+                    
+                    return true;
+                }
+                return false;
+            }
+            
+            draw() {
+                if (!this.active) return;
+                
+                const opacity = this.hits / this.maxHits;
+                ctx.globalAlpha = opacity;
+                ctx.fillStyle = this.color;
+                ctx.strokeStyle = COLORS.white;
+                ctx.lineWidth = 2;
+                
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+                ctx.strokeRect(this.x, this.y, this.width, this.height);
+                
+                // Draw Fibonacci value
+                ctx.fillStyle = COLORS.white;
+                ctx.font = '12px Courier New';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(this.fibValue, this.x + this.width/2, this.y + this.height/2);
+                
+                ctx.globalAlpha = 1;
+            }
+        }
+        
+        // Platforms for Doodle Jump mode
+        class Platform {
+            constructor(x, y, type = 'normal') {
+                this.x = x;
+                this.y = y;
+                this.width = 70;
+                this.height = 15;
+                this.type = type; // normal, moving, breaking, golden
+                this.color = type === 'golden' ? COLORS.Y : COLORS.H;
+                this.vx = type === 'moving' ? (Math.random() - 0.5) * 2 : 0;
+                this.broken = false;
+            }
+            
+            update() {
+                this.x += this.vx;
+                
+                if (this.x <= 0 || this.x >= canvas.width - this.width) {
+                    this.vx *= -1;
+                }
+                
+                // Scroll down in doodle mode
+                if (game.mode === 'DOODLE' && player.y < canvas.height / 2) {
+                    this.y += 2;
+                }
+            }
+            
+            draw() {
+                if (this.broken) return;
+                
+                ctx.fillStyle = this.color;
+                ctx.strokeStyle = COLORS.white;
+                ctx.lineWidth = 2;
+                ctx.shadowColor = this.color;
+                ctx.shadowBlur = 10;
+                
+                if (this.type === 'golden') {
+                    // Draw as golden ratio spiral
+                    ctx.save();
+                    ctx.translate(this.x + this.width/2, this.y + this.height/2);
+                    ctx.rotate(game.time * 0.05);
+                    
+                    ctx.beginPath();
+                    let r = 2;
+                    for (let angle = 0; angle < Math.PI * 2; angle += 0.2) {
+                        r = 2 + angle * 2;
+                        const px = Math.cos(angle) * r;
+                        const py = Math.sin(angle) * r;
+                        if (angle === 0) ctx.moveTo(px, py);
+                        else ctx.lineTo(px, py);
+                    }
+                    ctx.stroke();
+                    ctx.restore();
+                } else {
+                    ctx.fillRect(this.x, this.y, this.width, this.height);
+                    ctx.strokeRect(this.x, this.y, this.width, this.height);
+                }
+                
+                ctx.shadowBlur = 0;
+            }
+        }
+        
+        // Enemy for Space Invaders mode
+        class Enemy {
+            constructor(x, y, row, col) {
+                this.x = x;
+                this.y = y;
+                this.row = row;
+                this.col = col;
+                this.width = 30;
+                this.height = 30;
+                this.color = colorArray[row % colorArray.length];
+                this.active = true;
+                this.phase = col * 0.5;
+                this.shootTimer = Math.random() * 200;
+            }
+            
+            update() {
+                // Sine wave movement
+                this.x += Math.sin(game.time * 0.02 + this.phase) * 2;
+                
+                // Descend gradually
+                if (game.mode === 'INVADERS') {
+                    this.y += 0.1;
+                }
+                
+                // Shoot occasionally
+                this.shootTimer--;
+                if (this.shootTimer <= 0 && this.active) {
+                    this.shoot();
+                    this.shootTimer = 200 + Math.random() * 100;
+                }
+            }
+            
+            shoot() {
+                if (game.mode === 'INVADERS') {
+                    enemyBullets.push({
+                        x: this.x + this.width/2,
+                        y: this.y + this.height,
+                        vy: 3,
+                        color: this.color
+                    });
+                }
+            }
+            
+            draw() {
+                if (!this.active) return;
+                
+                ctx.save();
+                ctx.translate(this.x + this.width/2, this.y + this.height/2);
+                ctx.rotate(Math.sin(game.time * 0.05 + this.phase) * 0.2);
+                
+                // Draw as rotating square
+                ctx.fillStyle = this.color;
+                ctx.strokeStyle = COLORS.white;
+                ctx.lineWidth = 2;
+                ctx.shadowColor = this.color;
+                ctx.shadowBlur = 15;
+                
+                ctx.fillRect(-this.width/2, -this.height/2, this.width, this.height);
+                ctx.strokeRect(-this.width/2, -this.height/2, this.width, this.height);
+                
+                ctx.restore();
+            }
+        }
+        
+        // Particle system
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.vx = (Math.random() - 0.5) * 10;
+                this.vy = (Math.random() - 0.5) * 10;
+                this.color = color;
+                this.life = 1;
+                this.size = Math.random() * 5 + 2;
+            }
+            
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.vx *= 0.98;
+                this.vy += 0.2; // Gravity
+                this.life -= 0.02;
+                this.size *= 0.98;
+            }
+            
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.life;
+                ctx.fillStyle = this.color;
+                ctx.shadowColor = this.color;
+                ctx.shadowBlur = 10;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+        
+        // Fibonacci sequence for scoring
+        const fibonacci = [1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144];
+        
+        // Game objects
+        let balls = [new Ball()];
+        let bricks = [];
+        let platforms = [];
+        let enemies = [];
+        let enemyBullets = [];
+        let playerBullets = [];
+        
+        // Initialize game objects based on mode
+        function initializeMode(mode) {
+            game.mode = mode;
+            document.getElementById('game-mode').textContent = mode;
+            
+            // Clear objects
+            balls = [new Ball()];
+            bricks = [];
+            platforms = [];
+            enemies = [];
+            enemyBullets = [];
+            playerBullets = [];
+            
+            switch(mode) {
+                case 'BREAKER':
+                    initializeBricks();
+                    player.mode = 'paddle';
+                    player.y = canvas.height - 50;
+                    break;
+                    
+                case 'DOODLE':
+                    initializePlatforms();
+                    player.mode = 'jumper';
+                    player.vy = -10;
+                    break;
+                    
+                case 'INVADERS':
+                    initializeEnemies();
+                    player.mode = 'shooter';
+                    player.y = canvas.height - 50;
+                    break;
+                    
+                case 'PONG':
+                    player.mode = 'paddle';
+                    player.y = canvas.height - 50;
+                    // Add AI paddle
+                    break;
+                    
+                case 'UNIFIED':
+                    // Initialize a bit of everything
+                    initializeBricks();
+                    initializePlatforms();
+                    initializeEnemies();
+                    player.mode = 'paddle';
+                    break;
+            }
+        }
+        
+        function initializeBricks() {
+            bricks = [];
+            for (let row = 0; row < 5; row++) {
+                for (let col = 0; col < 10; col++) {
+                    bricks.push(new Brick(
+                        col * 75 + 40,
+                        row * 25 + 50,
+                        row,
+                        col
+                    ));
+                }
+            }
+        }
+        
+        function initializePlatforms() {
+            platforms = [];
+            for (let i = 0; i < 10; i++) {
+                const type = Math.random() < 0.1 ? 'golden' : 
+                            Math.random() < 0.2 ? 'moving' : 'normal';
+                platforms.push(new Platform(
+                    Math.random() * (canvas.width - 70),
+                    i * 60,
+                    type
+                ));
+            }
+        }
+        
+        function initializeEnemies() {
+            enemies = [];
+            for (let row = 0; row < 4; row++) {
+                for (let col = 0; col < 8; col++) {
+                    enemies.push(new Enemy(
+                        col * 80 + 100,
+                        row * 40 + 50,
+                        row,
+                        col
+                    ));
+                }
+            }
+        }
+        
+        // Transition between modes
+        function initiateTransition(newMode) {
+            if (game.morphing) return;
+            
+            game.morphing = true;
+            game.transition = 0;
+            
+            // Create transition particles
+            for (let i = 0; i < 50; i++) {
+                game.particles.push(new Particle(
+                    Math.random() * canvas.width,
+                    Math.random() * canvas.height,
+                    colorArray[Math.floor(Math.random() * colorArray.length)]
+                ));
+            }
+            
+            setTimeout(() => {
+                initializeMode(newMode);
+                game.morphing = false;
+            }, 500);
+        }
+        
+        // Input handling
+        let mouseX = canvas.width / 2;
+        let mouseY = canvas.height - 100;
+        
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            mouseX = e.clientX - rect.left;
+            mouseY = e.clientY - rect.top;
+        });
+        
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            const touch = e.touches[0];
+            mouseX = touch.clientX - rect.left;
+            mouseY = touch.clientY - rect.top;
+        });
+        
+        canvas.addEventListener('click', () => {
+            if (player.mode === 'shooter') {
+                playerBullets.push({
+                    x: player.x + player.width/2,
+                    y: player.y,
+                    vy: -8,
+                    color: COLORS.I
+                });
+            }
+        });
+        
+        // Collision detection
+        function checkCollisions() {
+            balls.forEach(ball => {
+                // Ball vs Player
+                if (ball.y + ball.radius >= player.y &&
+                    ball.y - ball.radius <= player.y + player.height &&
+                    ball.x >= player.x &&
+                    ball.x <= player.x + player.width) {
+                    
+                    ball.vy *= -1;
+                    // Add spin based on hit position
+                    const hitPos = (ball.x - player.x) / player.width;
+                    ball.vx = 8 * (hitPos - 0.5);
+                    
+                    game.combo++;
+                    game.score += fibonacci[game.combo % fibonacci.length];
+                }
+                
+                // Ball vs Bricks
+                bricks.forEach(brick => {
+                    if (!brick.active) return;
+                    
+                    if (ball.x + ball.radius >= brick.x &&
+                        ball.x - ball.radius <= brick.x + brick.width &&
+                        ball.y + ball.radius >= brick.y &&
+                        ball.y - ball.radius <= brick.y + brick.height) {
+                        
+                        brick.hit();
+                        ball.vy *= -1;
+                        ball.color = brick.color;
+                    }
+                });
+            });
+            
+            // Player vs Platforms (Doodle mode)
+            if (player.mode === 'jumper' && player.vy > 0) {
+                platforms.forEach(platform => {
+                    if (player.x + player.width >= platform.x &&
+                        player.x <= platform.x + platform.width &&
+                        player.y + player.height >= platform.y &&
+                        player.y + player.height <= platform.y + platform.height + 10) {
+                        
+                        player.vy = -15;
+                        if (platform.type === 'golden') {
+                            game.score += 100;
+                            game.combo += 5;
+                        }
+                        if (platform.type === 'breaking') {
+                            platform.broken = true;
+                        }
+                    }
+                });
+            }
+            
+            // Player bullets vs Enemies
+            playerBullets.forEach(bullet => {
+                enemies.forEach(enemy => {
+                    if (!enemy.active) return;
+                    
+                    if (bullet.x >= enemy.x &&
+                        bullet.x <= enemy.x + enemy.width &&
+                        bullet.y >= enemy.y &&
+                        bullet.y <= enemy.y + enemy.height) {
+                        
+                        enemy.active = false;
+                        bullet.y = -100; // Remove bullet
+                        game.score += fibonacci[enemy.row + enemy.col % fibonacci.length] * 10;
+                        game.combo++;
+                        
+                        // Create particles
+                        for (let i = 0; i < 5; i++) {
+                            game.particles.push(new Particle(enemy.x + enemy.width/2, enemy.y + enemy.height/2, enemy.color));
+                        }
+                    }
+                });
+            });
+        }
+        
+        // Update player
+        function updatePlayer() {
+            // Smooth movement towards mouse
+            const targetX = mouseX - player.width / 2;
+            player.x += (targetX - player.x) * 0.1;
+            
+            // Constrain to canvas
+            player.x = Math.max(0, Math.min(canvas.width - player.width, player.x));
+            
+            // Mode-specific updates
+            if (player.mode === 'jumper') {
+                player.vy += 0.5; // Gravity
+                player.y += player.vy;
+                
+                // Wrap around screen horizontally
+                if (player.x < 0) player.x = canvas.width;
+                if (player.x > canvas.width) player.x = 0;
+                
+                // Bounce at bottom
+                if (player.y > canvas.height - player.height) {
+                    player.y = canvas.height - player.height;
+                    player.vy = -15;
+                }
+            }
+            
+            // Add to trail
+            player.trail.push({ x: player.x + player.width/2, y: player.y });
+            if (player.trail.length > 30) player.trail.shift();
+        }
+        
+        // Draw player
+        function drawPlayer() {
+            // Draw trail
+            ctx.strokeStyle = player.color;
+            ctx.lineWidth = 2;
+            ctx.globalAlpha = 0.3;
+            ctx.beginPath();
+            player.trail.forEach((point, i) => {
+                if (i === 0) ctx.moveTo(point.x, point.y);
+                else ctx.lineTo(point.x, point.y);
+            });
+            ctx.stroke();
+            ctx.globalAlpha = 1;
+            
+            // Draw player shape based on mode
+            ctx.fillStyle = player.color;
+            ctx.strokeStyle = COLORS.white;
+            ctx.lineWidth = 2;
+            ctx.shadowColor = player.color;
+            ctx.shadowBlur = 20;
+            
+            if (player.mode === 'jumper') {
+                // Draw as circle for Doodle mode
+                ctx.beginPath();
+                ctx.arc(player.x + player.width/2, player.y + player.height/2, player.width/2, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.stroke();
+            } else {
+                // Draw as rectangle for paddle modes
+                ctx.fillRect(player.x, player.y, player.width, player.height);
+                ctx.strokeRect(player.x, player.y, player.width, player.height);
+            }
+            
+            ctx.shadowBlur = 0;
+        }
+        
+        // Draw background
+        function drawBackground() {
+            // Fade effect
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw mode-specific background elements
+            if (game.mode === 'UNIFIED' || game.morphing) {
+                // Draw golden spiral
+                ctx.save();
+                ctx.translate(canvas.width/2, canvas.height/2);
+                ctx.rotate(game.time * 0.001);
+                
+                ctx.strokeStyle = COLORS.Y;
+                ctx.lineWidth = 1;
+                ctx.globalAlpha = 0.05;
+                
+                ctx.beginPath();
+                let r = 1;
+                for (let angle = 0; angle < Math.PI * 6; angle += 0.1) {
+                    r = Math.exp(angle * 0.1) * 10;
+                    const x = Math.cos(angle) * r;
+                    const y = Math.sin(angle) * r;
+                    if (angle === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+                ctx.restore();
+                ctx.globalAlpha = 1;
+            }
+        }
+        
+        // Update UI
+        function updateUI() {
+            document.getElementById('score-value').textContent = game.score;
+            document.getElementById('combo-value').textContent = game.combo;
+        }
+        
+        // Game loop
+        function gameLoop() {
+            game.time++;
+            
+            // Clear and draw background
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            drawBackground();
+            
+            // Update and draw game objects
+            updatePlayer();
+            
+            // Update and draw balls
+            balls.forEach(ball => {
+                ball.update();
+                ball.draw();
+            });
+            
+            // Update and draw mode-specific objects
+            bricks.forEach(brick => brick.draw());
+            
+            platforms.forEach(platform => {
+                platform.update();
+                platform.draw();
+            });
+            
+            enemies.forEach(enemy => {
+                enemy.update();
+                enemy.draw();
+            });
+            
+            // Update bullets
+            playerBullets.forEach(bullet => {
+                bullet.y += bullet.vy;
+                ctx.fillStyle = bullet.color;
+                ctx.beginPath();
+                ctx.arc(bullet.x, bullet.y, 3, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            
+            enemyBullets.forEach(bullet => {
+                bullet.y += bullet.vy;
+                ctx.fillStyle = bullet.color;
+                ctx.beginPath();
+                ctx.arc(bullet.x, bullet.y, 3, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            
+            // Clean up bullets
+            playerBullets = playerBullets.filter(b => b.y > 0);
+            enemyBullets = enemyBullets.filter(b => b.y < canvas.height);
+            
+            // Update and draw particles
+            game.particles.forEach(particle => {
+                particle.update();
+                particle.draw();
+            });
+            game.particles = game.particles.filter(p => p.life > 0);
+            
+            // Check collisions
+            checkCollisions();
+            
+            // Draw player on top
+            drawPlayer();
+            
+            // Check win conditions
+            if (game.mode === 'BREAKER' && bricks.every(b => !b.active)) {
+                initializeBricks();
+                game.combo += 10;
+            }
+            
+            if (game.mode === 'INVADERS' && enemies.every(e => !e.active)) {
+                initializeEnemies();
+                game.combo += 10;
+            }
+            
+            // Update UI
+            updateUI();
+            
+            // Combo decay
+            if (game.time % 60 === 0 && game.combo > 0) {
+                game.combo--;
+            }
+            
+            requestAnimationFrame(gameLoop);
+        }
+        
+        // Initialize game
+        initializeMode('UNIFIED');
+        gameLoop();
+    </script>
+</body>
+</html>

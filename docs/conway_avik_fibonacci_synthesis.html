@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CONWAY × AVIK × FIBONACCI :: Life Synthesizes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #000;
+            font-family: 'Courier New', monospace;
+            color: #00FFFF;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        #container {
+            text-align: center;
+        }
+
+        #title {
+            font-size: 36px;
+            letter-spacing: 8px;
+            margin-bottom: 20px;
+            animation: pulse 1.729s infinite;
+        }
+
+        .letter-a { color: #FF1493; text-shadow: 0 0 20px #FF1493; }
+        .letter-v { color: #FFFF00; text-shadow: 0 0 20px #FFFF00; }
+        .letter-i { color: #00FFFF; text-shadow: 0 0 20px #00FFFF; }
+        .letter-k { color: #9370DB; text-shadow: 0 0 20px #9370DB; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.8; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); }
+        }
+
+        #canvas {
+            border: 2px solid #00FFFF;
+            box-shadow: 0 0 40px rgba(0, 255, 255, 0.5);
+            cursor: crosshair;
+        }
+
+        #controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        button {
+            background: linear-gradient(135deg, rgba(255,20,147,0.3), rgba(147,112,219,0.3));
+            border: 2px solid #00FFFF;
+            color: #00FFFF;
+            padding: 10px 20px;
+            font-family: 'Courier New', monospace;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+            letter-spacing: 2px;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+            background: rgba(0, 255, 255, 0.2);
+        }
+
+        #info {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #FFD700;
+            text-shadow: 0 0 10px #FFD700;
+        }
+
+        #fibonacci-display {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #FFD700;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .fib-title {
+            color: #FFD700;
+            font-size: 16px;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+
+        #fib-sequence {
+            color: #00FF00;
+            font-size: 12px;
+            max-width: 200px;
+            word-wrap: break-word;
+        }
+
+        #ramanujan {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            font-size: 24px;
+            color: #FF1493;
+            text-shadow: 0 0 20px #FF1493;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        #ramanujan.visible {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="title">
+            <span class="letter-a">C</span><span class="letter-v">O</span><span class="letter-i">N</span><span class="letter-k">W</span><span class="letter-a">A</span><span class="letter-v">Y</span>
+            <span style="color: #00FFFF;"> × </span>
+            <span class="letter-a">A</span><span class="letter-v">V</span><span class="letter-i">I</span><span class="letter-k">K</span>
+        </div>
+
+        <canvas id="canvas"></canvas>
+
+        <div id="controls">
+            <button id="playPause">▶ PLAY</button>
+            <button id="step">STEP</button>
+            <button id="clear">CLEAR</button>
+            <button id="random">RANDOM</button>
+            <button id="glider">GLIDER</button>
+            <button id="pulsar">PULSAR</button>
+            <button id="avik">AVIK PATTERN</button>
+        </div>
+
+        <div id="info">
+            <span id="generation">Gen: 0</span> |
+            <span id="population">Pop: 0</span> |
+            <span id="speed">φ Speed</span>
+        </div>
+    </div>
+
+    <div id="fibonacci-display">
+        <div class="fib-title">FIBONACCI SEQUENCE</div>
+        <div id="fib-sequence">1, 1, 2, 3, 5, 8, 13...</div>
+    </div>
+
+    <div id="ramanujan">1729 = 1³+12³ = 9³+10³</div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Grid parameters
+        const cellSize = 10;
+        const gridWidth = 80;
+        const gridHeight = 60;
+        canvas.width = gridWidth * cellSize;
+        canvas.height = gridHeight * cellSize;
+
+        // AVIK color mapping
+        const colorMap = {
+            'a': '#FF1493', // Pink/Magenta
+            'v': '#FFFF00', // Yellow
+            'i': '#00FFFF', // Cyan
+            'k': '#9370DB'  // Purple/Violet
+        };
+        const colors = Object.values(colorMap);
+
+        // Game state
+        let grid = createGrid();
+        let running = false;
+        let generation = 0;
+        let updateInterval;
+        const PHI = (1 + Math.sqrt(5)) / 2; // Golden ratio
+        const updateSpeed = 1000 / PHI; // Updates per φ seconds
+
+        // Fibonacci tracking
+        let fibSequence = [1, 1];
+        let fibIndex = 0;
+
+        function createGrid() {
+            return Array(gridHeight).fill(null).map(() =>
+                Array(gridWidth).fill(0)
+            );
+        }
+
+        function countNeighbors(x, y) {
+            let count = 0;
+            for (let dy = -1; dy <= 1; dy++) {
+                for (let dx = -1; dx <= 1; dx++) {
+                    if (dx === 0 && dy === 0) continue;
+                    const nx = (x + dx + gridWidth) % gridWidth;
+                    const ny = (y + dy + gridHeight) % gridHeight;
+                    if (grid[ny][nx] > 0) count++;
+                }
+            }
+            return count;
+        }
+
+        function updateGrid() {
+            const newGrid = createGrid();
+            let population = 0;
+
+            for (let y = 0; y < gridHeight; y++) {
+                for (let x = 0; x < gridWidth; x++) {
+                    const neighbors = countNeighbors(x, y);
+                    const cell = grid[y][x];
+
+                    if (cell > 0) {
+                        // Cell is alive
+                        if (neighbors === 2 || neighbors === 3) {
+                            // Survives, keep color
+                            newGrid[y][x] = cell;
+                            population++;
+                        }
+                    } else {
+                        // Cell is dead
+                        if (neighbors === 3) {
+                            // Birth - assign color based on neighbor average
+                            let colorSum = 0;
+                            let colorCount = 0;
+                            for (let dy = -1; dy <= 1; dy++) {
+                                for (let dx = -1; dx <= 1; dx++) {
+                                    if (dx === 0 && dy === 0) continue;
+                                    const nx = (x + dx + gridWidth) % gridWidth;
+                                    const ny = (y + dy + gridHeight) % gridHeight;
+                                    if (grid[ny][nx] > 0) {
+                                        colorSum += grid[ny][nx];
+                                        colorCount++;
+                                    }
+                                }
+                            }
+                            // Assign color based on neighbors
+                            newGrid[y][x] = Math.floor(colorSum / colorCount) || 1;
+                            population++;
+                        }
+                    }
+                }
+            }
+
+            grid = newGrid;
+            generation++;
+
+            // Update Fibonacci sequence based on population
+            updateFibonacci(population);
+
+            // Check for Ramanujan's number
+            if (population === 1729) {
+                document.getElementById('ramanujan').classList.add('visible');
+                setTimeout(() => {
+                    document.getElementById('ramanujan').classList.remove('visible');
+                }, 3000);
+            }
+
+            return population;
+        }
+
+        function updateFibonacci(population) {
+            // Generate next Fibonacci number if population matches current
+            if (fibIndex < fibSequence.length && population >= fibSequence[fibIndex]) {
+                const a = fibSequence[fibSequence.length - 1];
+                const b = fibSequence[fibSequence.length - 2];
+                fibSequence.push(a + b);
+                fibIndex++;
+
+                // Update display
+                document.getElementById('fib-sequence').textContent =
+                    fibSequence.slice(-10).join(', ') + '...';
+            }
+        }
+
+        function draw() {
+            // Clear canvas
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw grid
+            for (let y = 0; y < gridHeight; y++) {
+                for (let x = 0; x < gridWidth; x++) {
+                    if (grid[y][x] > 0) {
+                        // Get color based on cell value (1-4 maps to AVIK colors)
+                        const colorIndex = (grid[y][x] - 1) % colors.length;
+                        ctx.fillStyle = colors[colorIndex];
+
+                        // Draw cell with glow effect
+                        ctx.shadowColor = colors[colorIndex];
+                        ctx.shadowBlur = 10;
+                        ctx.fillRect(
+                            x * cellSize + 1,
+                            y * cellSize + 1,
+                            cellSize - 2,
+                            cellSize - 2
+                        );
+                        ctx.shadowBlur = 0;
+                    }
+                }
+            }
+
+            // Draw grid lines (subtle)
+            ctx.strokeStyle = 'rgba(0, 255, 255, 0.1)';
+            ctx.lineWidth = 1;
+            for (let x = 0; x <= gridWidth; x++) {
+                ctx.beginPath();
+                ctx.moveTo(x * cellSize, 0);
+                ctx.lineTo(x * cellSize, canvas.height);
+                ctx.stroke();
+            }
+            for (let y = 0; y <= gridHeight; y++) {
+                ctx.beginPath();
+                ctx.moveTo(0, y * cellSize);
+                ctx.lineTo(canvas.width, y * cellSize);
+                ctx.stroke();
+            }
+        }
+
+        function gameLoop() {
+            const population = updateGrid();
+            draw();
+
+            // Update UI
+            document.getElementById('generation').textContent = `Gen: ${generation}`;
+            document.getElementById('population').textContent = `Pop: ${population}`;
+        }
+
+        // Mouse interaction
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = Math.floor((e.clientX - rect.left) / cellSize);
+            const y = Math.floor((e.clientY - rect.top) / cellSize);
+
+            if (x >= 0 && x < gridWidth && y >= 0 && y < gridHeight) {
+                // Cycle through AVIK colors (0 -> 1 -> 2 -> 3 -> 4 -> 0)
+                grid[y][x] = (grid[y][x] + 1) % 5;
+                draw();
+            }
+        });
+
+        // Control buttons
+        document.getElementById('playPause').addEventListener('click', () => {
+            running = !running;
+            const btn = document.getElementById('playPause');
+
+            if (running) {
+                btn.textContent = '⏸ PAUSE';
+                updateInterval = setInterval(gameLoop, updateSpeed);
+            } else {
+                btn.textContent = '▶ PLAY';
+                clearInterval(updateInterval);
+            }
+        });
+
+        document.getElementById('step').addEventListener('click', () => {
+            gameLoop();
+        });
+
+        document.getElementById('clear').addEventListener('click', () => {
+            grid = createGrid();
+            generation = 0;
+            fibSequence = [1, 1];
+            fibIndex = 0;
+            draw();
+        });
+
+        document.getElementById('random').addEventListener('click', () => {
+            for (let y = 0; y < gridHeight; y++) {
+                for (let x = 0; x < gridWidth; x++) {
+                    grid[y][x] = Math.random() < 0.3 ? Math.floor(Math.random() * 4) + 1 : 0;
+                }
+            }
+            draw();
+        });
+
+        document.getElementById('glider').addEventListener('click', () => {
+            grid = createGrid();
+            const cx = Math.floor(gridWidth / 2);
+            const cy = Math.floor(gridHeight / 2);
+            // Glider pattern
+            grid[cy][cx+1] = 1;
+            grid[cy+1][cx+2] = 2;
+            grid[cy+2][cx] = 3;
+            grid[cy+2][cx+1] = 4;
+            grid[cy+2][cx+2] = 1;
+            draw();
+        });
+
+        document.getElementById('pulsar').addEventListener('click', () => {
+            grid = createGrid();
+            const cx = Math.floor(gridWidth / 2);
+            const cy = Math.floor(gridHeight / 2);
+            // Pulsar pattern (simplified)
+            const offsets = [
+                [-6,-4],[-6,-3],[-6,-2], [-1,-4],[-1,-3],[-1,-2],
+                [1,-4],[1,-3],[1,-2], [6,-4],[6,-3],[6,-2],
+                [-6,4],[-6,3],[-6,2], [-1,4],[-1,3],[-1,2],
+                [1,4],[1,3],[1,2], [6,4],[6,3],[6,2]
+            ];
+            offsets.forEach(([dx, dy], i) => {
+                const x = cx + dx;
+                const y = cy + dy;
+                if (x >= 0 && x < gridWidth && y >= 0 && y < gridHeight) {
+                    grid[y][x] = (i % 4) + 1;
+                }
+            });
+            draw();
+        });
+
+        document.getElementById('avik').addEventListener('click', () => {
+            grid = createGrid();
+            const cx = Math.floor(gridWidth / 2);
+            const cy = Math.floor(gridHeight / 2);
+
+            // A pattern (Pink)
+            for (let i = 0; i < 5; i++) {
+                grid[cy+i][cx-10] = 1;
+                grid[cy+i][cx-8] = 1;
+            }
+            grid[cy][cx-9] = 1;
+            grid[cy+2][cx-9] = 1;
+
+            // V pattern (Yellow)
+            for (let i = 0; i < 3; i++) {
+                grid[cy+i][cx-5] = 2;
+                grid[cy+i][cx-1] = 2;
+            }
+            grid[cy+3][cx-4] = 2;
+            grid[cy+4][cx-3] = 2;
+
+            // I pattern (Cyan)
+            for (let i = 0; i < 5; i++) {
+                grid[cy+i][cx+2] = 3;
+            }
+
+            // K pattern (Purple)
+            for (let i = 0; i < 5; i++) {
+                grid[cy+i][cx+5] = 4;
+            }
+            grid[cy+1][cx+6] = 4;
+            grid[cy+2][cx+7] = 4;
+            grid[cy+3][cx+6] = 4;
+            grid[cy+4][cx+7] = 4;
+
+            draw();
+        });
+
+        // Initial draw
+        draw();
+    </script>
+</body>
+</html>

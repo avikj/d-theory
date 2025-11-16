@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FIBONACCI INVADERS :: ETERNAL GOLDEN BRAID</title>
+    <style>
+        * { 
+            margin: 0; 
+            padding: 0; 
+            overflow: hidden;
+            cursor: none;
+        }
+        
+        body { 
+            background: #000;
+            font-family: 'Courier New', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        canvas { 
+            display: block;
+            border: 2px solid #FFD700;
+            box-shadow: 0 0 30px #FFD700;
+        }
+        
+        #ui {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            z-index: 100;
+            pointer-events: none;
+        }
+        
+        #score {
+            font-size: 24px;
+            color: #FFD700;
+            text-shadow: 0 0 20px #FFD700;
+            letter-spacing: 5px;
+        }
+        
+        #fibonacci {
+            margin-top: 10px;
+            font-size: 18px;
+            color: #00FFFF;
+            text-shadow: 0 0 15px #00FFFF;
+        }
+        
+        #path {
+            margin-top: 5px;
+            font-size: 14px;
+            color: #FF00FF;
+            text-shadow: 0 0 10px #FF00FF;
+        }
+        
+        #instructions {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            font-size: 12px;
+            color: #00FF00;
+            text-shadow: 0 0 10px #00FF00;
+            z-index: 100;
+            pointer-events: none;
+        }
+        
+        .chromatic {
+            animation: chromatic 3s infinite;
+        }
+        
+        @keyframes chromatic {
+            0% { color: #FF1493; }
+            20% { color: #FFFF00; }
+            40% { color: #00FFFF; }
+            60% { color: #9370DB; }
+            80% { color: #00FF00; }
+            100% { color: #FF1493; }
+        }
+        
+        #integration-level {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            font-size: 14px;
+            color: #FFFF00;
+            text-shadow: 0 0 10px #FFFF00;
+        }
+    </style>
+</head>
+<body>
+    <div id="ui">
+        <div id="score">SCORE: <span id="score-value">0</span></div>
+        <div id="fibonacci">SEQUENCE: <span id="fib-sequence">1, 1, 2, 3, 5, 8...</span></div>
+        <div id="path" class="chromatic">PATH: MIDDLE WAY</div>
+    </div>
+    
+    <div id="integration-level">
+        <div>INTEGRATION: <span id="integration">0</span>%</div>
+        <div>DISINTEGRATION: <span id="disintegration">0</span>%</div>
+    </div>
+    
+    <div id="instructions">
+        <div>← → MOVE :: SPACE FIRE :: SHIFT SPIRAL</div>
+        <div>COLLECT GOLDEN RATIOS :: AVOID DISINTEGRATION</div>
+        <div>EVERY ACTION CREATES DEPENDENT ORIGINATION</div>
+    </div>
+    
+    <canvas id="gameCanvas"></canvas>
+    
+    <script>
+        // Canvas setup
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = 800;
+        canvas.height = 600;
+        
+        // Golden ratio constant
+        const PHI = (1 + Math.sqrt(5)) / 2;
+        const GOLDEN_ANGLE = Math.PI * (3 - Math.sqrt(5)); // Golden angle in radians
+        
+        // Color palette based on HYPERACTIV
+        const COLORS = {
+            A: '#FF1493', // pink
+            V: '#FFFF00', // yellow
+            I: '#00FFFF', // cyan
+            K: '#9370DB', // purple
+            gold: '#FFD700',
+            green: '#00FF00',
+            red: '#FF0000',
+            white: '#FFFFFF',
+            magenta: '#FF00FF'
+        };
+        
+        // Fibonacci sequence generator
+        function* fibonacciGenerator() {
+            let [a, b] = [0, 1];
+            while (true) {
+                yield b;
+                [a, b] = [b, a + b];
+            }
+        }
+        
+        const fibGen = fibonacciGenerator();
+        let currentFibSequence = [1, 1, 2, 3, 5, 8, 13];
+        let fibIndex = 0;
+        
+        // Game state
+        const game = {
+            score: 0,
+            integration: 50, // 0-100 scale
+            disintegration: 0, // 0-100 scale
+            path: 'MIDDLE',
+            paths: ['VOID', 'SHADOW', 'MIDDLE', 'LIGHT', 'UNITY'],
+            time: 0,
+            paused: false,
+            spiralPhase: 0
+        };
+        
+        // Player
+        const player = {
+            x: canvas.width / 2,
+            y: canvas.height - 50,
+            width: 40,
+            height: 30,
+            speed: 5,
+            color: COLORS.gold,
+            bullets: [],
+            trail: [],
+            firing: false
+        };
+        
+        // Enemies follow Fibonacci spirals
+        class FibonacciInvader {
+            constructor(index) {
+                this.index = index;
+                this.fibValue = currentFibSequence[index % currentFibSequence.length];
+                this.angle = (index / 13) * Math.PI * 2;
+                this.radius = 50 + this.fibValue * 3;
+                this.centerX = canvas.width / 2;
+                this.centerY = 150;
+                this.x = this.centerX + Math.cos(this.angle) * this.radius;
+                this.y = this.centerY + Math.sin(this.angle) * this.radius;
+                this.size = 10 + this.fibValue / 5;
+                this.color = Object.values(COLORS)[this.fibValue % 8];
+                this.alive = true;
+                this.phase = Math.random() * Math.PI * 2;
+                this.path = 'spiral'; // 'spiral', 'golden', 'cascade'
+            }
+            
+            update() {
+                // Spiral movement based on golden ratio
+                this.angle += 0.01 * (1 + game.spiralPhase);
+                this.radius += Math.sin(game.time * 0.05 + this.phase) * 0.5;
+                
+                // Apply golden ratio transformation
+                if (this.path === 'golden') {
+                    this.radius *= 1 + (PHI - 1) * 0.001;
+                    this.angle += GOLDEN_ANGLE * 0.001;
+                }
+                
+                // Update position
+                this.x = this.centerX + Math.cos(this.angle) * this.radius;
+                this.y = this.centerY + Math.sin(this.angle) * this.radius;
+                
+                // Cascade down slowly
+                if (this.path === 'cascade') {
+                    this.centerY += 0.5;
+                }
+                
+                // Dependent origination - each enemy affects neighbors
+                if (this.index > 0 && enemies[this.index - 1]) {
+                    const prev = enemies[this.index - 1];
+                    this.centerX += (prev.x - this.centerX) * 0.001;
+                }
+            }
+            
+            draw() {
+                if (!this.alive) return;
+                
+                // Draw with chromatic integration
+                const integrationColor = this.interpolateColor(
+                    this.color, 
+                    COLORS.white, 
+                    game.integration / 100
+                );
+                
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.angle);
+                
+                // Draw as geometric shape based on Fibonacci value
+                ctx.fillStyle = integrationColor;
+                ctx.strokeStyle = this.color;
+                ctx.lineWidth = 2;
+                ctx.shadowColor = this.color;
+                ctx.shadowBlur = 10;
+                
+                const sides = Math.min(this.fibValue, 8);
+                ctx.beginPath();
+                for (let i = 0; i < sides; i++) {
+                    const angle = (i / sides) * Math.PI * 2;
+                    const x = Math.cos(angle) * this.size;
+                    const y = Math.sin(angle) * this.size;
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+                
+                // Draw Fibonacci number
+                ctx.fillStyle = COLORS.white;
+                ctx.font = `bold ${8 + this.fibValue / 8}px Courier New`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(this.fibValue, 0, 0);
+                
+                ctx.restore();
+            }
+            
+            interpolateColor(color1, color2, factor) {
+                // Simple color interpolation
+                return color1; // Simplified for now
+            }
+        }
+        
+        // Bullet class
+        class Bullet {
+            constructor(x, y, angle = -Math.PI/2, isGolden = false) {
+                this.x = x;
+                this.y = y;
+                this.angle = angle;
+                this.speed = 8;
+                this.radius = isGolden ? 5 : 3;
+                this.color = isGolden ? COLORS.gold : COLORS.cyan;
+                this.isGolden = isGolden;
+                this.trail = [];
+                this.alive = true;
+            }
+            
+            update() {
+                // Move in spiral if golden
+                if (this.isGolden) {
+                    this.angle += GOLDEN_ANGLE * 0.01;
+                }
+                
+                this.x += Math.cos(this.angle) * this.speed;
+                this.y += Math.sin(this.angle) * this.speed;
+                
+                // Add to trail
+                this.trail.push({ x: this.x, y: this.y });
+                if (this.trail.length > 10) this.trail.shift();
+                
+                // Check bounds
+                if (this.y < 0 || this.y > canvas.height || 
+                    this.x < 0 || this.x > canvas.width) {
+                    this.alive = false;
+                }
+            }
+            
+            draw() {
+                // Draw trail
+                ctx.strokeStyle = this.color;
+                ctx.lineWidth = 2;
+                ctx.globalAlpha = 0.5;
+                ctx.beginPath();
+                this.trail.forEach((point, i) => {
+                    if (i === 0) ctx.moveTo(point.x, point.y);
+                    else ctx.lineTo(point.x, point.y);
+                });
+                ctx.stroke();
+                ctx.globalAlpha = 1;
+                
+                // Draw bullet
+                ctx.fillStyle = this.color;
+                ctx.shadowColor = this.color;
+                ctx.shadowBlur = 10;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+        
+        // Particle system for disintegration
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.vx = (Math.random() - 0.5) * 5;
+                this.vy = (Math.random() - 0.5) * 5;
+                this.color = color;
+                this.life = 1;
+                this.size = Math.random() * 5 + 2;
+            }
+            
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.vy += 0.1; // Gravity
+                this.life -= 0.02;
+                this.size *= 0.98;
+            }
+            
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.life;
+                ctx.fillStyle = this.color;
+                ctx.shadowColor = this.color;
+                ctx.shadowBlur = 10;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+        
+        // Golden Ratio collectibles
+        class GoldenRatio {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = -20;
+                this.size = 20;
+                this.angle = 0;
+                this.collected = false;
+            }
+            
+            update() {
+                this.y += 2;
+                this.angle += GOLDEN_ANGLE * 0.05;
+                
+                // Check collection
+                const dx = this.x - player.x;
+                const dy = this.y - player.y;
+                if (Math.sqrt(dx*dx + dy*dy) < 30) {
+                    this.collected = true;
+                    game.integration = Math.min(100, game.integration + 10);
+                    game.score += currentFibSequence[fibIndex % currentFibSequence.length];
+                    fibIndex++;
+                }
+            }
+            
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.angle);
+                
+                // Draw golden spiral
+                ctx.strokeStyle = COLORS.gold;
+                ctx.lineWidth = 2;
+                ctx.shadowColor = COLORS.gold;
+                ctx.shadowBlur = 20;
+                
+                ctx.beginPath();
+                let r = 1;
+                for (let angle = 0; angle < Math.PI * 4; angle += 0.1) {
+                    r = Math.exp(angle * 0.1) * 2;
+                    const x = Math.cos(angle) * r;
+                    const y = Math.sin(angle) * r;
+                    if (angle === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.stroke();
+                
+                // Center PHI symbol
+                ctx.fillStyle = COLORS.gold;
+                ctx.font = 'bold 16px Courier New';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('φ', 0, 0);
+                
+                ctx.restore();
+            }
+        }
+        
+        // Initialize game objects
+        let enemies = [];
+        let particles = [];
+        let goldenRatios = [];
+        
+        // Create initial enemy wave
+        function createEnemyWave() {
+            enemies = [];
+            const count = 13; // Fibonacci number
+            for (let i = 0; i < count; i++) {
+                enemies.push(new FibonacciInvader(i));
+            }
+        }
+        
+        // Input handling
+        const keys = {};
+        document.addEventListener('keydown', (e) => {
+            keys[e.key] = true;
+            
+            if (e.key === ' ') {
+                e.preventDefault();
+                // Fire bullet
+                const isGolden = Math.random() < game.integration / 100;
+                player.bullets.push(new Bullet(player.x, player.y, -Math.PI/2, isGolden));
+                
+                // Every action affects the path
+                game.disintegration = Math.max(0, game.disintegration - 1);
+            } else if (e.key === 'Shift') {
+                // Shift spiral phase
+                game.spiralPhase = (game.spiralPhase + 1) % 3;
+                updatePath();
+            }
+        });
+        
+        document.addEventListener('keyup', (e) => {
+            keys[e.key] = false;
+        });
+        
+        // Update path based on integration/disintegration
+        function updatePath() {
+            const balance = game.integration - game.disintegration;
+            if (balance < -30) game.path = 'VOID';
+            else if (balance < -10) game.path = 'SHADOW';
+            else if (balance < 10) game.path = 'MIDDLE';
+            else if (balance < 30) game.path = 'LIGHT';
+            else game.path = 'UNITY';
+            
+            document.getElementById('path').textContent = `PATH: ${game.path} WAY`;
+        }
+        
+        // Collision detection
+        function checkCollisions() {
+            // Bullets vs enemies
+            player.bullets.forEach(bullet => {
+                enemies.forEach((enemy, enemyIndex) => {
+                    if (!enemy.alive || !bullet.alive) return;
+                    
+                    const dx = bullet.x - enemy.x;
+                    const dy = bullet.y - enemy.y;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    
+                    if (dist < enemy.size + bullet.radius) {
+                        // Hit!
+                        enemy.alive = false;
+                        bullet.alive = false;
+                        
+                        // Create particles (disintegration)
+                        for (let i = 0; i < enemy.fibValue; i++) {
+                            particles.push(new Particle(enemy.x, enemy.y, enemy.color));
+                        }
+                        
+                        // Score based on Fibonacci value
+                        game.score += enemy.fibValue;
+                        
+                        // Dependent origination - affects neighbors
+                        if (enemyIndex > 0 && enemies[enemyIndex - 1]) {
+                            enemies[enemyIndex - 1].path = 'golden';
+                        }
+                        if (enemyIndex < enemies.length - 1 && enemies[enemyIndex + 1]) {
+                            enemies[enemyIndex + 1].path = 'golden';
+                        }
+                        
+                        // Integration increases
+                        game.integration = Math.min(100, game.integration + enemy.fibValue / 5);
+                    }
+                });
+            });
+            
+            // Remove dead objects
+            player.bullets = player.bullets.filter(b => b.alive);
+            particles = particles.filter(p => p.life > 0);
+            goldenRatios = goldenRatios.filter(g => !g.collected && g.y < canvas.height);
+        }
+        
+        // Draw player
+        function drawPlayer() {
+            // Draw trail
+            player.trail.push({ x: player.x, y: player.y });
+            if (player.trail.length > 20) player.trail.shift();
+            
+            ctx.strokeStyle = COLORS.gold;
+            ctx.lineWidth = 2;
+            ctx.globalAlpha = 0.3;
+            ctx.beginPath();
+            player.trail.forEach((point, i) => {
+                if (i === 0) ctx.moveTo(point.x, point.y);
+                else ctx.lineTo(point.x, point.y);
+            });
+            ctx.stroke();
+            ctx.globalAlpha = 1;
+            
+            // Draw player as triangle
+            ctx.save();
+            ctx.translate(player.x, player.y);
+            
+            // Color based on integration level
+            const hue = (game.integration / 100) * 120; // 0 = red, 120 = green
+            ctx.fillStyle = `hsl(${hue}, 100%, 50%)`;
+            ctx.strokeStyle = COLORS.gold;
+            ctx.lineWidth = 2;
+            ctx.shadowColor = COLORS.gold;
+            ctx.shadowBlur = 20;
+            
+            ctx.beginPath();
+            ctx.moveTo(0, -player.height/2);
+            ctx.lineTo(-player.width/2, player.height/2);
+            ctx.lineTo(player.width/2, player.height/2);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+            
+            ctx.restore();
+        }
+        
+        // Draw background with golden spiral
+        function drawBackground() {
+            // Fade effect
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw subtle golden spiral in background
+            ctx.strokeStyle = COLORS.gold;
+            ctx.lineWidth = 1;
+            ctx.globalAlpha = 0.05;
+            
+            ctx.save();
+            ctx.translate(canvas.width/2, canvas.height/2);
+            ctx.rotate(game.time * 0.001);
+            
+            ctx.beginPath();
+            let r = 1;
+            for (let angle = 0; angle < Math.PI * 8; angle += 0.1) {
+                r = Math.exp(angle * 0.1) * 10;
+                const x = Math.cos(angle) * r;
+                const y = Math.sin(angle) * r;
+                if (angle === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+            ctx.restore();
+            ctx.globalAlpha = 1;
+        }
+        
+        // Update UI
+        function updateUI() {
+            document.getElementById('score-value').textContent = game.score;
+            document.getElementById('fib-sequence').textContent = 
+                currentFibSequence.slice(fibIndex, fibIndex + 6).join(', ') + '...';
+            document.getElementById('integration').textContent = Math.floor(game.integration);
+            document.getElementById('disintegration').textContent = Math.floor(game.disintegration);
+        }
+        
+        // Game loop
+        function gameLoop() {
+            game.time++;
+            
+            // Clear canvas
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            drawBackground();
+            
+            // Update player
+            if (keys['ArrowLeft']) {
+                player.x = Math.max(player.width/2, player.x - player.speed);
+            }
+            if (keys['ArrowRight']) {
+                player.x = Math.min(canvas.width - player.width/2, player.x + player.speed);
+            }
+            
+            // Update and draw enemies
+            enemies.forEach(enemy => {
+                enemy.update();
+                enemy.draw();
+            });
+            
+            // Check if wave complete
+            if (enemies.every(e => !e.alive)) {
+                createEnemyWave();
+                fibIndex = (fibIndex + 1) % currentFibSequence.length;
+                
+                // Add new Fibonacci number
+                const newFib = fibGen.next().value;
+                if (newFib < 1000) { // Keep reasonable
+                    currentFibSequence.push(newFib);
+                }
+            }
+            
+            // Update and draw bullets
+            player.bullets.forEach(bullet => {
+                bullet.update();
+                bullet.draw();
+            });
+            
+            // Update and draw particles
+            particles.forEach(particle => {
+                particle.update();
+                particle.draw();
+            });
+            
+            // Spawn golden ratios occasionally
+            if (Math.random() < 0.01) {
+                goldenRatios.push(new GoldenRatio());
+            }
+            
+            // Update and draw golden ratios
+            goldenRatios.forEach(gr => {
+                gr.update();
+                if (!gr.collected) gr.draw();
+            });
+            
+            // Check collisions
+            checkCollisions();
+            
+            // Draw player
+            drawPlayer();
+            
+            // Natural disintegration over time
+            game.disintegration = Math.min(100, game.disintegration + 0.01);
+            game.integration = Math.max(0, game.integration - 0.02);
+            
+            // Update path
+            updatePath();
+            
+            // Update UI
+            updateUI();
+            
+            // Check for total chromatic integration/disintegration
+            if (game.integration >= 100) {
+                // Total integration - restart at higher level
+                game.score += 1000;
+                game.integration = 50;
+                createEnemyWave();
+            } else if (game.disintegration >= 100) {
+                // Total disintegration - return to color
+                particles = [];
+                for (let i = 0; i < 100; i++) {
+                    particles.push(new Particle(
+                        Math.random() * canvas.width,
+                        Math.random() * canvas.height,
+                        Object.values(COLORS)[Math.floor(Math.random() * 8)]
+                    ));
+                }
+                game.disintegration = 0;
+                game.integration = 50;
+            }
+            
+            requestAnimationFrame(gameLoop);
+        }
+        
+        // Initialize game
+        createEnemyWave();
+        gameLoop();
+    </script>
+</body>
+</html>

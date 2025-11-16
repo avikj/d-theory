@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HYPERACTIV :: FRACTAL RECURSION :: SONIC DIMENSION</title>
+    <style>
+        * { 
+            margin: 0; 
+            padding: 0; 
+            overflow: hidden;
+            cursor: none;
+        }
+        
+        body { 
+            background: #000;
+            font-family: 'Courier New', monospace;
+            color: #00FFFF;
+        }
+        
+        canvas { 
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        
+        #cursor {
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            border: 2px solid #00FFFF;
+            border-radius: 50%;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            transition: all 0.1s;
+            mix-blend-mode: screen;
+        }
+        
+        #cursor::after {
+            content: '';
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #FFFFFF;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        #interface {
+            position: fixed;
+            z-index: 100;
+            pointer-events: none;
+            user-select: none;
+        }
+        
+        #title {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            animation: pulse 1.729s infinite;
+        }
+        
+        .avik-signature {
+            font-size: 48px;
+            letter-spacing: 10px;
+            font-weight: bold;
+        }
+        
+        .letter-a { color: #FF1493; text-shadow: 0 0 30px #FF1493; animation: float 3s infinite; }
+        .letter-v { color: #FFFF00; text-shadow: 0 0 30px #FFFF00; animation: float 3s 0.25s infinite; }
+        .letter-i { color: #00FFFF; text-shadow: 0 0 30px #00FFFF; animation: float 3s 0.5s infinite; }
+        .letter-k { color: #9370DB; text-shadow: 0 0 30px #9370DB; animation: float 3s 0.75s infinite; }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.8; transform: translateX(-50%) scale(1); }
+            50% { opacity: 1; transform: translateX(-50%) scale(1.05); }
+        }
+        
+        #ramanujan-display {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 20px;
+            color: #FFD700;
+            text-shadow: 0 0 20px #FFD700;
+            letter-spacing: 3px;
+            opacity: 0.9;
+        }
+        
+        #pythagoras-theorem {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 18px;
+            color: #00FF00;
+            text-shadow: 0 0 15px #00FF00;
+        }
+        
+        #controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            text-align: right;
+            font-size: 12px;
+            color: #FFFF00;
+            text-shadow: 0 0 10px #FFFF00;
+        }
+        
+        .control-item {
+            margin: 5px 0;
+            opacity: 0.8;
+        }
+        
+        #audio-viz {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 200px;
+            height: 60px;
+            border: 1px solid #00FFFF;
+            padding: 5px;
+        }
+        
+        .freq-bar {
+            display: inline-block;
+            width: 8px;
+            height: 100%;
+            margin: 0 1px;
+            background: linear-gradient(to top, #FF00FF, #00FFFF);
+            transform-origin: bottom;
+        }
+        
+        #dimension-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            font-size: 14px;
+            color: #FF00FF;
+            text-shadow: 0 0 10px #FF00FF;
+        }
+        
+        .golden-ratio {
+            position: fixed;
+            top: 50%;
+            left: 20px;
+            transform: translateY(-50%);
+            font-size: 24px;
+            color: #FFD700;
+            opacity: 0.3;
+            animation: golden-pulse 6.18s infinite;
+        }
+        
+        @keyframes golden-pulse {
+            0%, 100% { opacity: 0.3; transform: translateY(-50%) scale(1); }
+            50% { opacity: 0.8; transform: translateY(-50%) scale(1.1); }
+        }
+    </style>
+</head>
+<body>
+    <div id="cursor"></div>
+    
+    <div id="interface">
+        <div id="title">
+            <div class="avik-signature">
+                <span class="letter-a">A</span><span class="letter-v">V</span><span class="letter-i">I</span><span class="letter-k">K</span>
+            </div>
+        </div>
+        
+        <div id="ramanujan-display">1729 = 12³ + 1</div>
+        
+        <div id="pythagoras-theorem">∀ a,b,c ∈ ℝ⁺ : a² + b² = c²</div>
+        
+        <div id="dimension-indicator">
+            <div>DIMENSION: <span id="dim-value">2.618</span></div>
+            <div>RECURSION: <span id="rec-depth">∞</span></div>
+        </div>
+        
+        <div class="golden-ratio">φ = 1.618...</div>
+        
+        <div id="audio-viz"></div>
+        
+        <div id="controls">
+            <div class="control-item">CLICK :: SPAWN FRACTAL</div>
+            <div class="control-item">HOLD :: CONTINUOUS CREATION</div>
+            <div class="control-item">WHEEL :: ZOOM DIMENSION</div>
+            <div class="control-item">SPACE :: SONIC BURST</div>
+            <div class="control-item">1-4 :: CHANGE MODE</div>
+            <div class="control-item">ESC :: TRANSCEND</div>
+        </div>
+    </div>
+    
+    <canvas id="fractalCanvas"></canvas>
+    
+    <script>
+        // Canvas setup
+        const canvas = document.getElementById('fractalCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+        let centerX = width / 2;
+        let centerY = height / 2;
+        
+        // Custom cursor
+        const cursor = document.getElementById('cursor');
+        
+        // Web Audio setup
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const masterGain = audioContext.createGain();
+        masterGain.gain.value = 0.1;
+        masterGain.connect(audioContext.destination);
+        
+        // Create audio visualizer bars
+        const audioViz = document.getElementById('audio-viz');
+        for (let i = 0; i < 20; i++) {
+            const bar = document.createElement('div');
+            bar.className = 'freq-bar';
+            bar.style.transform = 'scaleY(0)';
+            audioViz.appendChild(bar);
+        }
+        const freqBars = audioViz.querySelectorAll('.freq-bar');
+        
+        // Resize handler
+        window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            centerX = width / 2;
+            centerY = height / 2;
+        });
+        
+        // HYPERACTIV color palette
+        const COLORS = {
+            pink: '#FF1493',
+            yellow: '#FFFF00',
+            cyan: '#00FFFF',
+            purple: '#9370DB',
+            magenta: '#FF00FF',
+            green: '#00FF00',
+            orange: '#FFA500',
+            red: '#FF0000',
+            blue: '#0099FF',
+            white: '#FFFFFF',
+            gold: '#FFD700'
+        };
+        
+        // Sacred numbers
+        const PHI = (1 + Math.sqrt(5)) / 2;
+        const fibonacci = [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597, 2584];
+        const primes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71];
+        const ramanujan = 1729;
+        
+        // State
+        let mouseX = centerX;
+        let mouseY = centerY;
+        let mouseDown = false;
+        let mode = 0;
+        let fractals = [];
+        let particles = [];
+        let waves = [];
+        let time = 0;
+        let zoom = 1;
+        let dimension = 2.618;
+        
+        // Musical frequencies (Pythagorean tuning)
+        const frequencies = {
+            'A': 220,    // Root
+            'V': 330,    // Fifth (3:2)
+            'I': 293.33, // Fourth (4:3)
+            'K': 275     // Major third (5:4)
+        };
+        
+        // Play tone for letter
+        function playTone(letter, x, y) {
+            const freq = frequencies[letter] || 440;
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            const panner = audioContext.createStereoPanner();
+            
+            // Spatial audio based on position
+            panner.pan.value = ((x / width) - 0.5) * 2;
+            
+            oscillator.frequency.value = freq * (1 + Math.sin(time) * 0.1);
+            oscillator.type = 'sine';
+            
+            gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+            gainNode.gain.linearRampToValueAtTime(0.2, audioContext.currentTime + 0.01);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 1);
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(panner);
+            panner.connect(masterGain);
+            
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 1);
+            
+            // Update visualizer
+            updateAudioViz(freq);
+        }
+        
+        // Update audio visualizer
+        function updateAudioViz(freq) {
+            const index = Math.floor((freq / 1000) * freqBars.length);
+            if (freqBars[index]) {
+                freqBars[index].style.transform = 'scaleY(1)';
+                setTimeout(() => {
+                    freqBars[index].style.transform = 'scaleY(0)';
+                }, 200);
+            }
+        }
+        
+        // Track mouse
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            cursor.style.left = mouseX + 'px';
+            cursor.style.top = mouseY + 'px';
+        });
+        
+        // Mouse controls
+        document.addEventListener('mousedown', () => { 
+            mouseDown = true;
+            cursor.style.transform = 'translate(-50%, -50%) scale(0.8)';
+            cursor.style.borderColor = '#FF00FF';
+        });
+        
+        document.addEventListener('mouseup', () => { 
+            mouseDown = false;
+            cursor.style.transform = 'translate(-50%, -50%) scale(1)';
+            cursor.style.borderColor = '#00FFFF';
+        });
+        
+        document.addEventListener('click', (e) => {
+            if (audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+            addFractal(e.clientX, e.clientY);
+        });
+        
+        // Wheel for zoom
+        document.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            zoom *= e.deltaY > 0 ? 0.95 : 1.05;
+            zoom = Math.max(0.1, Math.min(10, zoom));
+            dimension = 2 + Math.log(zoom) / Math.log(PHI);
+            document.getElementById('dim-value').textContent = dimension.toFixed(3);
+        });
+        
+        // Keyboard controls
+        document.addEventListener('keydown', (e) => {
+            if (e.key === ' ') {
+                e.preventDefault();
+                sonicBurst();
+            } else if (e.key >= '1' && e.key <= '4') {
+                mode = parseInt(e.key) - 1;
+            } else if (e.key === 'Escape') {
+                transcend();
+            }
+        });
+        
+        // Add fractal with enhanced properties
+        function addFractal(x, y) {
+            const fractal = {
+                x: x,
+                y: y,
+                depth: 0,
+                maxDepth: 5 + Math.floor(Math.random() * 3),
+                angle: Math.random() * Math.PI * 2,
+                scale: 1,
+                type: mode,
+                color: Object.values(COLORS)[Math.floor(Math.random() * Object.values(COLORS).length)],
+                rotation: 0,
+                z: Math.random() * 100 - 50
+            };
+            
+            fractals.push(fractal);
+            
+            // Spawn AVIK particles
+            'AVIK'.split('').forEach((letter, i) => {
+                particles.push({
+                    x: x,
+                    y: y,
+                    z: 0,
+                    vx: (Math.random() - 0.5) * 10,
+                    vy: (Math.random() - 0.5) * 10,
+                    vz: Math.random() * 5,
+                    letter: letter,
+                    color: COLORS[Object.keys(COLORS)[i % Object.keys(COLORS).length]],
+                    life: 1,
+                    size: 30,
+                    rotation: 0
+                });
+                
+                playTone(letter, x, y);
+            });
+            
+            // Create wave ripple
+            waves.push({
+                x: x,
+                y: y,
+                radius: 0,
+                maxRadius: 300,
+                color: fractal.color,
+                life: 1
+            });
+        }
+        
+        // Draw enhanced fractal branch
+        function drawFractalBranch(x, y, z, angle, depth, maxDepth, length, color) {
+            if (depth >= maxDepth) return;
+            
+            // 3D projection
+            const scale = 1 / (1 + z * 0.001);
+            const projX = (x - centerX) * scale + centerX;
+            const projY = (y - centerY) * scale + centerY;
+            
+            // Calculate end point
+            const endX = x + Math.cos(angle) * length;
+            const endY = y + Math.sin(angle) * length;
+            const endZ = z + Math.sin(time + depth) * 10;
+            
+            // Draw line with depth
+            ctx.strokeStyle = color;
+            ctx.lineWidth = Math.max(0.5, (maxDepth - depth) * scale * zoom);
+            ctx.globalAlpha = (1 - depth / maxDepth) * (1 - Math.abs(z) / 200);
+            ctx.shadowColor = color;
+            ctx.shadowBlur = 10 * scale;
+            
+            ctx.beginPath();
+            ctx.moveTo(projX, projY);
+            
+            const projEndX = (endX - centerX) * scale + centerX;
+            const projEndY = (endY - centerY) * scale + centerY;
+            ctx.lineTo(projEndX, projEndY);
+            ctx.stroke();
+            
+            // Draw content at nodes
+            if (depth % 2 === 0) {
+                ctx.save();
+                ctx.translate(projEndX, projEndY);
+                ctx.rotate(angle + time);
+                ctx.font = `bold ${(20 - depth * 2) * scale * zoom}px Courier New`;
+                ctx.fillStyle = color;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                
+                let content = '';
+                if (mode === 0) { // AVIK letters
+                    content = 'AVIK'[depth % 4];
+                } else if (mode === 1) { // Sacred numbers
+                    content = fibonacci[depth % fibonacci.length];
+                } else if (mode === 2) { // Mathematical symbols
+                    const symbols = ['∞', 'φ', 'π', '√', 'Σ', '∫', '∂', 'Δ'];
+                    content = symbols[depth % symbols.length];
+                } else { // Mixed
+                    const mixed = ['A', '1', '∞', 'V', '7', 'φ', 'I', '2', 'π', 'K', '9'];
+                    content = mixed[depth % mixed.length];
+                }
+                
+                ctx.fillText(content, 0, 0);
+                ctx.restore();
+            }
+            
+            // Golden ratio branching
+            const goldenAngle = Math.PI / PHI;
+            const branches = mode === 3 ? 4 : 3;
+            
+            for (let i = 0; i < branches; i++) {
+                const branchAngle = angle + (i - branches/2) * goldenAngle * (1 + Math.sin(time * PHI + depth) * 0.2);
+                const branchLength = length * (1 / PHI);
+                const branchZ = endZ + (Math.random() - 0.5) * 20;
+                
+                drawFractalBranch(
+                    endX, endY, branchZ,
+                    branchAngle,
+                    depth + 1,
+                    maxDepth,
+                    branchLength,
+                    color
+                );
+            }
+            
+            ctx.globalAlpha = 1;
+            ctx.shadowBlur = 0;
+        }
+        
+        // Sonic burst effect
+        function sonicBurst() {
+            const burst = 12;
+            for (let i = 0; i < burst; i++) {
+                const angle = (i / burst) * Math.PI * 2;
+                const x = centerX + Math.cos(angle) * 100;
+                const y = centerY + Math.sin(angle) * 100;
+                addFractal(x, y);
+            }
+        }
+        
+        // Transcendence effect
+        function transcend() {
+            dimension = Math.PI;
+            zoom = PHI;
+            
+            // Clear and create mandala
+            fractals = [];
+            particles = [];
+            waves = [];
+            
+            for (let ring = 0; ring < 5; ring++) {
+                const count = fibonacci[ring + 5];
+                for (let i = 0; i < count; i++) {
+                    const angle = (i / count) * Math.PI * 2;
+                    const radius = (ring + 1) * 60;
+                    const x = centerX + Math.cos(angle) * radius;
+                    const y = centerY + Math.sin(angle) * radius;
+                    
+                    setTimeout(() => addFractal(x, y), ring * 100);
+                }
+            }
+        }
+        
+        // Draw waves
+        function drawWaves() {
+            waves = waves.filter(wave => {
+                wave.radius += 5;
+                wave.life -= 0.02;
+                
+                if (wave.life > 0) {
+                    ctx.strokeStyle = wave.color;
+                    ctx.lineWidth = 2 * wave.life;
+                    ctx.globalAlpha = wave.life * 0.5;
+                    ctx.beginPath();
+                    ctx.arc(wave.x, wave.y, wave.radius, 0, Math.PI * 2);
+                    ctx.stroke();
+                    return true;
+                }
+                return false;
+            });
+        }
+        
+        // Update particles with 3D
+        function updateParticles() {
+            particles = particles.filter(p => {
+                p.x += p.vx;
+                p.y += p.vy;
+                p.z += p.vz;
+                p.vx *= 0.98;
+                p.vy *= 0.98;
+                p.vz *= 0.95;
+                p.vy += 0.2; // Gravity
+                p.rotation += 0.1;
+                p.life -= 0.01;
+                p.size = Math.max(5, p.size * 0.98);
+                
+                if (p.life > 0) {
+                    const scale = 1 / (1 + p.z * 0.01);
+                    const projX = (p.x - centerX) * scale + centerX;
+                    const projY = (p.y - centerY) * scale + centerY;
+                    
+                    ctx.save();
+                    ctx.font = `bold ${p.size * scale}px Courier New`;
+                    ctx.fillStyle = p.color;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.globalAlpha = p.life;
+                    ctx.shadowColor = p.color;
+                    ctx.shadowBlur = 20 * scale;
+                    ctx.translate(projX, projY);
+                    ctx.rotate(p.rotation);
+                    ctx.fillText(p.letter, 0, 0);
+                    ctx.restore();
+                    return true;
+                }
+                return false;
+            });
+        }
+        
+        // Draw sacred geometry background
+        function drawSacredGeometry() {
+            ctx.strokeStyle = COLORS.gold;
+            ctx.lineWidth = 0.5;
+            ctx.globalAlpha = 0.1;
+            
+            // Flower of Life pattern
+            const radius = 50 * zoom;
+            for (let i = 0; i < 7; i++) {
+                const angle = (i / 6) * Math.PI * 2;
+                const x = centerX + Math.cos(angle + time * 0.1) * radius;
+                const y = centerY + Math.sin(angle + time * 0.1) * radius;
+                
+                ctx.beginPath();
+                ctx.arc(x, y, radius, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+            
+            // Center circle
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+            ctx.stroke();
+            
+            ctx.globalAlpha = 1;
+        }
+        
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            time += 0.01;
+            
+            // Dynamic background fade
+            ctx.fillStyle = `rgba(0, 0, 0, ${0.05 + Math.sin(time) * 0.02})`;
+            ctx.fillRect(0, 0, width, height);
+            
+            // Draw background elements
+            drawSacredGeometry();
+            drawWaves();
+            
+            // Update and draw fractals
+            fractals = fractals.filter(f => {
+                f.depth += 0.05 * zoom;
+                f.angle += 0.005 * PHI;
+                f.rotation += 0.01;
+                f.z = Math.sin(time + f.angle) * 50;
+                
+                if (f.depth < f.maxDepth) {
+                    const startLength = 60 * zoom;
+                    
+                    ctx.save();
+                    ctx.translate(f.x, f.y);
+                    ctx.rotate(f.rotation);
+                    ctx.translate(-f.x, -f.y);
+                    
+                    drawFractalBranch(
+                        f.x, f.y, f.z,
+                        f.angle,
+                        0,
+                        Math.floor(f.depth),
+                        startLength,
+                        f.color
+                    );
+                    
+                    ctx.restore();
+                    return true;
+                }
+                return false;
+            });
+            
+            // Update particles
+            updateParticles();
+            
+            // Continuous creation when mouse down
+            if (mouseDown && Math.random() < 0.1) {
+                addFractal(mouseX + (Math.random() - 0.5) * 50, mouseY + (Math.random() - 0.5) * 50);
+            }
+            
+            // Update displays
+            document.getElementById('rec-depth').textContent = fractals.length > 0 ? 
+                Math.floor(fractals[0]?.depth || 0) : '∞';
+            
+            // Ramanujan number animation
+            const ramDisplay = document.getElementById('ramanujan-display');
+            if (Math.random() < 0.01) {
+                const expressions = [
+                    '1729 = 1³ + 12³',
+                    '1729 = 9³ + 10³',
+                    '1729 = 12³ + 1',
+                    '1729 = Hardy-Ramanujan'
+                ];
+                ramDisplay.textContent = expressions[Math.floor(Math.random() * expressions.length)];
+            }
+            
+            // Auto-generate on edges
+            if (Math.random() < 0.005) {
+                const side = Math.floor(Math.random() * 4);
+                let x, y;
+                switch(side) {
+                    case 0: x = Math.random() * width; y = 0; break;
+                    case 1: x = width; y = Math.random() * height; break;
+                    case 2: x = Math.random() * width; y = height; break;
+                    case 3: x = 0; y = Math.random() * height; break;
+                }
+                addFractal(x, y);
+            }
+        }
+        
+        // Start animation
+        animate();
+        
+        // Initial pattern
+        setTimeout(() => {
+            addFractal(centerX, centerY);
+        }, 1000);
+    </script>
+</body>
+</html>
